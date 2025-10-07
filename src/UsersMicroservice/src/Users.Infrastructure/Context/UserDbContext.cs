@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Users.Domain.Entities;
 
-namespace Users.Infrastructure.Repository;
+namespace Users.Infrastructure.Context;
 
 public class UserDbContext : DbContext 
 {
@@ -25,7 +25,7 @@ public class UserDbContext : DbContext
                 user.HasIndex(u => u.Email).IsUnique();
                 
                 user.Property(u => u.Password).IsRequired();
-                user.Property(u => u.CreatedAt)
+                user.Property(u => u.CreatedDate)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP")
                     .ValueGeneratedOnAdd()
                     .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
