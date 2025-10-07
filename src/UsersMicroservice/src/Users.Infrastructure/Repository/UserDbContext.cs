@@ -20,7 +20,10 @@ public class UserDbContext : DbContext
                 user.ToTable("Users");
                 user.Property(u => u.Id).HasDefaultValueSql("uuid_generate_v4()");
                 user.Property(u => u.Name).IsRequired();
+                
                 user.Property(u => u.Email).IsRequired();
+                user.HasIndex(u => u.Email).IsUnique();
+                
                 user.Property(u => u.Password).IsRequired();
                 user.Property(u => u.CreatedAt)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP")

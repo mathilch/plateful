@@ -57,23 +57,102 @@ public sealed class UserRepositoryTests : IAsyncLifetime
     {
         await _postgresContainer.DisposeAsync().AsTask();
     }
+
+    /**
+     * ================================================================================================================
+     * ============================================ T E S T I N G =====================================================
+     * ================================================================================================================
+     */
+
+
+    private readonly CreateUserRequest _mockUser = new CreateUserRequest
+    {
+        Name = "Mock User",
+        Email = "mock@example.com",
+        Password = "password"
+    };
     
     [Fact]
-    public async Task AddUser_Should_Add_User()
+    public async Task AddUser_ShouldAddUser()
     {
-        var mockUser = new CreateUserRequest
-        {
-            Name = "Mock User",
-            Email = "mock@example.com",
-            Password = "password"
-        };
+        var addUser =  await _repository.AddUser(_mockUser);
+        var fetchUser = await _repository.GetUserByEmail(_mockUser.Email);
         
-        var addUser =  await _repository.AddUser(mockUser);
-        var fetchUser = await _repository.GetUserByEmail(mockUser.Email);
+        Assert.NotNull(addUser);
+        Assert.NotNull(fetchUser);
+        Assert.Equal(addUser.Email, fetchUser.Email);
+    }
+    
+    [Fact]
+    public async Task GetUserById_ShouldGetUser()
+    {
+        var addUser =  await _repository.AddUser(_mockUser);
+        var fetchUser = await _repository.GetUserById(addUser!.Id);
         
         Assert.NotNull(addUser);
         Assert.NotNull(fetchUser);
         Assert.Equal(addUser.Id, fetchUser.Id);
     }
+
+    [Fact]
+    public async Task UpdateUser_ShouldUpdateUser()
+    {
+        var addUser =  await _repository.AddUser(_mockUser);
+        var updateUser = await _repository.UpdateUser(addUser!.Id, u => u.Name = "Updated Name");
+        var allUsers = await _repository.GetAllUsers();
+        
+        Assert.Equal(addUser.Id, updateUser!.Id);
+        Assert.NotEqual(_mockUser.Name, updateUser.Name);
+        Assert.Single(allUsers);
+    }
+
+    [Fact]
+    public async Task DeleteUser_ShouldDeleteUser()
+    {
+        var addUser =  await _repository.AddUser(_mockUser);
+        var allUsers = await _repository.GetAllUsers();
+        Assert.Single(allUsers);
+        
+        _ = await _repository.DeleteUser(addUser!.Id);
+        
+        var noUsers = await _repository.GetAllUsers();
+        Assert.Empty(noUsers);
+    }
+
+    [Fact]
+    public async Task AddDuplicateUser_ShouldThrowException()
+    {
+        var user = await _repository.AddUser(_mockUser);
+        var exception = await Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddUser(_mockUser));
+        
+        
+        var innerEx = exception.InnerException as PostgresException;
+        Assert.NotNull(innerEx);
+        Assert.Equal("23505", innerEx.SqlState); // 23505 er en kode postgres smider når en unik værdi prøves at replikeres
+        
+        var fetchedUser = await _repository.GetUserByEmail(user!.Email);
+        Assert.NotNull(fetchedUser);
+
+        var allUsers = await _repository.GetAllUsers();
+        Assert.Single(allUsers);
+    }
+
+    [Fact]
+    public async Task MultipleUsers_ShouldHaveDifferentIDs()
+    {
+        var firstUser = await _repository.AddUser(_mockUser);
+
+        var secondMock = new CreateUserRequest
+        {
+            Name = "Second User",
+            Email = "second@example.com",
+            Password = "password"
+        };
+        
+        var secondUser = await _repository.AddUser(secondMock);
+        
+        Assert.NotEqual(firstUser!.Id, secondUser!.Id);
+    }
+    
     
 }
