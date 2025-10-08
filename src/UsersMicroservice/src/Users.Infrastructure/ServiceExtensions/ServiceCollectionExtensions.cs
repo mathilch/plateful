@@ -19,4 +19,12 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<UserDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("FoodClubUserDbConnection")));
     }
+
+    public static void ApplyMigrations(this IServiceCollection services)
+    {
+        using var serviceProvider = services.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+        dbContext.Database.Migrate();
+    }
 }

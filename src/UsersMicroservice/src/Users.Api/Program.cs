@@ -14,6 +14,7 @@ public class Program
         builder.Services.ConfigureApplicationServices(builder.Configuration);
         builder.Services.ConfigureInfrastructureServices();
         builder.Services.ConfigureDatabase(builder.Configuration);
+        builder.Services.ApplyMigrations();
 
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

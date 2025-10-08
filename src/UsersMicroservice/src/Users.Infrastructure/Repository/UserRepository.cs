@@ -29,15 +29,7 @@ public class UserRepository : IUserRepository
 
     public async Task<UserDto?> GetUserByEmailAndPassword(string email, string password)
     {
-        //var user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email && user.Password == password);
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = "test_user@mail.com",
-            IsActive = true,
-            Name = "Test User",
-            CreatedDate = DateTime.UtcNow,
-        };
+        var user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email && user.Password == password);
         return user.ToDto();
     }
 

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Users.Domain.Entities;
+using Users.Infrastructure.EntityConfigurations;
 
 namespace Users.Infrastructure.Context;
 
-public class UserDbContext : DbContext 
+public class UserDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
 
@@ -13,23 +13,6 @@ public class UserDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<User>(user =>
-            {
-                user.ToTable("Users");
-                user.Property(u => u.Id).HasDefaultValueSql("uuid_generate_v4()");
-                user.Property(u => u.Name).IsRequired();
-                
-                user.Property(u => u.Email).IsRequired();
-                user.HasIndex(u => u.Email).IsUnique();
-                
-                user.Property(u => u.Password).IsRequired();
-                user.Property(u => u.CreatedDate)
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                    .ValueGeneratedOnAdd()
-                    .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
-            }
-        );
+        modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
     }
 }
