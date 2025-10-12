@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Users.Application.Dtos.Requests;
 using Users.Infrastructure.Context;
+using Users.Infrastructure.Exceptions;
 using Users.Infrastructure.Repository;
 
 namespace Users.Infrastructure.Tests;
@@ -122,12 +123,8 @@ public sealed class UserRepositoryTests : IAsyncLifetime
     public async Task AddDuplicateUser_ShouldThrowException()
     {
         var user = await _repository.AddUser(_mockUser);
-        var exception = await Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddUser(_mockUser));
-
-
-        var innerEx = exception.InnerException as PostgresException;
-        Assert.NotNull(innerEx);
-        Assert.Equal("23505", innerEx.SqlState); // 23505 er en kode postgres smider når en unik værdi prøves at replikeres
+        var exception = await Assert.ThrowsAsync<DuplicateUserEmailException>(async () => await _repository.AddUser(_mockUser));
+        
 
         var fetchedUser = await _repository.GetUserByEmailAndPassword(_mockUser.Email, _mockUser.Password);
         Assert.NotNull(fetchedUser);
