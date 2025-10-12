@@ -1,0 +1,40 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Events.Domain.Entities;
+
+namespace Events.Infrastructure.EntityConfigurations;
+
+public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
+{
+    public void Configure(EntityTypeBuilder<Event> builder)
+    {
+        
+        builder.ToTable("Events");
+
+        builder.Property(e => e.EventId);
+
+        builder.Property(e => e.UserId).IsRequired();
+
+        builder.Property(e => e.Name).HasMaxLength(150).IsRequired();
+        builder.Property(e => e.Description).HasMaxLength(150).IsRequired();
+        builder.Property(e => e.FoodName).HasMaxLength(150).IsRequired();
+        builder.Property(e => e.ImageThumbnail).HasMaxLength(150).IsRequired();
+
+        builder.Property(e => e.MaxAllowedParticipants).IsRequired();
+        builder.Property(e => e.MinAllowedAge).IsRequired();
+        builder.Property(e => e.MaxAllowedAge).IsRequired();
+
+        builder.Property(e => e.StartDate).IsRequired();
+        builder.Property(e => e.ReservationEndDate).IsRequired();
+
+        builder.Property(e => e.EventStatus);
+
+        builder.Property(e => e.CreatedDate)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+
+        builder.Property(e => e.IsActive);
+    }
+}
