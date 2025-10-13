@@ -3,8 +3,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Project structure
 
 `app/` - main application folder. \
-`componenets/core` - project own components. (Add your custom components here) \
-`components/ui` - componenets imported by shadcn(componenet library). Example: pnpm dlx shadcn@latest add button. Check out docs: https://ui.shadcn.com/docs/components \
+`components/core` - project own components. (Add your custom components here) \
+`components/ui` - components imported by shadcn(component library). Example: pnpm dlx shadcn@latest add button. Check out docs: https://ui.shadcn.com/docs/components \
 
 
 Next.Js routing example: 
