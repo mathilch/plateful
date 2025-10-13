@@ -15,7 +15,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.Email).HasMaxLength(150).IsRequired();
         builder.HasIndex(u => u.Email).IsUnique();
-
+        
         builder.Property(u => u.Password).HasMaxLength(150).IsRequired();
         builder.Property(u => u.CreatedDate)
             .HasDefaultValueSql("CURRENT_TIMESTAMP")

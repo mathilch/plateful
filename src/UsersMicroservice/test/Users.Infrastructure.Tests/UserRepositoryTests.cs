@@ -122,9 +122,8 @@ public sealed class UserRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task AddDuplicateUser_ShouldThrowException()
     {
-        var user = await _repository.AddUser(_mockUser);
-        var exception = await Assert.ThrowsAsync<DuplicateUserEmailException>(async () => await _repository.AddUser(_mockUser));
-        
+        await _repository.AddUser(_mockUser);
+        await Assert.ThrowsAsync<DuplicateUserEmailException>(async () => await _repository.AddUser(_mockUser));
 
         var fetchedUser = await _repository.GetUserByEmailAndPassword(_mockUser.Email, _mockUser.Password);
         Assert.NotNull(fetchedUser);
