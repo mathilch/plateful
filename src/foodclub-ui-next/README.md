@@ -1,15 +1,30 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Project structure
+
+`app/` - main application folder. \
+`componenets/core` - project own components, custom created \
+`components/ui` - componenets imported by shadcn(componenet library). Example: pnpm dlx shadcn@latest add button. Check out docs: https://ui.shadcn.com/docs/components \
+
+
+Next.Js routing example: 
+- route `/createFoodEvent` -> opens a `app/createFoodEvent/page.tsx` page
+
+
+
 ## Getting Started
 
-First, run the development server:
+First, run the development server
+by pressing F5 in Visual Studio Code (check out .vscode/lauch.json for configurations) \
+or by running the following scripts:
 
 ```bash
+#preferred
+pnpm dev 
+# or
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev (preferred)
 # or
 bun dev
 ```

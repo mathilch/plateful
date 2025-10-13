@@ -15,10 +15,10 @@ import { Button } from "../ui/button";
 
 type AuthDialogProps = {
     open: boolean;
-    setOpen: (open: boolean) => void;
+    setOpenAction: (open: boolean) => void;
 };
 
-export default function AuthDialog({ open, setOpen }: AuthDialogProps) {
+export default function AuthDialog({ open, setOpenAction: setOpen }: AuthDialogProps) {
     //const [open, setOpen] = useState(false);    
 
     return (
