@@ -4,6 +4,7 @@ using Events.Application.Dtos.Requests;
 using Events.Application.Mappers;
 using Events.Domain.Entities;
 using Events.Infrastructure.Context;
+using Events.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Events.Infrastructure.Repository;
@@ -17,20 +18,21 @@ public class EventRepository : IEventRepository
         _context = context;
     }
 
-    public async Task<EventDto?> GetEventById(Guid id)
+    public async Task<EventDto> GetEventById(Guid id)
     {
-        var e = await _context.Events.FindAsync(id);
+        var e = await _context.Events.FindAsync(id)
+            ?? throw new EventIdNotFoundException(id);
         return e.ToDto();
     }
 
-    public async Task<List<EventDto?>> GetAllEvents()
+    public async Task<List<EventDto>> GetAllEvents()
     {
         return await _context.Events
             .Select(e => e.ToDto())
             .ToListAsync();
     }
 
-    public async Task<EventDto?> AddEvent(CreateEventRequestDto createEvent)
+    public async Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
     {
         var e = new Event
         {
@@ -53,27 +55,27 @@ public class EventRepository : IEventRepository
         return e.ToDto();
     }
 
-    public async Task<EventDto?> UpdateEvent(Guid id, Action<Event> op)
+    public async Task<EventDto> UpdateEvent(Guid id, Action<Event> op)
     {
-        var e = await _context.Events.FindAsync(id);
-        if (e is null) return null;
+        var e = await _context.Events.FindAsync(id)
+                ?? throw new EventIdNotFoundException(id);
 
         op(e);
         await _context.SaveChangesAsync();
         return e.ToDto();
     }
 
-     public async Task<EventDto?> DeleteEvent(Guid id)
+     public async Task<EventDto> DeleteEvent(Guid id)
     {
-        var e = await _context.Events.FindAsync(id);
-        if (e is null) return null;
+        var e = await _context.Events.FindAsync(id)
+            ?? throw new EventIdNotFoundException(id);
 
         _context.Events.Remove(e);
         await _context.SaveChangesAsync();
         return e.ToDto();
     }
 
-    public async Task<List<EventDto?>> GetByUserId(Guid userId)
+    public async Task<List<EventDto>> GetEventByUserId(Guid userId)
     {
         return await _context.Events
             .Where(e => e.UserId == userId)

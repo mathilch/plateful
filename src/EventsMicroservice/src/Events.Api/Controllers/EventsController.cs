@@ -30,7 +30,7 @@ public class EventsController : ControllerBase
 
     [HttpGet("user/{userId:guid}")]
     public async Task<IActionResult> GetByUser(Guid userId)
-        => Ok(await _repo.GetByUserId(userId));
+        => Ok(await _repo.GetEventByUserId(userId));
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
