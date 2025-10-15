@@ -11,12 +11,12 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
-type AuthDialogProps = {
+type LoginDialogProps = {
     open: boolean;
     setOpenAction: (open: boolean) => void;
 };
 
-export default function AuthDialog({ open, setOpenAction: setOpen }: AuthDialogProps) {
+export default function LoginDialog({ open, setOpenAction: setOpen }: LoginDialogProps) {
     //const [open, setOpen] = useState(false);    
 
     return (
@@ -30,39 +30,40 @@ export default function AuthDialog({ open, setOpenAction: setOpen }: AuthDialogP
                     </DialogDescription>
 
                 </DialogHeader>
-                <form>
-                    <div className="flex flex-col gap-4">
-                        <div className="grid gap-2">
 
-                            <Label htmlFor="email" className="text-xs text-muted-gray font-bold">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                required
-                                className="h-12"
-                            />
+                <form className="grid gap-4">
+                    
+                    <div className="grid gap-2">
 
-                        </div>
-                        <div className="grid gap-2">
-
-                            <Label htmlFor="password" className="text-xs text-muted-gray font-bold">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                required
-                                className="h-12" />
-
-                        </div>
+                        <Label htmlFor="email" className="text-xs text-muted-gray font-bold">Email</Label>
+                        <Input
+                            id="email"
+                            type="email"
+                            placeholder="m@example.com"
+                            required
+                            className="h-12"
+                        />
 
                     </div>
-                </form>
+                    <div className="grid gap-2">
 
-                {/* <DialogFooter className="flex-col gap-2"> */}
-                <Button type="submit" className="h-9 bg-primary-green font-bold cursor-pointer">
-                    Log In
-                </Button>
+                        <Label htmlFor="password" className="text-xs text-muted-gray font-bold">Password</Label>
+                        <Input
+                            id="password"
+                            type="password"
+                            placeholder="••••••••"
+                            required
+                            className="h-12" />
+
+                    </div>
+
+
+                    {/* <DialogFooter className="flex-col gap-2"> */}
+                    <Button type="submit" className="h-9 bg-primary-green font-bold cursor-pointer">
+                        Log In
+                    </Button>
+
+                </form>
 
                 <a
                     href="#"

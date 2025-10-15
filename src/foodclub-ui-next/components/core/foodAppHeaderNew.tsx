@@ -3,17 +3,20 @@
 import Link from "next/link";
 import Image from 'next/image'
 import { useState } from "react";
-import AuthDialog from "./authDialog";
+import LoginDialog from "./loginDialog";
+import SignUpDialog from "./signUpDialog";
 
 
 
 export default function FoodAppHeaderNew() {
     const [openAuthDialog, setOpenAuthDialog] = useState(false);
+    const [openSignUpDialog, setOpenSignUpDialog] = useState(false);
 
     return (
         <>
             {/* TODO: move this to a client component */}
-            <AuthDialog open={openAuthDialog} setOpenAction={setOpenAuthDialog} />
+            <LoginDialog open={openAuthDialog} setOpenAction={setOpenAuthDialog} />
+            <SignUpDialog open={openSignUpDialog} setOpenAction={setOpenSignUpDialog} />
 
             <header className="flex justify-evenly items-center gap-5 h-20 outline-1 outline-gray-200">
 
@@ -37,7 +40,7 @@ export default function FoodAppHeaderNew() {
 
                 <div className="flex gap-4">
                     <Link href="#" onClick={() => setOpenAuthDialog(true)} className="py-2 px-8 border-1 border-primary-green rounded-[50%] text-primary-green text-base font-bold font-['Poppins'] hover:bg-muted hover:text-foreground transition-colors">Log in</Link>
-                    <Link href="#" className="py-2 px-12 border-1 border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Sign up</Link>
+                    <Link href="#" onClick={() => setOpenSignUpDialog(true)} className="py-2 px-12 border-1 border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Sign up</Link>
                 </div>
 
 

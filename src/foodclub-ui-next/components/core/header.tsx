@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import AuthDialog from "./authDialog";
+import LoginDialog from "./loginDialog";
 import { useState } from "react";
 
 
@@ -22,7 +22,7 @@ export default function FoodAppHeader() {
                     </nav>
                 </div>
             </header>
-            <AuthDialog open={openAuthDialog} setOpenAction={setOpenAuthDialog}/>
+            <LoginDialog open={openAuthDialog} setOpenAction={setOpenAuthDialog}/>
         </>
     );
 }
