@@ -3,6 +3,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+@theme {
+  --color-primary-green: #116149;
+  --color-primary-green-dark: #0D4B38;
+  --color-accent-orange: #FF7A00;
+  --color-primary-gray: var(--color-gray-800);
+  --color-muted-gray: var(--color-gray-500);
+  --color-success: var(--color-green-600);
+  --color-warning: var(--color-amber-500);
+  --color-danger: var(--color-red-600);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
