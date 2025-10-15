@@ -125,6 +125,22 @@
 }
 
 @layer base {
+  h1 {
+    @apply text-primary-gray text-5xl font-bold font-['Poppins'];
+  }
+
+  h2 {
+    @apply text-primary-gray text-3xl font-bold font-['Poppins'];
+  }
+
+  h3 {
+    @apply text-primary-gray text-xl font-bold font-['Poppins'];
+  }
+
+  body {
+    @apply text-primary-gray text-base font-normal font-['Poppins'];
+  }
+
   /* * {
     @apply border-border outline-ring/50;
   }

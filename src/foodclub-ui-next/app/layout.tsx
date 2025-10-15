@@ -8,8 +8,8 @@ import FoodAppHeaderNew from "@/components/core/foodAppHeaderNew";
 
 
 const poppinsFont = Poppins({
-    subsets: ['latin'],
-    weight: "700"
+    subsets: ["latin"],
+    weight: ["700", "400"]
 })
 
 const geistSans = Geist({

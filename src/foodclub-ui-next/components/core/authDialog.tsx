@@ -5,7 +5,8 @@ import {
     DialogContent,
     DialogDescription,
     DialogHeader,
-    DialogTitle} from "@/components/ui/dialog"
+    DialogTitle
+} from "@/components/ui/dialog"
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -20,60 +21,64 @@ export default function AuthDialog({ open, setOpenAction: setOpen }: AuthDialogP
 
     return (
         <Dialog open={open} onOpenChange={setOpen} >
-            <DialogContent>
+            <DialogContent className="p-10">
+
                 <DialogHeader>
-                    <DialogTitle>Login to your account</DialogTitle>
+                    <DialogTitle className="text-primary-gray text-3xl font-bold font-['Poppins']">Welcome back</DialogTitle>
                     <DialogDescription>
-                        Enter your email below to login to your account
+                        {/* Enter your email below to login to your account */}
                     </DialogDescription>
-                    {/* <CardAction>
-          <Button variant="link">Sign Up</Button>
-        </CardAction> */}
+
                 </DialogHeader>
                 <form>
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="email" className="justify-self-center">Email</Label>
+
+                            <Label htmlFor="email" className="text-xs text-muted-gray font-bold">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
                                 placeholder="m@example.com"
                                 required
+                                className="h-12"
                             />
+
                         </div>
                         <div className="grid gap-2">
-                            <div className="grid grid-cols-3 gap-4 ">
-                                <div className=""></div>
 
-                                <Label htmlFor="password" className="justify-self-center">Password</Label>
+                            <Label htmlFor="password" className="text-xs text-muted-gray font-bold">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                placeholder="••••••••"
+                                required
+                                className="h-12" />
 
-                         
-                            </div>
-
-                            <Input id="password" type="password" required />
-
-                                   <a
-                                    href="#"
-                                    className="text-sm justify-self-end underline-offset-4 hover:underline"
-                                >
-                                    Forgot password?
-                                </a>
                         </div>
+
                     </div>
                 </form>
 
                 {/* <DialogFooter className="flex-col gap-2"> */}
-                    <Button type="submit" className=" bg-amber-500">
-                        Login
-                    </Button>
-                    <Button variant="outline" className="">
-                        Login with Google
-                    </Button>
+                <Button type="submit" className="h-9 bg-primary-green font-bold cursor-pointer">
+                    Log In
+                </Button>
 
-                    {/* <Separator /> */}
-                    <p className="justify-self-center">Or</p>
+                <a
+                    href="#"
+                    className="text-xs font-bold text-primary-green justify-self-end underline-offset-4 hover:underline"
+                >
+                    Forgot password?
+                </a>
 
-                    <Button variant="outline" className="">Sign Up</Button>
+                <Button variant="outline" className="h-9 cursor-pointer">
+                    Login with Google
+                </Button>
+
+                {/* <Separator /> */}
+                <p className="justify-self-center">Or</p>
+
+                <Button variant="outline" className="h-9 cursor-pointer">Sign Up</Button>
 
 
                 {/* </DialogFooter> */}
