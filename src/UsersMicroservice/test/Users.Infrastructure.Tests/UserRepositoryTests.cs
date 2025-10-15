@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Users.Application.Dtos.Requests;
 using Users.Infrastructure.Context;
-using Users.Infrastructure.Exceptions;
+using Users.Application.Exceptions;
 using Users.Infrastructure.Repository;
 
 namespace Users.Infrastructure.Tests;
@@ -67,20 +67,22 @@ public sealed class UserRepositoryTests : IAsyncLifetime
      */
 
 
-    private readonly CreateUserRequestDto _mockUser = new CreateUserRequestDto(
-        "Mock User",
-        "mock@example.com",
-        "password");
+    private readonly CreateUserRequestDto _mockUser = new CreateUserRequestDto
+    {
+        Name = "Mock User",
+        Email = "mock@example.com",
+        Password = "password"
+    };
 
     [Fact]
     public async Task AddUser_ShouldAddUser()
     {
         var addUser = await _repository.AddUser(_mockUser);
-        var fetchUser = await _repository.GetUserByEmailAndPassword(_mockUser.Email, _mockUser.Password);
+        var fetchUser = await _repository.GetUserByEmail(_mockUser.Email);
 
         Assert.NotNull(addUser);
-        Assert.NotNull(fetchUser);
-        Assert.Equal(addUser.Email, fetchUser.Email);
+        Assert.NotNull(fetchUser.userDto);
+        Assert.Equal(addUser.Email, fetchUser.userDto.Email);
     }
 
     [Fact]
@@ -113,7 +115,7 @@ public sealed class UserRepositoryTests : IAsyncLifetime
         var allUsers = await _repository.GetAllUsers();
         Assert.Single(allUsers);
 
-        _ = await _repository.DeleteUser(addUser!.Id);
+        await _repository.DeleteUser(addUser!.Id);
 
         var noUsers = await _repository.GetAllUsers();
         Assert.Empty(noUsers);
@@ -125,8 +127,8 @@ public sealed class UserRepositoryTests : IAsyncLifetime
         await _repository.AddUser(_mockUser);
         await Assert.ThrowsAsync<DuplicateUserEmailException>(async () => await _repository.AddUser(_mockUser));
 
-        var fetchedUser = await _repository.GetUserByEmailAndPassword(_mockUser.Email, _mockUser.Password);
-        Assert.NotNull(fetchedUser);
+        var fetchedUser = await _repository.GetUserByEmail(_mockUser.Email);
+        Assert.NotNull(fetchedUser.userDto);
 
         var allUsers = await _repository.GetAllUsers();
         Assert.Single(allUsers);
@@ -137,10 +139,12 @@ public sealed class UserRepositoryTests : IAsyncLifetime
     {
         var firstUser = await _repository.AddUser(_mockUser);
 
-        var secondMock = new CreateUserRequestDto(
-        "Second User",
-        "second@example.com",
-        "password");
+        var secondMock = new CreateUserRequestDto
+        {
+            Name = "Second User",
+            Email = "second@example.com",
+            Password = "password"
+        };
 
         var secondUser = await _repository.AddUser(secondMock);
 

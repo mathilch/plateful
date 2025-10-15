@@ -1,6 +1,6 @@
-namespace Users.Infrastructure.Exceptions;
+namespace Users.Application.Exceptions;
 
-public class WrongUserCredentialsException : InfrastructureException
+public class WrongUserCredentialsException : ApplicationException
 {
     public WrongUserCredentialsException(string email) 
         : base($"Wrong password for {email}") { }
