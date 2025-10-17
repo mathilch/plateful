@@ -75,7 +75,7 @@ public class EventRepository : IEventRepository
         return e.ToDto();
     }
 
-    public async Task<List<EventDto>> GetEventByUserId(Guid userId)
+    public async Task<List<EventDto>> GetEventsByUserId(Guid userId)
     {
         return await _context.Events
             .Where(e => e.UserId == userId)

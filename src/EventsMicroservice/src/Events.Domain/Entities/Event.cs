@@ -9,7 +9,6 @@ public class Event
     public string Name { get; set; } = default!;
     public string Description { get; set; } = default!;
     public string FoodName { get; set; } = default!;
-    public EventStatus EventStatus { get; set; }
     public int MaxAllowedParticipants { get; set; }
     public int MinAllowedAge { get; set; }
     public int MaxAllowedAge { get; set; }
@@ -18,4 +17,6 @@ public class Event
     public string ImageThumbnail { get; set; } = default!;
     public DateTime CreatedDate { get; set; }
     public bool IsActive { get; set; }
+    public bool IsPublic { get; set; } = true;
+
 }

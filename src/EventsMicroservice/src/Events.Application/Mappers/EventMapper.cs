@@ -20,7 +20,8 @@ public static class EventMapper
             e.ReservationEndDate,
             e.ImageThumbnail,
             e.CreatedDate,
-            e.IsActive
+            e.IsActive,
+            e.IsPublic
         );
     }
 }

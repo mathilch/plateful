@@ -11,5 +11,5 @@ public interface IEventRepository
     Task<EventDto> AddEvent(CreateEventRequestDto createEvent);
     Task<EventDto> UpdateEvent(Guid id, Action<Event> op);
     Task<EventDto> DeleteEvent(Guid id);
-    Task<List<EventDto>> GetEventByUserId(Guid userId);
+    Task<List<EventDto>> GetEventsByUserId(Guid userId);
 }

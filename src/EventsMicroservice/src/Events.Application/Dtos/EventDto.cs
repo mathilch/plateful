@@ -13,5 +13,6 @@ public record EventDto(
     DateTime ReservationEndDate,
     string ImageThumbnail,
     DateTime CreatedDate,
-    bool IsActive
+    bool IsActive,
+    bool IsPublic
 );
