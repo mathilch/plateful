@@ -1,6 +1,6 @@
-namespace Users.Infrastructure.Exceptions;
+namespace Users.Application.Exceptions;
 
-public class DuplicateUserEmailException : InfrastructureException
+public class DuplicateUserEmailException : ApplicationException
 {
     public DuplicateUserEmailException(string email) 
         : base($"User with email {email} already exists.") { }

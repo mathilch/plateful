@@ -1,3 +1,9 @@
 ﻿namespace Users.Application.Dtos.Requests;
 
-public record CreateUserRequestDto(string Name, string Email, string Password);
+public class CreateUserRequestDto
+{
+    public string Name { get; init; } = default!;
+    public string Email { get; init; } = default!;
+    public string Password { get; set; } = default!;
+    public int Age { get; init; }
+}
