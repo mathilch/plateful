@@ -56,7 +56,7 @@ export default function SignUpDialog({ open, setOpenAction: setOpen }: SignUpDia
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="age" className="text-xs text-muted-gray font-bold">Full Name</Label>
+                        <Label htmlFor="age" className="text-xs text-muted-gray font-bold">Age</Label>
                         <Input
                             id="age"
                             type="number"
