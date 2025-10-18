@@ -39,7 +39,7 @@ public class UserService(IUserRepository _userRepository, ITokenService _tokenSe
         var verificationResult = _passwordHasher.VerifyHashedPassword(user.userDto.Email, user.hashedPassword, password);
         if (verificationResult == PasswordVerificationResult.Success)
         {
-            return _tokenService.CreateToken(user.userDto.Id, user.userDto.Email);
+            return _tokenService.CreateToken(user.userDto.Id, user.userDto.Email, user.userDto.Name);
         }
 
         throw new WrongUserCredentialsException(email);
