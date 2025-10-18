@@ -20,6 +20,16 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
+
         builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Users API", Version = "v1" });
@@ -43,6 +53,8 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.UseCors();
 
         app.Run();
     }

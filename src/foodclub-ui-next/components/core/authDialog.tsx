@@ -1,85 +1,141 @@
-"use client"
+"use client";
 
+import React, { useState } from "react";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle} from "@/components/ui/dialog"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 type AuthDialogProps = {
-    open: boolean;
-    setOpenAction: (open: boolean) => void;
+  open: boolean;
+  setOpenAction: (open: boolean) => void;
 };
 
-export default function AuthDialog({ open, setOpenAction: setOpen }: AuthDialogProps) {
-    //const [open, setOpen] = useState(false);    
+export default function AuthDialog({
+  open,
+  setOpenAction: setOpen,
+}: AuthDialogProps) {
+  const [Email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    return (
-        <Dialog open={open} onOpenChange={setOpen} >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Login to your account</DialogTitle>
-                    <DialogDescription>
-                        Enter your email below to login to your account
-                    </DialogDescription>
-                    {/* <CardAction>
-          <Button variant="link">Sign Up</Button>
-        </CardAction> */}
-                </DialogHeader>
-                <form>
-                    <div className="flex flex-col gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email" className="justify-self-center">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                required
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <div className="grid grid-cols-3 gap-4 ">
-                                <div className=""></div>
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-                                <Label htmlFor="password" className="justify-self-center">Password</Label>
+    try {
+      const res = await fetch("https://localhost:7083/api/User/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Email, Password }),
+      });
 
-                         
-                            </div>
+      if (!res.ok) {
+        // Try to parse error message from the server, fall back to status text
+        let msg = res.statusText;
+        try {
+          const json = await res.json();
 
-                            <Input id="password" type="password" required />
+          msg = json?.message || msg;
+        } catch (err) {
+          /* ignore JSON parse errors */
+        }
+        setError(msg || "Login failed");
+        return;
+      }
+      // Server returns the token as plain text in the response body.
+      const token = await res.text();
 
-                                   <a
-                                    href="#"
-                                    className="text-sm justify-self-end underline-offset-4 hover:underline"
-                                >
-                                    Forgot password?
-                                </a>
-                        </div>
-                    </div>
-                </form>
+      if (!token) {
+        setError("Login failed: no token returned");
+        return;
+      }
 
-                {/* <DialogFooter className="flex-col gap-2"> */}
-                    <Button type="submit" className=" bg-amber-500">
-                        Login
-                    </Button>
-                    <Button variant="outline" className="">
-                        Login with Google
-                    </Button>
+      try {
+        localStorage.setItem("accessToken", token);
+        // notify same-tab listeners that auth state changed
+        window.dispatchEvent(new Event("authChanged"));
+      } catch (err) {
+        // ignore storage errors
+        console.warn("Unable to store token in localStorage", err);
+      }
 
-                    {/* <Separator /> */}
-                    <p className="justify-self-center">Or</p>
+      // Success: close dialog. Caller can handle routing / further auth handling.
+      setOpen(false);
+    } catch (err: any) {
+      setError(err?.message || "Network error");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-                    <Button variant="outline" className="">Sign Up</Button>
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Login to your account</DialogTitle>
+          <DialogDescription>
+            Enter your email below to login to your account
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                value={Email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={Password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <a
+                href="#"
+                className="text-sm justify-self-end underline-offset-4 hover:underline"
+              >
+                Forgot password?
+              </a>
+            </div>
+          </div>
 
+          {error && (
+            <p className="text-sm text-red-600 mt-4" role="alert">
+              {error}
+            </p>
+          )}
 
-                {/* </DialogFooter> */}
-
-            </DialogContent>
-        </Dialog>
-
-    )
+          <div className="mt-6">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="py-2 px-12 text-white text-base font-bold font-['Poppins'] bg-emerald-800 rounded-xl hover:bg-emerald-700 hover:cursor-pointer"
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 }

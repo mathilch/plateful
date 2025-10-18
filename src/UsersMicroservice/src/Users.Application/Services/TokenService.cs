@@ -10,7 +10,7 @@ namespace Users.Application.Services;
 
 public class TokenService(IOptions<JwtSettings> _jwtSettings) : ITokenService
 {
-    public string CreateToken(Guid userId, string email)
+    public string CreateToken(Guid userId, string email, string userName)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Value.SecretKey));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -18,7 +18,8 @@ public class TokenService(IOptions<JwtSettings> _jwtSettings) : ITokenService
         var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new(JwtRegisteredClaimNames.UniqueName, email),
+                new(JwtRegisteredClaimNames.UniqueName, userName),
+                new(JwtRegisteredClaimNames.Email, email),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
