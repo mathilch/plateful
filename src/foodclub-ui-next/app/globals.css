@@ -13,6 +13,8 @@
   --color-success: var(--color-green-600);
   --color-warning: var(--color-amber-500);
   --color-danger: var(--color-red-600);
+  --color-green-light: #E5F6EF;
+  --color-gray-light: #F3F4F6;
 }
 
 @theme inline {
