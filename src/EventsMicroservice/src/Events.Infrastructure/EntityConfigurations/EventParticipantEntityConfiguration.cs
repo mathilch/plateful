@@ -25,12 +25,12 @@ public class EventParticipantEntityConfiguration : IEntityTypeConfiguration<Even
         
         builder.HasIndex(ep => new { ep.EventId, ep.UserId }).IsUnique();
         
-        builder.Property(e => e.CreatedDate).IsRequired();
-        builder.Property(e => e.ParticipantStatus)
+        builder.Property(ep => ep.CreatedDate).IsRequired();
+        builder.Property(ep => ep.ParticipantStatus)
             .HasConversion<string>()
             .IsRequired();
 
-        builder.Property(e => e.PaymentStatus)
+        builder.Property(ep => ep.PaymentStatus)
             .HasConversion<string>()
             .IsRequired();
     }

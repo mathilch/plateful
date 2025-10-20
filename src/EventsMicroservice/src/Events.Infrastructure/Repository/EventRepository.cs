@@ -82,4 +82,38 @@ public class EventRepository : IEventRepository
             .Select(e => e.ToDto())
             .ToListAsync();
     }
+
+    public async Task<EventDto> AddEventParticipant(Guid eventId, Guid userId)
+    {
+        var ep = new EventParticipant
+        {
+            Id = Guid.NewGuid(),
+            EventId = eventId,
+            UserId = userId,
+            CreatedDate = DateTime.Now
+        };
+        
+        _context.EventParticipants.Add(ep);
+        await _context.SaveChangesAsync();
+        return GetEventById(eventId).Result;
+    }
+    
+    public async Task<EventDto> RemoveEventParticipant(Guid eventId, Guid userId)
+    { 
+        var ep = await _context.EventParticipants
+            .FirstOrDefaultAsync(ep => ep.EventId == eventId && ep.UserId == userId)
+            ?? throw new RemoveEventParticipantException(eventId, userId);
+
+        _context.EventParticipants.Remove(ep);
+        await _context.SaveChangesAsync();
+        return GetEventById(eventId).Result;
+    }
+
+    public async Task<List<Guid>> GetEventParticipants(Guid eventId)
+    {
+        return await _context.EventParticipants
+            .Select(ep => ep.UserId)
+            .Where(ep => ep == eventId)
+            .ToListAsync();
+    }
 }

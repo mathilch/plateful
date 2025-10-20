@@ -21,7 +21,8 @@ public static class EventMapper
             e.ImageThumbnail,
             e.CreatedDate,
             e.IsActive,
-            e.IsPublic
+            e.IsPublic,
+            e.EventParticipants
         );
     }
 }

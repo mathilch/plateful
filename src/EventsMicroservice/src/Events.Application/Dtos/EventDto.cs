@@ -1,3 +1,5 @@
+using Events.Domain.Entities;
+
 namespace Events.Application.Dtos;
 
 public record EventDto(
@@ -14,5 +16,6 @@ public record EventDto(
     string ImageThumbnail,
     DateTime CreatedDate,
     bool IsActive,
-    bool IsPublic
+    bool IsPublic,
+    ICollection<EventParticipant> EventParticipants
 );
