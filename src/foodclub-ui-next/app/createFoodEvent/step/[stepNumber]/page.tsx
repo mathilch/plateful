@@ -10,8 +10,11 @@ const stepForms: React.ComponentType<any>[] = [CreateFoodEvent, WhenWhereForm, P
 
 export default async function ReturnStepForm({ params }: { params: { stepNumber: string } }) {
     const {stepNumber} = await params;
+    if (!Number.isInteger(Number(stepNumber))) {
+        return notFound();
+    }
     const idx = Number(stepNumber) - 1;
-    if (!Number.isInteger(idx) || idx < 0 || idx >= stepForms.length) {
+    if (idx < 0 || idx >= stepForms.length) {
         return notFound();
     }
 
