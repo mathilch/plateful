@@ -23,6 +23,8 @@ public class EventParticipantEntityConfiguration : IEntityTypeConfiguration<Even
             .HasForeignKey(ep => ep.UserId)
             .IsRequired();
         
+        builder.HasIndex(ep => new { ep.EventId, ep.UserId }).IsUnique();
+        
         builder.Property(e => e.CreatedDate).IsRequired();
         builder.Property(e => e.ParticipantStatus)
             .HasConversion<string>()
