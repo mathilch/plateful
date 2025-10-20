@@ -18,5 +18,8 @@ public class Event
     public DateTime CreatedDate { get; set; }
     public bool IsActive { get; set; }
     public bool IsPublic { get; set; } = true;
+    
+    // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/navigations
+    public ICollection<EventParticipant> EventParticipants { get; } = new List<EventParticipant>();
 
 }

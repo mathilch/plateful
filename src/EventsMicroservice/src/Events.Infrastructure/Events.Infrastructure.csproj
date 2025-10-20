@@ -16,4 +16,10 @@
 
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Users.Domain">
+      <HintPath>..\..\..\UsersMicroservice\src\Users.Domain\obj\Debug\net9.0\Users.Domain.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

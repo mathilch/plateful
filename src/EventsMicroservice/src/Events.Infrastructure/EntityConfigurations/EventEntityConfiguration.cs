@@ -34,5 +34,10 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
         builder.Property(e => e.IsActive);
+        
+        builder
+            .HasMany(e => e.EventParticipants)
+            .WithOne()
+            .IsRequired();
     }
 }
