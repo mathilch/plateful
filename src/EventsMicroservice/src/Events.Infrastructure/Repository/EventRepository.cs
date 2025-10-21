@@ -116,4 +116,10 @@ public class EventRepository : IEventRepository
             .Where(ep => ep == eventId)
             .ToListAsync();
     }
+
+    public async Task<bool> IsUserParticipant(Guid eventId, Guid userId)
+    {
+        return await _context.EventParticipants
+            .AnyAsync(ep => ep.UserId == userId && ep.EventId == eventId);
+    }
 }

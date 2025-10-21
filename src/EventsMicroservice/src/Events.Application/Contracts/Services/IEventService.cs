@@ -18,5 +18,10 @@ public interface IEventService
     Task<EventDto> MakeEventPrivate(Guid loggedInUserId, Guid eventId);
     Task<EventDto> MakeEventPublic(Guid loggedInUserId, Guid eventId);
     Task<EventDto> CancelEvent(Guid loggedInUserId, Guid eventId);
+    
+    // Event participation
+    Task<EventDto> SignUpForEvent(Guid loggedInUserId, Guid eventId);
+    Task<EventDto> WithdrawFromEvent(Guid loggedInUserId, Guid eventId);
+    Task<List<Guid>> ViewEventParticipants(Guid loggedInUserId, Guid eventId);
 
 }

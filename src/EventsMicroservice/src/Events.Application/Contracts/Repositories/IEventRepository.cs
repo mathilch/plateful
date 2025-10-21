@@ -19,4 +19,5 @@ public interface IEventRepository
     
     //questionable? should it return a list of userDto instead
     Task<List<Guid>> GetEventParticipants(Guid eventId);
+    Task<bool> IsUserParticipant(Guid eventId, Guid userId);
 }
