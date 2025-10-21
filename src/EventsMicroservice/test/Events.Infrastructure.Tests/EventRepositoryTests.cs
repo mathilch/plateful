@@ -106,8 +106,8 @@ public sealed class EventRepositoryTests
         var e3 = await repo.AddEvent(NewEventPayload(name: "User2 Event A"));
         await repo.UpdateEvent(e3!.EventId, e => e.UserId = u2);
 
-        var user1Events = await repo.GetEventByUserId(u1);
-        var user2Events = await repo.GetEventByUserId(u2);
+        var user1Events = await repo.GetEventsByUserId(u1);
+        var user2Events = await repo.GetEventsByUserId(u2);
 
         Assert.Equal(2, user1Events.Count);
         Assert.Single(user2Events);
