@@ -5,11 +5,10 @@ namespace Events.Application.Mappers;
 
 public static class EventMapper
 {
-    public static EventDto? ToDto(this Event? e)
+    public static EventDto ToDto(this Event e)
     {
-        if (e is null) return null;
         return new EventDto(
-             e.EventId,
+            e.EventId,
             e.UserId,
             e.Name,
             e.Description,
@@ -21,7 +20,9 @@ public static class EventMapper
             e.ReservationEndDate,
             e.ImageThumbnail,
             e.CreatedDate,
-            e.IsActive
+            e.IsActive,
+            e.IsPublic,
+            e.EventParticipants
         );
     }
 }

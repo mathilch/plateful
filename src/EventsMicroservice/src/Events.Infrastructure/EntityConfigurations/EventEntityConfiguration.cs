@@ -27,14 +27,17 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
 
         builder.Property(e => e.StartDate).IsRequired();
         builder.Property(e => e.ReservationEndDate).IsRequired();
-
-        builder.Property(e => e.EventStatus);
-
+        
         builder.Property(e => e.CreatedDate)
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .ValueGeneratedOnAdd()
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
         builder.Property(e => e.IsActive);
+        
+        builder
+            .HasMany(e => e.EventParticipants)
+            .WithOne()
+            .IsRequired();
     }
 }

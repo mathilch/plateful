@@ -1,3 +1,5 @@
+using Events.Domain.Entities;
+
 namespace Events.Application.Dtos;
 
 public record EventDto(
@@ -13,5 +15,7 @@ public record EventDto(
     DateTime ReservationEndDate,
     string ImageThumbnail,
     DateTime CreatedDate,
-    bool IsActive
+    bool IsActive,
+    bool IsPublic,
+    ICollection<EventParticipant> EventParticipants
 );
