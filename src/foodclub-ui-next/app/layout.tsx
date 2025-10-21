@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import FoodAppHeader from "@/components/core/header";
+
+import { Poppins } from 'next/font/google'
+import FoodAppHeader from "@/components/core/foodAppHeader";
+
+
+const poppinsFont = Poppins({
+    subsets: ["latin"],
+    weight: ["700", "400"]
+})
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <FoodAppHeader />
         
