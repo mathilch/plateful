@@ -31,7 +31,7 @@ public class UserService(IUserRepository _userRepository, ITokenService _tokenSe
         return _tokenService.CreateToken(user.Id, user.Email);
     }
 
-    public Task<UserDto?> GetUserByIdAsync(Guid userId)
+    public Task<UserDto> GetUserByIdAsync(Guid userId)
     {
         throw new NotImplementedException();
     }
