@@ -39,15 +39,14 @@ public class EventService(IEventRepository eventRepository) : IEventService
         EnsureThatUserIsLoggedIn(loggedInUserId);
         return eventRepository.GetEventById(eventId);
     }
-
-    // TODO Also retreive events where the loggedInUser exists in the participation list.
-    // Need to factor Event Entity to contain a list of participants
+    
     public async Task<List<EventDto>> GetEventsByUserId(Guid loggedInUser, Guid loggedInUserId)
     {
         EnsureThatUserIsLoggedIn(loggedInUserId);
         var events = await eventRepository.GetEventsByUserId(loggedInUserId);
         return events
-            .Where(e => e.IsPublic)
+            .Where(e => e.IsPublic ||
+                        e.EventParticipants.Any(pe => pe.UserId == loggedInUserId))
             .ToList();
     }
 
@@ -55,8 +54,7 @@ public class EventService(IEventRepository eventRepository) : IEventService
     {
         return eventRepository.GetAllEvents();
     }
-
-    // loggedInUserId getting carried into from the auth service
+    
     public async Task<EventDto> UpdateEvent(Guid loggedInUserId, Guid eventId, UpdateEventRequestDto updateReq)
     {
         await EnsureThatUserOwnsTheEvent(loggedInUserId, eventId);
@@ -118,11 +116,16 @@ public class EventService(IEventRepository eventRepository) : IEventService
         await EnsureThatUserOwnsTheEvent(loggedInUserId, eventId);
         return await eventRepository.UpdateEvent(eventId, @event => @event.IsActive = false);
     }
-
-    // TODO Check if the user is old enough/within the age range
-    public async Task<EventDto> SignUpForEvent(Guid loggedInUserId, Guid eventId)
+    
+    public async Task<EventDto> SignUpForEvent(Guid loggedInUserId, Guid eventId, DateOnly userBirthday)
     {
         EnsureThatUserIsLoggedIn(loggedInUserId);
+        var e = await eventRepository.GetEventById(eventId);
+        var userAge = CalculateAge(userBirthday);
+        if (userAge < e.MinAllowedAge || userAge > e.MaxAllowedAge)
+        {
+            throw new UserIsNotTheRightAgeException(loggedInUserId, e.MinAllowedAge, e.MaxAllowedAge);
+        }
         return await eventRepository.AddEventParticipant(eventId, loggedInUserId);
     }
 
@@ -143,4 +146,19 @@ public class EventService(IEventRepository eventRepository) : IEventService
         EnsureThatUserIsLoggedIn(loggedInUserId);
         return await eventRepository.GetEventParticipants(eventId);
     }
+
+
+
+    private static int CalculateAge(DateOnly birthday)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        int age = today.Year - birthday.Year;
+
+        if (birthday > today.AddYears(-age))
+        {
+            age--;
+        }
+        return age;   
+    }
+    
 }

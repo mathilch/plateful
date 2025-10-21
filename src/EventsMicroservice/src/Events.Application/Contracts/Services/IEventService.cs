@@ -20,7 +20,7 @@ public interface IEventService
     Task<EventDto> CancelEvent(Guid loggedInUserId, Guid eventId);
     
     // Event participation
-    Task<EventDto> SignUpForEvent(Guid loggedInUserId, Guid eventId);
+    Task<EventDto> SignUpForEvent(Guid loggedInUserId, Guid eventId, DateOnly userBirthday);
     Task<EventDto> WithdrawFromEvent(Guid loggedInUserId, Guid eventId);
     Task<List<Guid>> ViewEventParticipants(Guid loggedInUserId, Guid eventId);
 
