@@ -70,7 +70,7 @@ public class UserService(IUserRepository _userRepository, ITokenService _tokenSe
         throw new WrongUserCredentialsException(requestDto.Email);
     }
 
-    public Task<UserDto?> GetUserByIdAsync(Guid userId)
+    public Task<UserDto> GetUserByIdAsync(Guid userId)
     {
         throw new NotImplementedException();
     }

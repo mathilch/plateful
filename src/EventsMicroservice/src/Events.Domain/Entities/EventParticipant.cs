@@ -6,7 +6,7 @@ public class EventParticipant
 {
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
-    public Event Event { get; set; } = default!;
+    
     public Guid UserId { get; set; }
     public DateTime CreatedDate { get; set; }
     public ParticipantStatus ParticipantStatus { get; set; }
