@@ -1,10 +1,10 @@
 using Events.Application.Contracts.Repositories;
 using Events.Application.Dtos;
 using Events.Application.Dtos.Requests;
+using Events.Application.Exceptions;
 using Events.Application.Mappers;
 using Events.Domain.Entities;
 using Events.Infrastructure.Context;
-using Events.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Events.Infrastructure.Repository;

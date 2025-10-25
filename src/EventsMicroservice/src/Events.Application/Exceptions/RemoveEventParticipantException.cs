@@ -1,8 +1,8 @@
-namespace Events.Infrastructure.Exceptions;
+namespace Events.Application.Exceptions;
 
-public class RemoveEventParticipantException : EventInfrastructureException 
+public class RemoveEventParticipantException : EventApplicationException
 {
     public RemoveEventParticipantException(Guid eventId, Guid userId)
         : base($"Cannot remove eventparticipant with id {userId} from event with id {eventId}") { }
-    
+
 }
