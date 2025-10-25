@@ -1,6 +1,6 @@
 namespace Events.Domain.Entities;
 
-public class FoodDetails
+public class EventFoodDetails
 {
     public Guid Id { get; set; }
     public Guid EventId { get; set; }

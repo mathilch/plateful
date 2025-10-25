@@ -20,20 +20,18 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         services.AddDbContext<EventsDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("EventsDb"))
+            options.UseNpgsql(configuration.GetConnectionString("FoodClubEventsDbConnection"))
         );
 
         return services;
     }
 
-    public static IServiceCollection ApplyMigrations(this IServiceCollection services)
+    public static void ApplyMigrations(this IServiceCollection services)
     {
         using var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
 
-        var ctx = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
-        ctx.Database.Migrate();
-
-        return services;
+        var dbContext = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
+        dbContext.Database.Migrate();
     }
 }

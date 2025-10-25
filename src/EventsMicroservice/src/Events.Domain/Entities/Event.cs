@@ -18,8 +18,11 @@ public class Event
     public DateTime CreatedDate { get; set; }
     public bool IsActive { get; set; }
     public bool IsPublic { get; set; } = true;
-    
-    // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/navigations
-    public ICollection<EventParticipant> EventParticipants { get; } = new List<EventParticipant>();
 
+    // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/navigations
+    public EventFoodDetails EventFoodDetails { get; set; } = new EventFoodDetails();
+    public ICollection<EventParticipant> EventParticipants { get; set; } = new List<EventParticipant>();
+    public ICollection<EventImage> EventImages { get; set; } = new List<EventImage>();
+    public ICollection<EventReview> EventReviews { get; set; } = new List<EventReview>();
+    public ICollection<EventComment> EventComments { get; set; } = new List<EventComment>();
 }

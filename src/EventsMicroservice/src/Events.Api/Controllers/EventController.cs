@@ -1,15 +1,15 @@
-using Events.Application.Contracts.Repositories;
 using Events.Application.Contracts.Services;
 using Events.Application.Dtos.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Events.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class EventController(IEventService _eventService) : ControllerBase
 {
-
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await _eventService.GetAllEvents());
 

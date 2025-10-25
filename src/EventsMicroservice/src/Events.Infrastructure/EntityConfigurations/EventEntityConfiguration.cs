@@ -9,12 +9,11 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
 {
     public void Configure(EntityTypeBuilder<Event> builder)
     {
-        
-        builder.ToTable("Events");
-
+        builder.HasKey(e => e.EventId);
         builder.Property(e => e.EventId);
 
         builder.Property(e => e.UserId).IsRequired();
+        builder.HasIndex(e => e.UserId);
 
         builder.Property(e => e.Name).HasMaxLength(150).IsRequired();
         builder.Property(e => e.Description).HasMaxLength(150).IsRequired();
@@ -27,14 +26,14 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
 
         builder.Property(e => e.StartDate).IsRequired();
         builder.Property(e => e.ReservationEndDate).IsRequired();
-        
+
         builder.Property(e => e.CreatedDate)
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .ValueGeneratedOnAdd()
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
         builder.Property(e => e.IsActive);
-        
+
         builder
             .HasMany(e => e.EventParticipants)
             .WithOne()
