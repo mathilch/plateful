@@ -99,7 +99,7 @@ export default function FoodAppHeader() {
                         </div>
                     ) :(
                         <div className="flex gap-4">
-                            <button onClick={() => setOpenAuthDialog(true)} className="py-2 px-8 border-1 cursor-pointer border-primary-green rounded-[50%] text-primary-green text-base font-bold font-['Poppins'] hover:bg-muted hover:text-foreground transition-colors">Log in</button>
+                            <button onClick={() => setOpenAuthDialog(true)} className="py-2 px-6 border-2 rounded-xl border-emerald-800 text-emerald-800 text-base font-bold font-['Poppins'] hover:bg-muted">Log in</button>
                             <button onClick={() => setOpenSignUpDialog(true)} className="py-2 px-12 border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Sign up</button>
                         </div>
                     )
