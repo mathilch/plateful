@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 
-export default function roundedLink({
+export default function RoundedLink({
     children,
     href,
     isActive = false

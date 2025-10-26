@@ -1,4 +1,7 @@
+"use client";
+
 import RoundedLink from "@/components/core/roundedLink";
+import { useState } from "react";
 
 
 export default function CreateFormLayout({
@@ -6,6 +9,9 @@ export default function CreateFormLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  // const [activeButton, setActiveButton] = useState<string>("");
+
     return (
         <div className="flex flex-col gap-5 p-5 ">
             <h2>Create a new event</h2>
