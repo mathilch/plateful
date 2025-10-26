@@ -1,6 +1,5 @@
 using Events.Application.Contracts.Repositories;
 using Events.Application.Dtos;
-using Events.Application.Dtos.Requests;
 using Events.Application.Exceptions;
 using Events.Application.Mappers;
 using Events.Domain.Entities;
@@ -32,27 +31,11 @@ public class EventRepository : IEventRepository
             .ToListAsync();
     }
 
-    public async Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
+    public async Task<EventDto> AddEvent(Event newEvent)
     {
-        var e = new Event
-        {
-            EventId = Guid.NewGuid(),
-            UserId = createEvent.UserId,
-            Name = createEvent.Name,
-            Description = createEvent.Description,
-            FoodName = createEvent.FoodName,
-            MaxAllowedParticipants = createEvent.MaxAllowedParticipants,
-            MinAllowedAge = createEvent.MinAllowedAge,
-            MaxAllowedAge = createEvent.MaxAllowedAge,
-            StartDate = createEvent.StartDate,
-            ReservationEndDate = createEvent.ReservationEndDate,
-            ImageThumbnail = createEvent.ImageThumbnail,
-            IsActive = true
-        };
-
-        _context.Events.Add(e);
+        _context.Events.Add(newEvent);
         await _context.SaveChangesAsync();
-        return e.ToDto();
+        return newEvent.ToDto();
     }
 
     public async Task<EventDto> UpdateEvent(Guid id, Action<Event> op)
@@ -65,7 +48,7 @@ public class EventRepository : IEventRepository
         return e.ToDto();
     }
 
-     public async Task<EventDto> DeleteEvent(Guid id)
+    public async Task<EventDto> DeleteEvent(Guid id)
     {
         var e = await _context.Events.FindAsync(id)
             ?? throw new EventIdNotFoundException(id);
@@ -92,14 +75,14 @@ public class EventRepository : IEventRepository
             UserId = userId,
             CreatedDate = DateTime.Now
         };
-        
+
         _context.EventParticipants.Add(ep);
         await _context.SaveChangesAsync();
         return GetEventById(eventId).Result;
     }
-    
+
     public async Task<EventDto> RemoveEventParticipant(Guid eventId, Guid userId)
-    { 
+    {
         var ep = await _context.EventParticipants
             .FirstOrDefaultAsync(ep => ep.EventId == eventId && ep.UserId == userId)
             ?? throw new RemoveEventParticipantException(eventId, userId);

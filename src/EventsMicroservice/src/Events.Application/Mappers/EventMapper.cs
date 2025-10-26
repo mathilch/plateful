@@ -1,4 +1,5 @@
 using Events.Application.Dtos;
+using Events.Application.Dtos.Requests;
 using Events.Domain.Entities;
 
 namespace Events.Application.Mappers;
@@ -24,5 +25,25 @@ public static class EventMapper
             e.IsPublic,
             e.EventParticipants
         );
+    }
+
+    public static Event ToEntity(this CreateEventRequestDto dto, Guid userId)
+    {
+        return new Event
+        {
+            UserId = userId,
+            Name = dto.Name,
+            Description = dto.Description,
+            FoodName = dto.FoodName,
+            MaxAllowedParticipants = dto.MaxAllowedParticipants,
+            MinAllowedAge = dto.MinAllowedAge,
+            MaxAllowedAge = dto.MaxAllowedAge,
+            StartDate = dto.StartDate,
+            ReservationEndDate = dto.ReservationEndDate,
+            ImageThumbnail = dto.ImageThumbnail,
+            IsActive = true,
+            IsPublic = dto.IsPublic,
+            EventParticipants = Enumerable.Empty<EventParticipant>().ToList()
+        };
     }
 }

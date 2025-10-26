@@ -1,7 +1,6 @@
 namespace Events.Application.Dtos.Requests;
 
 public record CreateEventRequestDto(
-    Guid UserId,
     string Name,
     string Description,
     string FoodName,
@@ -10,5 +9,6 @@ public record CreateEventRequestDto(
     int MaxAllowedAge,
     DateTime StartDate,
     DateTime ReservationEndDate,
-    string ImageThumbnail
+    string ImageThumbnail,
+    bool IsPublic
 );

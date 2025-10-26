@@ -3,6 +3,7 @@ using Events.Application.Contracts.Services;
 using Events.Application.Dtos;
 using Events.Application.Dtos.Requests;
 using Events.Application.Exceptions;
+using Events.Application.Mappers;
 
 namespace Events.Application.Services;
 
@@ -20,7 +21,8 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
 
     public Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
     {
-        return eventRepository.AddEvent(createEvent with { UserId = currentUser.UserId });
+        var eventEntity = createEvent.ToEntity(currentUser.UserId);
+        return eventRepository.AddEvent(eventEntity);
     }
 
     public Task<EventDto> GetEventByEventId(Guid eventId)
