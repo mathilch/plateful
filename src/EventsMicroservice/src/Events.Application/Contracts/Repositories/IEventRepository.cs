@@ -32,4 +32,13 @@ public interface IEventRepository
     Task<EventReview> DeleteEventReview(Guid commentId);
     Task<List<EventReview>> GetEventReviews(Guid eventId);
     Task<EventReview> GetEventReviewById(Guid reviewId);
+    
+    /*
+     * ===========================================================================
+     * =========================== I M A G E S ===================================
+     * ===========================================================================
+     */
+    Task<EventImage> AddImageToEvent(EventImage image);
+    Task<EventImage> RemoveImageFromEvent(Guid imageId);
+    
 }

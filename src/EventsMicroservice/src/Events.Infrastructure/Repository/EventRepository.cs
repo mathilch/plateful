@@ -153,4 +153,21 @@ public class EventRepository : IEventRepository
         return await _context.EventReviews.FindAsync(reviewId)
             ?? throw new ReviewIdNotFoundException(reviewId);
     }
+
+    public async Task<EventImage> AddImageToEvent(EventImage image)
+    {
+        image.Id = Guid.NewGuid();
+        _context.EventImages.Add(image);
+        await _context.SaveChangesAsync();
+        return image;
+    }
+
+    public async Task<EventImage> RemoveImageFromEvent(Guid imageId)
+    {
+        var ei = await _context.EventImages.FindAsync(imageId)
+            ?? throw new ImageNotFoundException(imageId);
+        _context.EventImages.Remove(ei);
+        await _context.SaveChangesAsync();
+        return ei;
+    }
 }

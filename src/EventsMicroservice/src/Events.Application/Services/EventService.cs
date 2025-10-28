@@ -192,6 +192,23 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
             .ToList();
     }
 
+    public async Task<EventImageDto> AddEventImage(Guid eventId, AddEventImageRequestDto createReq)
+    {
+        await EnsureThatUserOwnsTheEvent(currentUser.UserId);
+        
+        var image = createReq.ToEntity(eventId);
+        await eventRepository.AddImageToEvent(image);
+        return  image.ToDto();
+    }
+
+    public async Task<EventImageDto> RemoveEventImage(Guid imageId)
+    {
+        await EnsureThatUserOwnsTheEvent(currentUser.UserId);
+        var image = await eventRepository.RemoveImageFromEvent(imageId)
+            ?? throw new ImageNotFoundException(imageId);
+        return image.ToDto();
+    }
+
 
     private static int CalculateAge(DateOnly birthday)
     {

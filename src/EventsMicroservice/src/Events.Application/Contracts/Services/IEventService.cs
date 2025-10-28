@@ -28,4 +28,8 @@ public interface IEventService
     Task<EventReviewDto> DeleteReview(Guid reviewId);
     Task<EventReviewDto> EditReview(Guid reviewId, UpdateEventReviewRequestDto updateReq);
     Task<List<EventReviewDto>> GetAllReviewsForAnEvent(Guid eventId);
+    
+    // EventImages
+    Task<EventImageDto> AddEventImage(Guid eventId, AddEventImageRequestDto createReq);
+    Task<EventImageDto> RemoveEventImage(Guid imageId);
 }

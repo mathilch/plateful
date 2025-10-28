@@ -45,5 +45,11 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
             .WithOne()
             .HasForeignKey(ec => ec.EventId)
             .IsRequired();
+        
+        builder 
+            .HasMany(e => e.EventImages)
+            .WithOne()
+            .HasForeignKey(ei => ei.EventId)
+            .IsRequired();
     }
 }

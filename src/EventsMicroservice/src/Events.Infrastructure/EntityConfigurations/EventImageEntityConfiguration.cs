@@ -9,6 +9,7 @@ public class EventImageEntityConfiguration : IEntityTypeConfiguration<EventImage
 {
     public void Configure(EntityTypeBuilder<EventImage> builder)
     {
+        builder.HasKey(ei => ei.Id);
         builder.HasIndex(ei => ei.EventId);
 
         builder.Property(ei => ei.Name)
