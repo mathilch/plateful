@@ -21,12 +21,12 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         }
     }
 
-    private async Task EnsureThatUserOwnsTheComment(Guid commentId)
+    private async Task EnsureThatUserOwnsTheReview(Guid reviewId)
     {
-        var ec = await eventRepository.GetComment(commentId);
+        var ec = await eventRepository.GetEventReviewById(reviewId);
         if (ec.UserId != currentUser.UserId)
         {
-            throw new UnauthorizedUserForCommentException(ec.Id, ec.UserId, currentUser.UserId);
+            throw new UnauthorizedUserForReviewException(ec.Id, ec.UserId, currentUser.UserId);
         }   
     }
 
@@ -149,7 +149,7 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         return await eventRepository.GetEventParticipants(eventId);
     }
 
-    public async Task<EventCommentDto> CreateComment(Guid eventId, CreateEventCommentRequestDto createReq)
+    public async Task<EventReviewDto> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq)
     {
         Guid userId = currentUser.UserId;
         var e = await eventRepository.GetEventById(eventId);
@@ -157,33 +157,37 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
 
         if (!participants.Any(id => id == userId) || e.IsActive)
         {
-            throw new CannotCommentException(eventId);
+            throw new CannotReviewException(eventId);
         }
 
-        var commentEntity = createReq.ToEntity(eventId, userId);
-        await eventRepository.AddEventComment(commentEntity);
-        return commentEntity.ToDto();
+        var reviewEntity = createReq.ToEntity(eventId, userId);
+        await eventRepository.AddEventReview(reviewEntity);
+        return reviewEntity.ToDto();
     }
 
-    public async Task<EventCommentDto> DeleteComment(Guid commentId)
+    public async Task<EventReviewDto> DeleteReview(Guid reviewId)
     {
-        await EnsureThatUserOwnsTheComment(commentId);
-        var comment = await eventRepository.DeleteEventComment(commentId);
-        return comment.ToDto();
+        await EnsureThatUserOwnsTheReview(reviewId);
+        var review = await eventRepository.DeleteEventReview(reviewId);
+        return review.ToDto();
     }
 
-    public async Task<EventCommentDto> EditComment(Guid commentId, UpdateEventCommentRequestDto updateReq)
+    public async Task<EventReviewDto> EditReview(Guid reviewId, UpdateEventReviewRequestDto updateReq)
     {
-        await EnsureThatUserOwnsTheComment(commentId);
-        var updatedComment = await eventRepository.UpdateEventComment(commentId, comment => comment.Comment = updateReq.Comment);
-        return updatedComment.ToDto();
+        await EnsureThatUserOwnsTheReview(reviewId);
+        var updatedReview = await eventRepository.UpdateEventReview(reviewId, review =>
+        {
+            review.ReviewStars = updateReq.Stars;
+            review.ReviewComment = updateReq.Comment;
+        });
+        return updatedReview.ToDto();
     }
     
 
-    public async Task<List<EventCommentDto>> GetAllCommentsForAnEvent(Guid eventId)
+    public async Task<List<EventReviewDto>> GetAllReviewsForAnEvent(Guid eventId)
     {
         var e = await eventRepository.GetEventById(eventId);
-        return e.EventComments
+        return e.EventReviews
             .Select(ec => ec.ToDto())
             .ToList();
     }

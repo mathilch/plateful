@@ -24,8 +24,8 @@ public interface IEventService
     Task<List<Guid>> ViewEventParticipants(Guid eventId);
     
     // Event Comments 
-    Task<EventCommentDto> CreateComment(Guid eventId, CreateEventCommentRequestDto createReq);
-    Task<EventCommentDto> DeleteComment(Guid commentId);
-    Task<EventCommentDto> EditComment(Guid commentId, UpdateEventCommentRequestDto updateReq);
-    Task<List<EventCommentDto>> GetAllCommentsForAnEvent(Guid eventId);
+    Task<EventReviewDto> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq);
+    Task<EventReviewDto> DeleteReview(Guid reviewId);
+    Task<EventReviewDto> EditReview(Guid reviewId, UpdateEventReviewRequestDto updateReq);
+    Task<List<EventReviewDto>> GetAllReviewsForAnEvent(Guid eventId);
 }

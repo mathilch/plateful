@@ -13,16 +13,23 @@ public interface IEventRepository
     Task<EventDto> DeleteEvent(Guid id);
     Task<List<EventDto>> GetEventsByUserId(Guid userId);
     
-    // For participants
+    /* ===========================================================================
+     * =============== P A R T I C I P A N T S ===================================
+     * ===========================================================================
+     */
     Task<Event> AddEventParticipant(Guid eventId, Guid userId);
     Task<Event> RemoveEventParticipant(Guid eventId, Guid userId);
     Task<List<Guid>> GetEventParticipants(Guid eventId);
     Task<bool> IsUserParticipant(Guid eventId, Guid userId);
     
-    // For comments
-    Task<EventComment> AddEventComment(EventComment comment);
-    Task<EventComment> UpdateEventComment(Guid commentId, Action<EventComment> op);
-    Task<EventComment> DeleteEventComment(Guid commentId);
-    Task<EventComment> GetComment(Guid commentId);
-    Task<List<EventComment>> GetEventComments(Guid eventId);
+    
+    /* ===========================================================================
+     * ======================= R E V I E W S =====================================
+     * ===========================================================================
+     */
+    Task<EventReview> AddEventReview(EventReview review);
+    Task<EventReview> UpdateEventReview(Guid commentId, Action<EventReview> op);
+    Task<EventReview> DeleteEventReview(Guid commentId);
+    Task<List<EventReview>> GetEventReviews(Guid eventId);
+    Task<EventReview> GetEventReviewById(Guid reviewId);
 }

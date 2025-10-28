@@ -24,5 +24,4 @@ public class Event
     public ICollection<EventParticipant> EventParticipants { get; set; } = new List<EventParticipant>();
     public ICollection<EventImage> EventImages { get; set; } = new List<EventImage>();
     public ICollection<EventReview> EventReviews { get; set; } = new List<EventReview>();
-    public ICollection<EventComment> EventComments { get; set; } = new List<EventComment>();
 }

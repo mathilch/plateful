@@ -41,7 +41,7 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
             .IsRequired();
 
         builder
-            .HasMany(e => e.EventComments)
+            .HasMany(e => e.EventReviews)
             .WithOne()
             .HasForeignKey(ec => ec.EventId)
             .IsRequired();

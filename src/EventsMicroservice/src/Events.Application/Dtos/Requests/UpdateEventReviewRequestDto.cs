@@ -1,5 +1,6 @@
 namespace Events.Application.Dtos.Requests;
 
-public record CreateEventCommentRequestDto(
+public record UpdateEventReviewRequestDto(
+    Int16 Stars,
     string Comment
 );

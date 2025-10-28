@@ -108,49 +108,49 @@ public class EventRepository : IEventRepository
             .AnyAsync(ep => ep.UserId == userId && ep.EventId == eventId);
     }
     
-    // Specific for EventComments
-    public async Task<EventComment> AddEventComment(EventComment comment)
+    // Specific for EventReviews
+    public async Task<EventReview> AddEventReview(EventReview review)
     {
-        comment.Id = Guid.NewGuid();
+        review.Id = Guid.NewGuid();
         
-        _context.EventComments.Add(comment);
+        _context.EventReviews.Add(review);
         await _context.SaveChangesAsync();
-        return comment;
+        return review;
     }
 
-    public async Task<EventComment> UpdateEventComment(Guid commentId, Action<EventComment> op)
+    public async Task<EventReview> UpdateEventReview(Guid reviewId, Action<EventReview> op)
     {
-        var ec = await _context.EventComments.FindAsync(commentId)
-                ?? throw new CommentIdNotFoundException(commentId);
+        var er = await _context.EventReviews.FindAsync(reviewId)
+                ?? throw new ReviewIdNotFoundException(reviewId);
 
-        op(ec);
+        op(er);
         await _context.SaveChangesAsync();
-        return ec;
+        return er;
     }
 
-    public async Task<EventComment> DeleteEventComment(Guid commentId)
+    public async Task<EventReview> DeleteEventReview(Guid reviewId)
     {
-        var ec = await _context.EventComments.FindAsync(commentId)
-                ?? throw new CommentIdNotFoundException(commentId);
+        var er = await _context.EventReviews.FindAsync(reviewId)
+                ?? throw new ReviewIdNotFoundException(reviewId);
 
-        _context.EventComments.Remove(ec);
+        _context.EventReviews.Remove(er);
         await _context.SaveChangesAsync();
-        return ec;
+        return er;
     }
 
-    public async Task<List<EventComment>> GetEventComments(Guid eventId)
+    public async Task<List<EventReview>> GetEventReviews(Guid eventId)
     {
-        var comments = await _context.Events
+        var reviews = await _context.Events
             .Where(e => e.EventId == eventId)
-            .SelectMany(e => e.EventComments)
+            .SelectMany(e => e.EventReviews)
             .ToListAsync();
 
-        return comments;
+        return reviews;
     }
 
-    public async Task<EventComment> GetComment(Guid commentId)
+    public async Task<EventReview> GetEventReviewById(Guid reviewId)
     {
-        return await _context.EventComments.FindAsync(commentId)
-            ?? throw new CommentIdNotFoundException(commentId);
+        return await _context.EventReviews.FindAsync(reviewId)
+            ?? throw new ReviewIdNotFoundException(reviewId);
     }
 }

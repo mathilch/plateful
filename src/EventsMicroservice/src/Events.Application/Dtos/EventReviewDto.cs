@@ -1,9 +1,10 @@
 namespace Events.Application.Dtos;
 
-public record EventCommentDto(
-    Guid CommentId,
+public record EventReviewDto(
+    Guid ReviewId,
     Guid EventId,
     Guid UserId,
+    Int16 Stars,
     string Comment,
     DateTime CreatedAt
 );
