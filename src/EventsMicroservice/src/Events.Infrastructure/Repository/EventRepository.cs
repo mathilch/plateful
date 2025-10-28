@@ -17,11 +17,11 @@ public class EventRepository : IEventRepository
         _context = context;
     }
 
-    public async Task<EventDto> GetEventById(Guid id)
+    public async Task<Event> GetEventById(Guid id)
     {
         var e = await _context.Events.FindAsync(id)
             ?? throw new EventIdNotFoundException(id);
-        return e.ToDto();
+        return e;
     }
 
     public async Task<List<EventDto>> GetAllEvents()
@@ -33,6 +33,7 @@ public class EventRepository : IEventRepository
 
     public async Task<EventDto> AddEvent(Event newEvent)
     {
+        newEvent.EventId = Guid.NewGuid();
         _context.Events.Add(newEvent);
         await _context.SaveChangesAsync();
         return newEvent.ToDto();
@@ -66,7 +67,7 @@ public class EventRepository : IEventRepository
             .ToListAsync();
     }
 
-    public async Task<EventDto> AddEventParticipant(Guid eventId, Guid userId)
+    public async Task<Event> AddEventParticipant(Guid eventId, Guid userId)
     {
         var ep = new EventParticipant
         {
@@ -78,10 +79,11 @@ public class EventRepository : IEventRepository
 
         _context.EventParticipants.Add(ep);
         await _context.SaveChangesAsync();
-        return GetEventById(eventId).Result;
+        return await GetEventById(eventId);
     }
 
-    public async Task<EventDto> RemoveEventParticipant(Guid eventId, Guid userId)
+    // Specific for EventParticipant
+    public async Task<Event> RemoveEventParticipant(Guid eventId, Guid userId)
     {
         var ep = await _context.EventParticipants
             .FirstOrDefaultAsync(ep => ep.EventId == eventId && ep.UserId == userId)
@@ -89,7 +91,7 @@ public class EventRepository : IEventRepository
 
         _context.EventParticipants.Remove(ep);
         await _context.SaveChangesAsync();
-        return GetEventById(eventId).Result;
+        return await GetEventById(eventId);
     }
 
     public async Task<List<Guid>> GetEventParticipants(Guid eventId)
@@ -104,5 +106,51 @@ public class EventRepository : IEventRepository
     {
         return await _context.EventParticipants
             .AnyAsync(ep => ep.UserId == userId && ep.EventId == eventId);
+    }
+    
+    // Specific for EventComments
+    public async Task<EventComment> AddEventComment(EventComment comment)
+    {
+        comment.Id = Guid.NewGuid();
+        
+        _context.EventComments.Add(comment);
+        await _context.SaveChangesAsync();
+        return comment;
+    }
+
+    public async Task<EventComment> UpdateEventComment(Guid commentId, Action<EventComment> op)
+    {
+        var ec = await _context.EventComments.FindAsync(commentId)
+                ?? throw new CommentIdNotFoundException(commentId);
+
+        op(ec);
+        await _context.SaveChangesAsync();
+        return ec;
+    }
+
+    public async Task<EventComment> DeleteEventComment(Guid commentId)
+    {
+        var ec = await _context.EventComments.FindAsync(commentId)
+                ?? throw new CommentIdNotFoundException(commentId);
+
+        _context.EventComments.Remove(ec);
+        await _context.SaveChangesAsync();
+        return ec;
+    }
+
+    public async Task<List<EventComment>> GetEventComments(Guid eventId)
+    {
+        var comments = await _context.Events
+            .Where(e => e.EventId == eventId)
+            .SelectMany(e => e.EventComments)
+            .ToListAsync();
+
+        return comments;
+    }
+
+    public async Task<EventComment> GetComment(Guid commentId)
+    {
+        return await _context.EventComments.FindAsync(commentId)
+            ?? throw new CommentIdNotFoundException(commentId);
     }
 }

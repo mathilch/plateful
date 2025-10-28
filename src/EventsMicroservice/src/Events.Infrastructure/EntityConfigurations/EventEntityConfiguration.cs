@@ -37,6 +37,13 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
         builder
             .HasMany(e => e.EventParticipants)
             .WithOne()
+            .HasForeignKey(ep => ep.EventId)
+            .IsRequired();
+
+        builder
+            .HasMany(e => e.EventComments)
+            .WithOne()
+            .HasForeignKey(ec => ec.EventId)
             .IsRequired();
     }
 }

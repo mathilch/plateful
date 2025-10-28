@@ -22,5 +22,10 @@ public interface IEventService
     Task<EventDto> SignUpForEvent(Guid eventId, DateOnly userBirthday);
     Task<EventDto> WithdrawFromEvent(Guid eventId);
     Task<List<Guid>> ViewEventParticipants(Guid eventId);
-
+    
+    // Event Comments 
+    Task<EventCommentDto> CreateComment(Guid eventId, CreateEventCommentRequestDto createReq);
+    Task<EventCommentDto> DeleteComment(Guid commentId);
+    Task<EventCommentDto> EditComment(Guid commentId, UpdateEventCommentRequestDto updateReq);
+    Task<List<EventCommentDto>> GetAllCommentsForAnEvent(Guid eventId);
 }

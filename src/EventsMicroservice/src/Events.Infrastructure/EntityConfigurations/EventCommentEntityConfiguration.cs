@@ -10,9 +10,8 @@ public class EventCommentEntityConfiguration : IEntityTypeConfiguration<EventCom
     public void Configure(EntityTypeBuilder<EventComment> builder)
     {
         builder.HasKey(ec => ec.Id);
-
-        builder.Property(ec => ec.UserId)
-            .IsRequired();
+        builder.Property(ec => ec.EventId).IsRequired();
+        builder.Property(ec => ec.UserId).IsRequired();
 
         builder.Property(ec => ec.Comment).IsRequired().HasMaxLength(500);
 
