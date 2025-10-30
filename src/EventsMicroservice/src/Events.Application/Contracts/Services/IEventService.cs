@@ -1,5 +1,6 @@
 using Events.Application.Dtos;
 using Events.Application.Dtos.Requests;
+using Events.Domain.Entities;
 
 namespace Events.Application.Contracts.Services;
 
@@ -32,4 +33,10 @@ public interface IEventService
     // EventImages
     Task<EventImageDto> AddEventImage(Guid eventId, AddEventImageRequestDto createReq);
     Task<EventImageDto> RemoveEventImage(Guid imageId);
+    
+    // Food Details 
+    // Don't need one for add? since you should always create fooddetails when you add an event
+    Task<EventFoodDetailsDto> GetEventFoodDetails(Guid eventId);
+    Task<EventFoodDetailsDto> EditFoodDetailsForEvent(Guid eventId, UpdateEventFoodRequest upReq);
+    Task<EventFoodDetailsDto> DeleteFoodDetailsForEvent(Guid eventId);
 }

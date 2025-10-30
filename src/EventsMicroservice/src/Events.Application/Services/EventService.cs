@@ -36,7 +36,8 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         var e = await eventRepository.AddEvent(eventEntity);
         
         createEvent.Images.Select(async image => await eventRepository.AddImageToEvent(e.EventId, image));
-
+        await eventRepository.AddEventFoodDetails(e.EventId, createEvent.EventFoodDetails);
+        
         return e.ToDto();
     }
 
@@ -86,6 +87,7 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         
         var e = await eventRepository.DeleteEvent(eventId);
         await eventRepository.RemoveAllImagesFromEvent(eventId);
+        await eventRepository.RemoveEventFoodDetails(eventId);
         
         return e.ToDto();
     }
@@ -213,9 +215,34 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
     public async Task<EventImageDto> RemoveEventImage(Guid imageId)
     {
         await EnsureThatUserOwnsTheEvent(currentUser.UserId);
-        var image = await eventRepository.RemoveImageFromEvent(imageId)
-            ?? throw new ImageNotFoundException(imageId);
+        var image = await eventRepository.RemoveImageFromEvent(imageId);
         return image.ToDto();
+    }
+
+    public async Task<EventFoodDetailsDto> GetEventFoodDetails(Guid eventId)
+    {
+        // Make sure user is logged in? or is it enough to have it on event
+        var fd = await eventRepository.GetEventFoodDetails(eventId);
+        return fd.ToDto();
+    }
+
+    public async Task<EventFoodDetailsDto> EditFoodDetailsForEvent(Guid eventId, UpdateEventFoodRequest upReq)
+    {
+        await EnsureThatUserOwnsTheEvent(eventId);
+        var fd = await eventRepository.UpdateEventFoodDetails(eventId, food =>
+        {
+            food.Name = upReq.Name;
+            food.Ingredients = upReq.Ingredients;
+            food.AdditionalFoodItems = upReq.AdditionalFoodItems;
+        });
+        
+        return fd.ToDto();
+    }
+
+    public async Task<EventFoodDetailsDto> DeleteFoodDetailsForEvent(Guid eventId)
+    {
+         var fd = await eventRepository.RemoveEventFoodDetails(eventId);
+         return fd.ToDto();
     }
 
 

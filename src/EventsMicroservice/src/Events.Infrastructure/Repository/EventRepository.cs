@@ -200,20 +200,25 @@ public class EventRepository : IEventRepository
     {
         var foodDetails = await
                               _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
-                          ?? throw new Exception();
+                          ?? throw new NoFoodDetailsForEventException(eventId);
 
         op(foodDetails);
         await _context.SaveChangesAsync();
         return foodDetails;
     }
 
-    public Task<EventFoodDetails> GetEventFoodDetails(Guid eventId)
+    public async Task<EventFoodDetails> GetEventFoodDetails(Guid eventId)
     {
-        throw new NotImplementedException();
+        return await _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
+                          ?? throw new NoFoodDetailsForEventException(eventId);
     }
 
-    public Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId)
+    public async Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId)
     {
-        throw new NotImplementedException();
+        var foodDetails = await _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
+                          ?? throw new NoFoodDetailsForEventException(eventId);
+        _context.EventFoodDetails.Remove(foodDetails);
+        await _context.SaveChangesAsync(); 
+        return foodDetails;
     }
 }
