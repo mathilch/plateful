@@ -31,12 +31,12 @@ public class EventRepository : IEventRepository
             .ToListAsync();
     }
 
-    public async Task<EventDto> AddEvent(Event newEvent)
+    public async Task<Event> AddEvent(Event newEvent)
     {
         newEvent.EventId = Guid.NewGuid();
         _context.Events.Add(newEvent);
         await _context.SaveChangesAsync();
-        return newEvent.ToDto();
+        return newEvent;
     }
 
     public async Task<EventDto> UpdateEvent(Guid id, Action<Event> op)
@@ -49,14 +49,14 @@ public class EventRepository : IEventRepository
         return e.ToDto();
     }
 
-    public async Task<EventDto> DeleteEvent(Guid id)
+    public async Task<Event> DeleteEvent(Guid id)
     {
         var e = await _context.Events.FindAsync(id)
             ?? throw new EventIdNotFoundException(id);
 
         _context.Events.Remove(e);
         await _context.SaveChangesAsync();
-        return e.ToDto();
+        return e;
     }
 
     public async Task<List<EventDto>> GetEventsByUserId(Guid userId)
@@ -154,9 +154,10 @@ public class EventRepository : IEventRepository
             ?? throw new ReviewIdNotFoundException(reviewId);
     }
 
-    public async Task<EventImage> AddImageToEvent(EventImage image)
+    public async Task<EventImage> AddImageToEvent(Guid eventId, EventImage image)
     {
         image.Id = Guid.NewGuid();
+        image.EventId = eventId;
         _context.EventImages.Add(image);
         await _context.SaveChangesAsync();
         return image;
@@ -169,5 +170,20 @@ public class EventRepository : IEventRepository
         _context.EventImages.Remove(ei);
         await _context.SaveChangesAsync();
         return ei;
+    }
+
+    public async Task<List<EventImage>> RemoveAllImagesFromEvent(Guid eventId)
+    {
+        var images = _context.EventImages
+            .Where(image => image.EventId == eventId)
+            .ToList();
+
+        if (images.Any())
+        {
+            _context.EventImages.RemoveRange(images);
+            await _context.SaveChangesAsync();
+        }
+
+        return images;
     }
 }

@@ -8,9 +8,9 @@ public interface IEventRepository
 {
     Task<Event> GetEventById(Guid id);
     Task<List<EventDto>> GetAllEvents();
-    Task<EventDto> AddEvent(Event createEvent);
+    Task<Event> AddEvent(Event createEvent);
     Task<EventDto> UpdateEvent(Guid id, Action<Event> op);
-    Task<EventDto> DeleteEvent(Guid id);
+    Task<Event> DeleteEvent(Guid id);
     Task<List<EventDto>> GetEventsByUserId(Guid userId);
     
     /* ===========================================================================
@@ -38,7 +38,8 @@ public interface IEventRepository
      * =========================== I M A G E S ===================================
      * ===========================================================================
      */
-    Task<EventImage> AddImageToEvent(EventImage image);
+    Task<EventImage> AddImageToEvent(Guid eventId, EventImage image);
     Task<EventImage> RemoveImageFromEvent(Guid imageId);
+    Task<List<EventImage>> RemoveAllImagesFromEvent(Guid eventId);
     
 }

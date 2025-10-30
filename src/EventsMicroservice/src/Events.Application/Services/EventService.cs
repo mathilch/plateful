@@ -32,9 +32,12 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
 
     public async Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
     {
-        createEvent.Images.Select(async image => await eventRepository.AddImageToEvent(image));
         var eventEntity = createEvent.ToEntity(currentUser.UserId);
-        return await eventRepository.AddEvent(eventEntity);
+        var e = await eventRepository.AddEvent(eventEntity);
+        
+        createEvent.Images.Select(async image => await eventRepository.AddImageToEvent(e.EventId, image));
+
+        return e.ToDto();
     }
 
     public async Task<EventDto> GetEventByEventId(Guid eventId)
@@ -51,12 +54,14 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
                         e.EventParticipants.Any(pe => pe.UserId == loggedInUserId))
             .ToList();
     }
-
-    // TODO Make sure that the events are active
-    public Task<List<EventDto>> GetAllEvents()
+    
+    public async Task<List<EventDto>> GetAllEvents()
     {
-        Guid userId = currentUser.UserId;
-        return eventRepository.GetAllEvents();
+        _ = currentUser.UserId;
+        var events = await eventRepository.GetAllEvents();
+        return events
+            .Where(e => e.IsActive)
+            .ToList();
     }
 
     public async Task<EventDto> UpdateEvent(Guid eventId, UpdateEventRequestDto updateReq)
@@ -79,7 +84,11 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
     public async Task<EventDto> DeleteEvent(Guid eventId)
     {
         await EnsureThatUserOwnsTheEvent(eventId);
-        return await eventRepository.DeleteEvent(eventId);
+        
+        var e = await eventRepository.DeleteEvent(eventId);
+        await eventRepository.RemoveAllImagesFromEvent(eventId);
+        
+        return e.ToDto();
     }
 
     public async Task<EventDto> MakeEventPrivate(Guid eventId)
@@ -198,7 +207,7 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         await EnsureThatUserOwnsTheEvent(currentUser.UserId);
         
         var image = createReq.ToEntity(eventId);
-        await eventRepository.AddImageToEvent(image);
+        await eventRepository.AddImageToEvent(eventId, image);
         return  image.ToDto();
     }
 
