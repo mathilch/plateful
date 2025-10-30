@@ -186,4 +186,34 @@ public class EventRepository : IEventRepository
 
         return images;
     }
+
+    public async Task<EventFoodDetails> AddEventFoodDetails(Guid eventId, EventFoodDetails foodDetails)
+    {
+        foodDetails.Id = Guid.NewGuid();
+        foodDetails.EventId = eventId;
+        _context.EventFoodDetails.Add(foodDetails);
+        await _context.SaveChangesAsync();
+        return foodDetails;
+    }
+
+    public async Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op)
+    {
+        var foodDetails = await
+                              _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
+                          ?? throw new Exception();
+
+        op(foodDetails);
+        await _context.SaveChangesAsync();
+        return foodDetails;
+    }
+
+    public Task<EventFoodDetails> GetEventFoodDetails(Guid eventId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId)
+    {
+        throw new NotImplementedException();
+    }
 }

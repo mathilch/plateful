@@ -71,7 +71,6 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         {
             @event.Name = updateReq.Name;
             @event.Description = updateReq.Description;
-            @event.FoodName = updateReq.FoodName;
             @event.MaxAllowedParticipants = updateReq.MaxAllowedParticipants;
             @event.MinAllowedAge = updateReq.MinAllowedAge;
             @event.MaxAllowedAge = updateReq.MaxAllowedAge;

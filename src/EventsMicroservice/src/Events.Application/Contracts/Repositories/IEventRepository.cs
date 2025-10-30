@@ -42,4 +42,14 @@ public interface IEventRepository
     Task<EventImage> RemoveImageFromEvent(Guid imageId);
     Task<List<EventImage>> RemoveAllImagesFromEvent(Guid eventId);
     
+    /*
+     * ===========================================================================
+     * ===================== F O O D - D E T A I L S =============================
+     * ===========================================================================
+     */
+    
+    Task<EventFoodDetails> AddEventFoodDetails(Guid eventId, EventFoodDetails foodDetails);
+    Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op);
+    Task<EventFoodDetails> GetEventFoodDetails(Guid eventId);
+    Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId);
 }

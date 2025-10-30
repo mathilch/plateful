@@ -7,7 +7,6 @@ public record EventDto(
     Guid UserId,
     string Name,
     string Description,
-    string FoodName,
     int MaxAllowedParticipants,
     int MinAllowedAge,
     int MaxAllowedAge,
@@ -17,6 +16,7 @@ public record EventDto(
     DateTime CreatedDate,
     bool IsActive,
     bool IsPublic,
+    EventFoodDetails EventFoodDetails,
     ICollection<EventParticipant> EventParticipants,
     ICollection<EventImage> EventImages
 );

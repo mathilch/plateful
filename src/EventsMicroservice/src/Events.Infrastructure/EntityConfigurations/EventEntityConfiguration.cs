@@ -17,7 +17,6 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
 
         builder.Property(e => e.Name).HasMaxLength(150).IsRequired();
         builder.Property(e => e.Description).HasMaxLength(150).IsRequired();
-        builder.Property(e => e.FoodName).HasMaxLength(150).IsRequired();
         builder.Property(e => e.ImageThumbnail).HasMaxLength(150).IsRequired();
 
         builder.Property(e => e.MaxAllowedParticipants).IsRequired();

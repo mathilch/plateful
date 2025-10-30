@@ -10,6 +10,7 @@ public class EventFoodDetailsEntityConfiguration : IEntityTypeConfiguration<Even
     {
         builder.HasKey(ef => ef.Id);
 
+        builder.Property(ef => ef.Name).HasMaxLength(150).IsRequired();
         builder.Property(ef => ef.Ingredients).HasMaxLength(500);
         builder.Property(ef => ef.AdditionalFoodItems).HasMaxLength(500);
 

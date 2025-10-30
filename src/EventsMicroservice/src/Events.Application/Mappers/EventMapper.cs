@@ -13,7 +13,6 @@ public static class EventMapper
             e.UserId,
             e.Name,
             e.Description,
-            e.FoodName,
             e.MaxAllowedParticipants,
             e.MinAllowedAge,
             e.MaxAllowedAge,
@@ -23,6 +22,7 @@ public static class EventMapper
             e.CreatedDate,
             e.IsActive,
             e.IsPublic,
+            e.EventFoodDetails,
             e.EventParticipants,
             e.EventImages
         );
@@ -35,7 +35,6 @@ public static class EventMapper
             UserId = userId,
             Name = dto.Name,
             Description = dto.Description,
-            FoodName = dto.FoodName,
             MaxAllowedParticipants = dto.MaxAllowedParticipants,
             MinAllowedAge = dto.MinAllowedAge,
             MaxAllowedAge = dto.MaxAllowedAge,
@@ -44,6 +43,7 @@ public static class EventMapper
             ImageThumbnail = dto.ImageThumbnail,
             IsActive = true,
             IsPublic = dto.IsPublic,
+            EventFoodDetails = dto.EventFoodDetails,
             EventParticipants = Enumerable.Empty<EventParticipant>().ToList(),
             EventImages = dto.Images
         };
