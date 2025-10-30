@@ -1,3 +1,5 @@
+using Events.Domain.Entities;
+
 namespace Events.Application.Dtos.Requests;
 
 public record CreateEventRequestDto(
@@ -10,5 +12,6 @@ public record CreateEventRequestDto(
     DateTime StartDate,
     DateTime ReservationEndDate,
     string ImageThumbnail,
-    bool IsPublic
+    bool IsPublic,
+    ICollection<EventImage> Images
 );

@@ -23,7 +23,8 @@ public static class EventMapper
             e.CreatedDate,
             e.IsActive,
             e.IsPublic,
-            e.EventParticipants
+            e.EventParticipants,
+            e.EventImages
         );
     }
 
@@ -43,7 +44,8 @@ public static class EventMapper
             ImageThumbnail = dto.ImageThumbnail,
             IsActive = true,
             IsPublic = dto.IsPublic,
-            EventParticipants = Enumerable.Empty<EventParticipant>().ToList()
+            EventParticipants = Enumerable.Empty<EventParticipant>().ToList(),
+            EventImages = dto.Images
         };
     }
 }

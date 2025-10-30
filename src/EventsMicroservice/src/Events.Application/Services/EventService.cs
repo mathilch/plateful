@@ -30,10 +30,11 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         }   
     }
 
-    public Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
+    public async Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
     {
+        createEvent.Images.Select(async image => await eventRepository.AddImageToEvent(image));
         var eventEntity = createEvent.ToEntity(currentUser.UserId);
-        return eventRepository.AddEvent(eventEntity);
+        return await eventRepository.AddEvent(eventEntity);
     }
 
     public async Task<EventDto> GetEventByEventId(Guid eventId)

@@ -17,5 +17,6 @@ public record EventDto(
     DateTime CreatedDate,
     bool IsActive,
     bool IsPublic,
-    ICollection<EventParticipant> EventParticipants
+    ICollection<EventParticipant> EventParticipants,
+    ICollection<EventImage> EventImages
 );
