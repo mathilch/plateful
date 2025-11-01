@@ -45,7 +45,7 @@ public static class EventMapper
             IsPublic = dto.IsPublic,
             EventFoodDetails = dto.EventFoodDetails,
             EventParticipants = Enumerable.Empty<EventParticipant>().ToList(),
-            EventImages = dto.Images
+            EventImages = dto.Images.ToList()
         };
     }
 }

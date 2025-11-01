@@ -1,4 +1,6 @@
 using Events.Application.Dtos.Requests;
+using Events.Application.Mappers;
+using Events.Domain.Entities;
 using Events.Infrastructure.Context;
 using Events.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -30,16 +32,17 @@ public sealed class EventRepositoryTests
         int maxAge = 65)
     {
         return new CreateEventRequestDto(
-            UserId: Guid.Parse("11111111-1111-1111-1111-111111111111"),
             Name: name,
             Description: description,
-            FoodName: foodName,
             MaxAllowedParticipants: maxAllowedParticipants,
             MinAllowedAge: minAge,
             MaxAllowedAge: maxAge,
             StartDate: DateTime.UtcNow.AddDays(7),
             ReservationEndDate: DateTime.UtcNow.AddDays(3),
-            ImageThumbnail: "thumb.png"
+            ImageThumbnail: "thumb.png",
+            IsPublic: true,
+            new EventFoodDetails(),
+            Enumerable.Empty<EventImage>()
         );
     }
 
@@ -47,7 +50,8 @@ public sealed class EventRepositoryTests
     public async Task AddEvent_ShouldAdd()
     {
         var repo = NewRepo(Guid.NewGuid().ToString());
-        var created = await repo.AddEvent(NewEventPayload());
+        var eventDto = NewEventPayload();
+        var created = await repo.AddEvent(eventDto.ToEntity(Guid.NewGuid()));
         Assert.NotNull(created);
         var all = await repo.GetAllEvents();
         Assert.Single(all);
@@ -57,7 +61,8 @@ public sealed class EventRepositoryTests
     public async Task GetEventById_ShouldReturn()
     {
         var repo = NewRepo(Guid.NewGuid().ToString());
-        var created = await repo.AddEvent(NewEventPayload());
+        var eventDto = NewEventPayload();
+        var created = await repo.AddEvent(eventDto.ToEntity(Guid.NewGuid()));
         var fetched = await repo.GetEventById(created!.EventId);
         Assert.NotNull(fetched);
         Assert.Equal(created.EventId, fetched!.EventId);
@@ -67,7 +72,7 @@ public sealed class EventRepositoryTests
     public async Task UpdateEvent_ShouldModifyFields()
     {
         var repo = NewRepo(Guid.NewGuid().ToString());
-        var created = await repo.AddEvent(NewEventPayload());
+        var created = await repo.AddEvent(NewEventPayload().ToEntity(Guid.NewGuid()));
         var updated = await repo.UpdateEvent(created!.EventId, e =>
         {
             e.Name = "Updated Name";
@@ -82,7 +87,7 @@ public sealed class EventRepositoryTests
     public async Task DeleteEvent_ShouldRemove()
     {
         var repo = NewRepo(Guid.NewGuid().ToString());
-        var created = await repo.AddEvent(NewEventPayload());
+        var created = await repo.AddEvent(NewEventPayload().ToEntity(Guid.NewGuid()));
         var allBefore = await repo.GetAllEvents();
         Assert.Single(allBefore);
         var deleted = await repo.DeleteEvent(created!.EventId);
@@ -100,10 +105,10 @@ public sealed class EventRepositoryTests
         var u1 = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var u2 = Guid.Parse("22222222-2222-2222-2222-222222222222");
 
-        await repo.AddEvent(NewEventPayload(name: "User1 Event A"));
-        await repo.AddEvent(NewEventPayload(name: "User1 Event B"));
+        await repo.AddEvent(NewEventPayload(name: "User1 Event A").ToEntity(Guid.NewGuid()));
+        await repo.AddEvent(NewEventPayload(name: "User1 Event B").ToEntity(Guid.NewGuid()));
 
-        var e3 = await repo.AddEvent(NewEventPayload(name: "User2 Event A"));
+        var e3 = await repo.AddEvent(NewEventPayload(name: "User2 Event A").ToEntity(Guid.NewGuid()));
         await repo.UpdateEvent(e3!.EventId, e => e.UserId = u2);
 
         var user1Events = await repo.GetEventsByUserId(u1);
