@@ -38,7 +38,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 
     private ValidationProblemDetails CreateValidationProblemDetails(RequestValidationException exception, string path)
     {
-        _exceptionStatusCodeMapping.TryGetValue(typeof(RequestValidationException), out var type);
+        _exceptionsMap.TryGetValue(typeof(RequestValidationException), out var type);
         return new ValidationProblemDetails
         {
             Instance = path,
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler : IExceptionHandler
     {
         var type = exception.GetType();
 
-        var (title, statusCode) = _exceptionStatusCodeMapping.TryGetValue(type, out var mappedException) ? mappedException : ("An unexpected error occurred. Contact support if the problem persists.", StatusCodes.Status500InternalServerError);
+        var (title, statusCode) = _exceptionsMap.TryGetValue(type, out var mappedException) ? mappedException : ("An unexpected error occurred. Contact support if the problem persists.", StatusCodes.Status500InternalServerError);
 
         return new ProblemDetails
         {

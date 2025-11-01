@@ -1,3 +1,4 @@
+using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Events.Application.Mappers;
 using Events.Domain.Entities;
@@ -53,7 +54,7 @@ public sealed class EventRepositoryTests
         var eventDto = NewEventPayload();
         var created = await repo.AddEvent(eventDto.ToEntity(Guid.NewGuid()));
         Assert.NotNull(created);
-        var all = await repo.GetAllEvents();
+        var all = await repo.GetAllEvents(new PaginationDto(0, 0));
         Assert.Single(all);
     }
 
@@ -88,11 +89,11 @@ public sealed class EventRepositoryTests
     {
         var repo = NewRepo(Guid.NewGuid().ToString());
         var created = await repo.AddEvent(NewEventPayload().ToEntity(Guid.NewGuid()));
-        var allBefore = await repo.GetAllEvents();
+        var allBefore = await repo.GetAllEvents(new PaginationDto(0, 0));
         Assert.Single(allBefore);
         var deleted = await repo.DeleteEvent(created!.EventId);
         Assert.NotNull(deleted);
-        var allAfter = await repo.GetAllEvents();
+        var allAfter = await repo.GetAllEvents(new PaginationDto(0, 0));
         Assert.Empty(allAfter);
     }
 

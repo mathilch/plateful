@@ -1,11 +1,12 @@
-using System.Runtime.InteropServices.ComTypes;
 using Events.Application.Contracts.Repositories;
 using Events.Application.Contracts.Services;
 using Events.Application.Dtos;
+using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Events.Application.Exceptions;
 using Events.Application.Mappers;
 using Events.Domain.Entities;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Events.Application.Services;
 
@@ -27,17 +28,17 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         if (ec.UserId != currentUser.UserId)
         {
             throw new UnauthorizedUserForReviewException(ec.Id, ec.UserId, currentUser.UserId);
-        }   
+        }
     }
 
     public async Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
     {
         var eventEntity = createEvent.ToEntity(currentUser.UserId);
         var e = await eventRepository.AddEvent(eventEntity);
-        
+
         createEvent.Images.Select(async image => await eventRepository.AddImageToEvent(e.EventId, image));
         await eventRepository.AddEventFoodDetails(e.EventId, createEvent.EventFoodDetails);
-        
+
         return e.ToDto();
     }
 
@@ -55,14 +56,15 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
                         e.EventParticipants.Any(pe => pe.UserId == loggedInUserId))
             .ToList();
     }
-    
+
     public async Task<List<EventDto>> GetAllEvents()
     {
-        _ = currentUser.UserId;
-        var events = await eventRepository.GetAllEvents();
-        return events
-            .Where(e => e.IsActive)
-            .ToList();
+        return await eventRepository.GetAllEvents();
+    }
+
+    public async Task<List<EventDto>> GetRecentEvents(PaginationDto paginationDto)
+    {
+        return await eventRepository.GetAllEvents(paginationDto);
     }
 
     public async Task<EventDto> UpdateEvent(Guid eventId, UpdateEventRequestDto updateReq)
@@ -84,11 +86,11 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
     public async Task<EventDto> DeleteEvent(Guid eventId)
     {
         await EnsureThatUserOwnsTheEvent(eventId);
-        
+
         var e = await eventRepository.DeleteEvent(eventId);
         await eventRepository.RemoveAllImagesFromEvent(eventId);
         await eventRepository.RemoveEventFoodDetails(eventId);
-        
+
         return e.ToDto();
     }
 
@@ -193,7 +195,7 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         });
         return updatedReview.ToDto();
     }
-    
+
 
     public async Task<List<EventReviewDto>> GetAllReviewsForAnEvent(Guid eventId)
     {
@@ -206,10 +208,10 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
     public async Task<EventImageDto> AddEventImage(Guid eventId, AddEventImageRequestDto createReq)
     {
         await EnsureThatUserOwnsTheEvent(currentUser.UserId);
-        
+
         var image = createReq.ToEntity(eventId);
         await eventRepository.AddImageToEvent(eventId, image);
-        return  image.ToDto();
+        return image.ToDto();
     }
 
     public async Task<EventImageDto> RemoveEventImage(Guid imageId)
@@ -235,16 +237,15 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
             food.Ingredients = upReq.Ingredients;
             food.AdditionalFoodItems = upReq.AdditionalFoodItems;
         });
-        
+
         return fd.ToDto();
     }
 
     public async Task<EventFoodDetailsDto> DeleteFoodDetailsForEvent(Guid eventId)
     {
-         var fd = await eventRepository.RemoveEventFoodDetails(eventId);
-         return fd.ToDto();
+        var fd = await eventRepository.RemoveEventFoodDetails(eventId);
+        return fd.ToDto();
     }
-
 
     private static int CalculateAge(DateOnly birthday)
     {

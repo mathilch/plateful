@@ -1,4 +1,5 @@
 using Events.Application.Contracts.Services;
+using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +8,15 @@ namespace Events.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/event")]
 public class EventController(IEventService _eventService) : ControllerBase
 {
+    [HttpGet("recent")]
+    public async Task<IActionResult> GetRecentEvents()
+    {
+        return Ok(await _eventService.GetRecentEvents(new PaginationDto(0, 10)));
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await _eventService.GetAllEvents());
 
