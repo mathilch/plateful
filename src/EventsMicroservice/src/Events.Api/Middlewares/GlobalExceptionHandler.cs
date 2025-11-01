@@ -6,63 +6,66 @@ namespace Events.Api.Middlewares;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
+    private readonly Dictionary<Type, (string Title, int StatusCode)> _exceptionsMap = new()
+    {
+        { typeof(UnauthorizedUserException), ("User is unauthorized", StatusCodes.Status401Unauthorized)},
+        { typeof(EventIdNotFoundException),("Event not found", StatusCodes.Status404NotFound) },
+        { typeof(RemoveEventParticipantException), ("Participant not found registered with Event", StatusCodes.Status404NotFound)},
+        { typeof(UserIsNotSignedUpForEventException), ("User not signed up for event",StatusCodes.Status400BadRequest )},
+        { typeof(UserIsNotTheRightAgeException), ("User age is not right for participation", StatusCodes.Status400BadRequest)},
+        { typeof(RequestValidationException), ("Request validation errors", StatusCodes.Status400BadRequest)}
+    };
+
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         httpContext.Response.ContentType = "application/problem+json";
-        ProblemDetails problemDetails = new();
-        ValidationProblemDetails validationProblemDetails = new();
 
-        problemDetails.Instance = httpContext.Request.Path;
-        problemDetails.Detail = exception.Message;
-
-        validationProblemDetails.Instance = httpContext.Request.Path;
-        validationProblemDetails.Detail = exception.Message;
-
-        switch (exception)
+        var problemDetails = exception switch
         {
-            case UnauthorizedUserException:
-                problemDetails.Title = "User is unauthorized";
-                problemDetails.Status = StatusCodes.Status401Unauthorized;
-                break;
-            case EventIdNotFoundException:
-                problemDetails.Title = "Event not found";
-                problemDetails.Status = StatusCodes.Status404NotFound;
-                break;
-            case RemoveEventParticipantException:
-                problemDetails.Title = "Participant not found registered with Event";
-                problemDetails.Status = StatusCodes.Status404NotFound;
-                break;
-            case UserIsNotSignedUpForEventException:
-                problemDetails.Title = "User not signed up for event";
-                problemDetails.Status = StatusCodes.Status400BadRequest;
-                break;
-            case UserIsNotTheRightAgeException:
-                problemDetails.Title = "User age is not right for participation";
-                problemDetails.Status = StatusCodes.Status400BadRequest;
-                break;
-            case RequestValidationException:
-                var requestValidationException = (RequestValidationException)exception;
-                validationProblemDetails.Title = "Request Validation Errors";
-                validationProblemDetails.Status = StatusCodes.Status400BadRequest;
-                validationProblemDetails.Errors = requestValidationException.ValidationErrors;
-                break;
-            default:
-                problemDetails.Title = "An unexpected error occurred.";
-                problemDetails.Status = StatusCodes.Status500InternalServerError;
-                problemDetails.Detail = "An unexpected error occurred. Contact support if the problem persists.";
-                break;
-        }
-        if (exception is RequestValidationException)
+            RequestValidationException validationException => CreateValidationProblemDetails(validationException, httpContext.Request.Path),
+            _ => CreateProblemDetails(exception, httpContext.Request.Path),
+        };
+
+        httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+        if (problemDetails is ValidationProblemDetails validationProblemDetails)
         {
-            httpContext.Response.StatusCode = validationProblemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(validationProblemDetails, cancellationToken);
         }
         else
         {
-            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
         }
 
         return true;
+    }
+
+    private ValidationProblemDetails CreateValidationProblemDetails(RequestValidationException exception, string path)
+    {
+        _exceptionsMap.TryGetValue(typeof(RequestValidationException), out var exceptionType);
+        return new ValidationProblemDetails
+        {
+            Instance = path,
+            Title = exceptionType.Title,
+            Status = exceptionType.StatusCode,
+            Errors = exception.ValidationErrors,
+            Detail = exception.Message
+        };
+    }
+
+    private ProblemDetails CreateProblemDetails(Exception exception, string path)
+    {
+        var type = exception.GetType();
+
+        var (title, statusCode) = _exceptionsMap.TryGetValue(type, out var mappedException) ? mappedException : ("An unexpected error occurred. Contact support if the problem persists.", StatusCodes.Status500InternalServerError);
+
+        return new ProblemDetails
+        {
+            Instance = path,
+            Title = title,
+            Status = statusCode,
+            Detail = statusCode == StatusCodes.Status500InternalServerError
+                ? "An unexpected error occurred. Contact support if the problem persists."
+                : exception.Message,
+        };
     }
 }

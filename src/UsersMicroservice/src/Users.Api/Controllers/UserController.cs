@@ -24,6 +24,7 @@ public class UserController(IUserService _userService) : ControllerBase
     [HttpPost]
     [ProducesResponseType<Guid>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddUser([FromBody] CreateUserRequestDto request)
     {
         var userId = await _userService.CreateUserAsync(request);
