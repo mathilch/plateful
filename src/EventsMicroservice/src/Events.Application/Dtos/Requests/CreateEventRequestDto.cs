@@ -13,5 +13,5 @@ public record CreateEventRequestDto(
     string ImageThumbnail,
     bool IsPublic,
     EventFoodDetails EventFoodDetails,
-    ICollection<EventImage> Images
+    IEnumerable<EventImage> Images
 );
