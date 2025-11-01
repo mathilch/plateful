@@ -1,4 +1,5 @@
 using Events.Application.Dtos;
+using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Events.Domain.Entities;
 
@@ -7,7 +8,7 @@ namespace Events.Application.Contracts.Repositories;
 public interface IEventRepository
 {
     Task<Event> GetEventById(Guid id);
-    Task<List<EventDto>> GetAllEvents();
+    Task<List<EventDto>> GetAllEvents(PaginationDto? paginationDto = null);
     Task<Event> AddEvent(Event createEvent);
     Task<EventDto> UpdateEvent(Guid id, Action<Event> op);
     Task<Event> DeleteEvent(Guid id);

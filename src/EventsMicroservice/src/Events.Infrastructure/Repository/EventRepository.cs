@@ -1,5 +1,6 @@
 using Events.Application.Contracts.Repositories;
 using Events.Application.Dtos;
+using Events.Application.Dtos.Common;
 using Events.Application.Exceptions;
 using Events.Application.Mappers;
 using Events.Domain.Entities;
@@ -24,11 +25,21 @@ public class EventRepository : IEventRepository
         return e;
     }
 
-    public async Task<List<EventDto>> GetAllEvents()
+    public async Task<List<EventDto>> GetAllEvents(PaginationDto? paginationDto = null)
     {
-        return await _context.Events
-            .Select(e => e.ToDto())
-            .ToListAsync();
+        var query = _context.Events
+            .AsNoTracking()
+            .Where(x => x.IsActive);
+
+        if (paginationDto is not null)
+        {
+            query = query.Skip(paginationDto.pageNumber * paginationDto.pageSize).Take(paginationDto.pageSize);
+        }
+
+        return await query
+            .OrderByDescending(x => x.CreatedDate)
+           .Select(e => e.ToDto())
+           .ToListAsync();
     }
 
     public async Task<Event> AddEvent(Event newEvent)
@@ -107,12 +118,12 @@ public class EventRepository : IEventRepository
         return await _context.EventParticipants
             .AnyAsync(ep => ep.UserId == userId && ep.EventId == eventId);
     }
-    
+
     // Specific for EventReviews
     public async Task<EventReview> AddEventReview(EventReview review)
     {
         review.Id = Guid.NewGuid();
-        
+
         _context.EventReviews.Add(review);
         await _context.SaveChangesAsync();
         return review;
@@ -218,7 +229,7 @@ public class EventRepository : IEventRepository
         var foodDetails = await _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
                           ?? throw new NoFoodDetailsForEventException(eventId);
         _context.EventFoodDetails.Remove(foodDetails);
-        await _context.SaveChangesAsync(); 
+        await _context.SaveChangesAsync();
         return foodDetails;
     }
 }
