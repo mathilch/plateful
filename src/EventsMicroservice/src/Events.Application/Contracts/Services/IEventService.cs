@@ -11,7 +11,7 @@ public interface IEventService
     Task<EventDto> GetEventByEventId(Guid eventId);
     Task<List<EventDto>> GetEventsByUserId(Guid userId);
     Task<List<EventDto>> GetAllEvents();
-    Task<List<EventDto>> GetRecentEvents(PaginationDto paginationDto);
+    Task<List<EventOverviewDto>> GetRecentEvents(PaginationDto paginationDto);
     Task<EventDto> UpdateEvent(Guid eventId, UpdateEventRequestDto updateReq);
     Task<EventDto> DeleteEvent(Guid eventId);
 

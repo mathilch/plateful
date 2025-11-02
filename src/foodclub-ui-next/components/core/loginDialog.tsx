@@ -32,7 +32,7 @@ export default function LoginDialog({ open, setOpenAction: setOpen }: LoginDialo
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/User/login`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_USERS_API_BASE_URL}/api/User/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

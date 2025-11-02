@@ -1,14 +1,23 @@
-export type EventDetails = {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
+import { EventFoodDetails } from "./event-food-details.type";
+
+export type EventOverviewDto = {
+  eventId: string;
+  userId: string;
   hostName: string;
   hostRating: number;
+  name: string;
+  maxAllowedParticipants: number;
+  minAllowedAge: number;
+  maxAllowedAge: number;
+  startDate: string;
+  startTime: string;
+  reservationEndDate: string;
   tags: string[];
-  seatsAvailable: number;
-  totalSeats: number;
+  participantsCount: number;
+  imageThumbnail: string;
+  createdDate: string;
   price: number;
-  imageUrl: string;
+  isActive: boolean;
+  isPublic: boolean;
+  eventFoodDetails: EventFoodDetails;
 };

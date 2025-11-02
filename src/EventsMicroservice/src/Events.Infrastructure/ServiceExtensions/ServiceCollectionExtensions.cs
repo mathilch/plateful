@@ -1,5 +1,7 @@
+using Events.Application.Contracts.ExternalApis;
 using Events.Application.Contracts.Repositories;
 using Events.Infrastructure.Context;
+using Events.Infrastructure.ExternalApis;
 using Events.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +14,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<IUserApiService, UserApiService>();
         return services;
     }
 

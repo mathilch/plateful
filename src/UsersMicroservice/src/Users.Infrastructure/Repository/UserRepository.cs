@@ -82,4 +82,12 @@ public class UserRepository : IUserRepository
         user.IsActive = false;
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<UserDto>> GetMultipleUsersByIds(IEnumerable<Guid> ids)
+    {
+        return await _context.Users
+            .Where(x => ids.Contains(x.Id))
+            .Select(x => x.ToDto())
+            .ToListAsync();
+    }
 }

@@ -6,6 +6,7 @@ using Events.Application.Mappers;
 using Events.Domain.Entities;
 using Events.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Events.Infrastructure.Repository;
 
@@ -93,7 +94,6 @@ public class EventRepository : IEventRepository
         return await GetEventById(eventId);
     }
 
-    // Specific for EventParticipant
     public async Task<Event> RemoveEventParticipant(Guid eventId, Guid userId)
     {
         var ep = await _context.EventParticipants
@@ -119,7 +119,6 @@ public class EventRepository : IEventRepository
             .AnyAsync(ep => ep.UserId == userId && ep.EventId == eventId);
     }
 
-    // Specific for EventReviews
     public async Task<EventReview> AddEventReview(EventReview review)
     {
         review.Id = Guid.NewGuid();
@@ -231,5 +230,27 @@ public class EventRepository : IEventRepository
         _context.EventFoodDetails.Remove(foodDetails);
         await _context.SaveChangesAsync();
         return foodDetails;
+    }
+
+    public async Task<List<Event>> GetPaginatedAndFilteredEvents(List<Expression<Func<Event, bool>>> eventFilters, PaginationDto? paginationDto = null)
+    {
+        var query = _context.Events
+             .AsNoTracking();
+
+        foreach (var filter in eventFilters)
+        {
+            query = query.Where(filter);
+        }
+
+        if (paginationDto is not null)
+        {
+            query = query.Skip(paginationDto.pageNumber * paginationDto.pageSize).Take(paginationDto.pageSize);
+        }
+
+        return await query
+            .OrderByDescending(x => x.CreatedDate)
+            .Include(x => x.EventParticipants)
+            .Include(x => x.EventFoodDetails)
+            .ToListAsync();
     }
 }
