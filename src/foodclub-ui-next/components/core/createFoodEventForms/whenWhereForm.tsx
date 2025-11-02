@@ -22,7 +22,7 @@ export default function WhenWhereForm() {
 
             <ComponentsWrapper id="whenWhereForm">
 
-                <div className="flex gap-5">
+                <div className="flex flex-col md:flex-row gap-5">
                     <CreateEventFormInput
                         id="date"
                         labelText="Date"
@@ -69,57 +69,63 @@ export default function WhenWhereForm() {
                     required
                 />
 
+                <div className="flex">
 
-                <div className="flex gap-5">
-                    <CreateEventFormInput
-                        id="postalCode"
-                        labelText="Postal code"
-                        type="text"
-                        placeholder="2200"
-                        value={formLocationDetails?.postalCode}
-                        onChange={e => setFormLocationDetails(prev => ({
-                            ...prev,
-                            postalCode: e.target.value
-                        }))}
-                        required
-                    />
+                    <div className="flex flex-col md:flex-row gap-5 flex-1">
+                        <CreateEventFormInput
+                            id="postalCode"
+                            labelText="Postal code"
+                            type="text"
+                            placeholder="2200"
+                            value={formLocationDetails?.postalCode}
+                            wrapperClassName="flex-1"
+                            onChange={e => setFormLocationDetails(prev => ({
+                                ...prev,
+                                postalCode: e.target.value
+                            }))}
+                            required
+                        />
 
-                    <CreateEventFormInput
-                        id="city"
-                        labelText="City"
-                        type="text"
-                        placeholder="Copenhagen"
-                        value={formLocationDetails?.city}
-                        onChange={e => setFormLocationDetails(prev => ({
-                            ...prev,
-                            city: e.target.value
-                        }))}
-                        required
-                    />
+                        <CreateEventFormInput
+                            id="city"
+                            labelText="City"
+                            type="text"
+                            placeholder="Copenhagen"
+                            value={formLocationDetails?.city}
+                            wrapperClassName="flex-1"
+                            onChange={e => setFormLocationDetails(prev => ({
+                                ...prev,
+                                city: e.target.value
+                            }))}
+                            required
+                        />
 
-                    <CreateEventFormInput
-                        id="region"
-                        labelText="Region"
-                        type="text"
-                        placeholder="Capital Region"
-                        value={formLocationDetails?.region}
-                        onChange={e => setFormLocationDetails(prev => ({
-                            ...prev,
-                            region: e.target.value
-                        }))}
-                        required
-                    />
+                        <CreateEventFormInput
+                            id="region"
+                            labelText="Region"
+                            type="text"
+                            placeholder="Capital Region"
+                            value={formLocationDetails?.region}
+                            wrapperClassName="flex-1"
+                            onChange={e => setFormLocationDetails(prev => ({
+                                ...prev,
+                                region: e.target.value
+                            }))}
+                            required
+                        />
 
-                    <CreateEventFormInput
-                        id="country"
-                        labelText="Country"
-                        type="text"
-                        placeholder="Denmark"
-                        value="Denmark"
-                        disabled
-                        required
-                    />
+                        <CreateEventFormInput
+                            id="country"
+                            labelText="Country"
+                            type="text"
+                            placeholder="Denmark"
+                            value="Denmark"
+                            wrapperClassName="flex-1"
+                            disabled
+                            required
+                        />
 
+                    </div>
                 </div>
 
 
