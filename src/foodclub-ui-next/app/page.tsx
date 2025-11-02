@@ -8,10 +8,11 @@ import {
 } from "@/components/ui/card";
 import MealCard from "@/components/core/meal-card/meal-card";
 import { getRecentEventsForHomePage } from "@/services/api/events-api.service";
+import { EventOverviewDto } from "@/types/event-details.type";
 
-export default function Home() {
-  const eventDetails = getRecentEventsForHomePage();
-
+export default async function Home() {
+  //const eventDetails = eventDetailsMocks;
+  const eventDetails: EventOverviewDto[] = await getRecentEventsForHomePage();
   return (
     <div>
       <div className="banner">
@@ -76,7 +77,7 @@ export default function Home() {
         <h2>Upcoming dinners</h2>
         <div className="upcoming-dinner-cards">
           {eventDetails.map((eventDetail) => (
-            <MealCard key={eventDetail.id} {...eventDetail} />
+            <MealCard key={eventDetail.eventId} {...eventDetail} />
           ))}
         </div>
       </div>

@@ -11,6 +11,7 @@ namespace Events.Api.Controllers;
 [Route("api/event")]
 public class EventController(IEventService _eventService) : ControllerBase
 {
+    [AllowAnonymous]
     [HttpGet("recent")]
     public async Task<IActionResult> GetRecentEvents()
     {

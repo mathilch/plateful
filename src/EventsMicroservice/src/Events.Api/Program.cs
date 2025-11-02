@@ -36,6 +36,13 @@ public class Program
             });
         });
 
+        builder.Services.AddHttpClient("UserApiClient", client =>
+        {
+            client.BaseAddress = new Uri("https://localhost:7083/");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
@@ -53,7 +60,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
-
+        app.UseCors();
         app.Run();
     }
 }

@@ -1,9 +1,6 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Users.Application.Contracts.Services;
 using Users.Application.Dtos.Requests;
-using Users.Application.Exceptions;
-using Users.Application.Extensions;
 
 namespace Users.Api.Controllers;
 
@@ -29,6 +26,14 @@ public class UserController(IUserService _userService) : ControllerBase
     {
         var userId = await _userService.CreateUserAsync(request);
         return Ok(userId);
+    }
+
+    [HttpGet("multiple-users")]
+    public async Task<IActionResult> GetMultipleUsersById([FromQuery] IEnumerable<Guid> ids)
+    {
+        var users = await _userService.GetMultipleUsersByIdsAsync(ids);
+
+        return Ok(users);
     }
 
     [HttpPatch("{id}/deactivate-user")]

@@ -9,6 +9,7 @@ public interface IUserService
     Task DeleteUserAsync(Guid userId);
     Task<bool> UpdateUserAsync(Guid userId, string name, string email);
     Task<UserDto?> GetUserByIdAsync(Guid userId);
+    Task<IEnumerable<UserDto>?> GetMultipleUsersByIdsAsync(IEnumerable<Guid> userIds);
     Task<string> AuthenticateAndGenerateUserTokenAsync(LoginUserRequestDto requestDto);
     Task<IEnumerable<UserDto>> GetAllUsersAsync();
     Task DeactivateUserAsync(Guid id);

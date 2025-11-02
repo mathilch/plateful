@@ -1,3 +1,5 @@
+using Events.Application.Builders;
+using Events.Application.Contracts.ExternalApis;
 using Events.Application.Contracts.Repositories;
 using Events.Application.Contracts.Services;
 using Events.Application.Dtos;
@@ -5,12 +7,10 @@ using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Events.Application.Exceptions;
 using Events.Application.Mappers;
-using Events.Domain.Entities;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace Events.Application.Services;
 
-public class EventService(IEventRepository eventRepository, CurrentUser currentUser) : IEventService
+public class EventService(IEventRepository eventRepository, CurrentUser currentUser, IUserApiService userApiService) : IEventService
 {
     // Helper methods to avoid code duplication
     private async Task EnsureThatUserOwnsTheEvent(Guid eventId)
@@ -62,9 +62,21 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         return await eventRepository.GetAllEvents();
     }
 
-    public async Task<List<EventDto>> GetRecentEvents(PaginationDto paginationDto)
+    public async Task<List<EventOverviewDto>> GetRecentEvents(PaginationDto paginationDto)
     {
-        return await eventRepository.GetAllEvents(paginationDto);
+        var filterSpecification = new EventsFilterSpecificationBuilder();
+        var filters = filterSpecification.FilterByActive(true).Build();
+
+        var events = await eventRepository.GetPaginatedAndFilteredEvents(filters, paginationDto);
+        if (events is not null)
+        {
+            var userIds = events.Select(x => x.UserId).Distinct().ToList();
+            var users = await userApiService.GetUsersByIds(userIds);
+
+            var eventDtos = events.Select(x => x.ToEventOverviewDto(users)).ToList();
+            return eventDtos;
+        }
+        return Enumerable.Empty<EventOverviewDto>().ToList();
     }
 
     public async Task<EventDto> UpdateEvent(Guid eventId, UpdateEventRequestDto updateReq)

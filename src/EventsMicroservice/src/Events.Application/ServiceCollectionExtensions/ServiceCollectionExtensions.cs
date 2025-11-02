@@ -1,3 +1,4 @@
+using Events.Application.Contracts.ExternalApis;
 using Events.Application.Contracts.Services;
 using Events.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

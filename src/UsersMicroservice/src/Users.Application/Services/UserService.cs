@@ -70,9 +70,9 @@ public class UserService(IUserRepository _userRepository, ITokenService _tokenSe
         throw new WrongUserCredentialsException(requestDto.Email);
     }
 
-    public Task<UserDto> GetUserByIdAsync(Guid userId)
+    public async Task<UserDto> GetUserByIdAsync(Guid userId)
     {
-        throw new NotImplementedException();
+        return await _userRepository.GetUserById(userId);
     }
 
     public Task<bool> UpdateUserAsync(Guid userId, string name, string email)
@@ -89,5 +89,10 @@ public class UserService(IUserRepository _userRepository, ITokenService _tokenSe
     {
         var scope = _httpContextAccessor.HttpContext.RequestServices.CreateScope();
         return scope.ServiceProvider.GetRequiredService<T>();
+    }
+
+    public async Task<IEnumerable<UserDto>?> GetMultipleUsersByIdsAsync(IEnumerable<Guid> userIds)
+    {
+        return await _userRepository.GetMultipleUsersByIds(userIds);
     }
 }
