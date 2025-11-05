@@ -5,6 +5,7 @@ import ComponentsWrapper from "../wrappers/componentsWrapper";
 import OrangeWrapper from "../wrappers/orangeWrapper";
 import CreateEventFormInput from "./createEventFormInput";
 import InputAddressAutocomplete from "./inputAddressAutocomplete";
+import { useFormWizardContext } from "./formWizardContext";
 
 export interface LocationDetails {
     streetNumber?: string;
@@ -16,8 +17,10 @@ export interface LocationDetails {
 export default function WhenWhereForm() {
     const [formLocationDetails, setFormLocationDetails] = useState<LocationDetails | null>(null);
 
+    const [formState, formDispatch] = useFormWizardContext();
+
     return (
-        // md:grid-cols-[2fr_1fr]
+        // md:grid-cols-[2fr_1fr] 
         <div id="mainWrapper" className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10">
 
             <ComponentsWrapper id="whenWhereForm">
@@ -49,16 +52,15 @@ export default function WhenWhereForm() {
 
                 </div>
 
-                {/* TODO: work on address selection options, eg: show list of regions */}
-
                 <InputAddressAutocomplete
-                    labelText={"Address autocomplete test"}
+                    labelText={"Enter your address"}
+                    placeholder="e.g. Nørrebrostræde 123, 2. tv"
                     id={"addressAutocomplete"}
                     setFormLocationDetailsAction={setFormLocationDetails} />
 
                 <CreateEventFormInput
                     id="address"
-                    labelText="Address"
+                    labelText="Street address"
                     type="text"
                     placeholder="Street & number"
                     value={formLocationDetails?.streetNumber}

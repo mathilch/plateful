@@ -26,6 +26,7 @@ export default function CreateEventFormInput({
 
       <Input
         id={id}
+        name={props.name ?? id}
         className="h-10 bg-gray-50 text-sm font-normal text-muted-foreground font-['Poppins']"
         {...props}
       />
