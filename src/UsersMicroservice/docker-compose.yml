@@ -1,0 +1,34 @@
+services:
+  users-api:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    container_name: users-api
+    ports:
+      - "5001:8080"
+    depends_on:
+      - postgres
+    networks:
+      - users-network
+
+  postgres:
+    image: postgres:15
+    container_name: usersmicroservice-db
+    environment:
+      POSTGRES_USER: postgres 
+      POSTGRES_PASSWORD: postgres 
+      POSTGRES_DB: usersdb
+    ports:
+      - "5433:5432"
+    volumes:
+      # Persist data outside the container so that it isnt lost in case it stops or is deleted
+      - pgdata:/var/lib/postgresql/data 
+    networks: 
+      - users-network
+
+volumes:
+  pgdata:
+
+networks: 
+  users-network:
+    driver: bridge
