@@ -6,6 +6,10 @@ export type FormBasics = {
 }
 
 export type FormWhenWhere = {
+    date: string,
+    startTime: string,
+    endTime?: string,
+    
     streetAddress: string,
     postalCode: string,
     city: string,
