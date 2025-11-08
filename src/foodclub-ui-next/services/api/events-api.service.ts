@@ -1,4 +1,7 @@
+
+import { CreateEventRequestDto } from "@prvacy/events-api-sdk/dist/generated/model";
 import { eventDetailsMocks } from "../mocks/event-details-mocks";
+import {postApiEvent} from "@prvacy/events-api-sdk"
 
 export async function getRecentEventsForHomePage() {
   try {
@@ -24,4 +27,11 @@ export async function getRecentEventsForHomePage() {
     console.error("Events fetch error:", err);
     return []; // fallback
   }
+}
+
+export async function postEvent(createEventRequest: CreateEventRequestDto) {
+
+  
+  const resp = await postApiEvent(createEventRequest);
+  return resp.data;
 }
