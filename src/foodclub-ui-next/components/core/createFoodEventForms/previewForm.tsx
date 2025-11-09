@@ -34,7 +34,39 @@ export default function PreviewForm() {
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-        await postEvent(mockCreateEventRequest)
+
+        // Use formState.whenWhere?.date to determine start and end date
+        const eventDate = formState.whenWhere?.date;
+        if (!eventDate) {
+            throw new Error('Event date is required');
+        }
+
+        // Calculate reservation end date (typically one day before the event)
+        const reservationEndDate = (() => {
+            const date = new Date(eventDate);
+            date.setDate(date.getDate() - 1);
+            return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        })();
+
+        const createEventReq: CreateEventRequestDto = {
+            name: formState.basics?.title,
+            description: formState.basics?.description,
+            maxAllowedParticipants: 7,
+            minAllowedAge: 0,
+            maxAllowedAge: 99,
+            startDate: eventDate,
+            reservationEndDate: reservationEndDate,
+            imageThumbnail: "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
+            isPublic: true,
+            eventFoodDetails: {
+                name: "Noodles & More",
+                ingredients: "Noodles, vegetables, spices",
+                additionalFoodItems: "Dessert included",
+            },
+            images: [],
+        };
+
+        await postEvent(createEventReq);
     }
 
     return (
