@@ -2,7 +2,6 @@
 
 import FormWizardProvider from "@/components/core/createFoodEventForms/formWizardContext";
 import RoundedLink from "@/components/core/roundedLink";
-import { useState } from "react";
 
 
 export default function CreateFormLayout({
