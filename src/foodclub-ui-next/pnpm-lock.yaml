@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@prvacy/events-api-sdk':
-        specifier: ^1.0.4
-        version: 1.0.4
+      '@Rameez349/events-api-sdk':
+        specifier: 1.0.5
+        version: 1.0.5
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.1(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -86,6 +86,9 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@Rameez349/events-api-sdk@1.0.5':
+    resolution: {integrity: sha512-GbDAZkwgMl6u7BAIouKIMqXboM7wIpTdGXwqXisYlIMGLgsBi3oGIlIgCvyEW+Pes2sUNpwcUqUWkE5PHXi72Q==, tarball: https://npm.pkg.github.com/download/@Rameez349/events-api-sdk/1.0.5/317958485d26e9fd93e98db167be98a8a5be11e2}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -387,9 +390,6 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
-
-  '@prvacy/events-api-sdk@1.0.4':
-    resolution: {integrity: sha512-cy5/Y2etmVzIBh5oYNMCvOelcGNuIMpAemFIkwGW0fbE/aUfvCmS9Jd2dcAgGzQ0pBjQPDb2k7RPfFsbVB+DNw==, tarball: https://npm.pkg.github.com/download/@prvacy/events-api-sdk/1.0.4/00abad6bd849152786ab360cf12e759e6cd40dcc}
 
   '@radix-ui/primitive@1.1.3':
     resolution: {integrity: sha512-JTF99U/6XIjCBo0wqkU5sK10glYe27MRRsfwoiq5zzOEZLHU3A3KCMa5X/azekYRCJ0HlwI0crAXS/5dEHTzDg==}
@@ -2202,6 +2202,11 @@ packages:
 
 snapshots:
 
+  '@Rameez349/events-api-sdk@1.0.5':
+    dependencies:
+      '@types/node': 24.10.0
+      typescript: 5.9.3
+
   '@alloc/quick-lru@5.2.0': {}
 
   '@emnapi/core@1.5.0':
@@ -2456,11 +2461,6 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
-
-  '@prvacy/events-api-sdk@1.0.4':
-    dependencies:
-      '@types/node': 24.10.0
-      typescript: 5.9.3
 
   '@radix-ui/primitive@1.1.3': {}
 

@@ -4,6 +4,9 @@ on:
     branches:
     - master
     - feature/events-sdk-cicd
+    paths:
+      - 'src/EventsMicroservice/**'                 
+      - 'src/npm-packages/events-ts-sdk/**'
   workflow_dispatch:
 
 jobs:
