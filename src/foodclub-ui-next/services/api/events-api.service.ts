@@ -1,4 +1,7 @@
+
+import { CreateEventRequestDto } from "@prvacy/events-api-sdk/dist/generated/model";
 import { eventDetailsMocks } from "../mocks/event-details-mocks";
+import { postApiEvent } from "@prvacy/events-api-sdk"
 
 export async function getRecentEventsForHomePage() {
   try {
@@ -24,4 +27,22 @@ export async function getRecentEventsForHomePage() {
     console.error("Events fetch error:", err);
     return []; // fallback
   }
+}
+
+function addAuthHeaders(): HeadersInit {
+  return {
+    // TODO: work on proper authentication flow
+    Authorization: 'Bearer token123'
+  };
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    //return token;
+  }
+}
+
+export async function postEvent(createEventRequest: CreateEventRequestDto) {
+
+
+  const resp = await postApiEvent(createEventRequest, { headers: addAuthHeaders() });
+  return resp.data;
 }
