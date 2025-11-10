@@ -81,10 +81,19 @@ jobs:
 
 
       # e.g. 1.0.3 -> 1.0.4
-      - name: Update npm package patch version
+      # - name: Update npm package patch version
+      #   working-directory: src/npm-packages/events-ts-sdk/src
+      #   run: |
+      #     npm version patch
+
+      - name: Set patch version from build number
         working-directory: src/npm-packages/events-ts-sdk/src
         run: |
-          npm version patch
+          BUILD=${GITHUB_RUN_NUMBER}
+          BASE=$(node -p "require('./package.json').version.split('.').slice(0,2).join('.')") # e.g. "1.0"
+          NEW="$BASE.$BUILD"
+          npm version "$NEW" --no-git-tag-version
+          echo "Publishing version $NEW"
 
       - name: Install the sdk package deps
         working-directory: src/npm-packages/events-ts-sdk/src
