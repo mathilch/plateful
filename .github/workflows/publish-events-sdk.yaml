@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  openapi:
+  build-publish-openapi-client:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -72,7 +72,7 @@ jobs:
 
       - name: Generate TS client with Orval
         working-directory: src/npm-packages/events-ts-sdk
-        run: orval --config ./orval.config.js
+        run: npx orval --config ./orval.config.js
         #run: pnpm run gen
         # or: pnpm dlx orval --config orval.config.ts
 
