@@ -14,6 +14,11 @@ Next.Js routing example:
 
 ## Getting Started
 
+Important:
+
+Before running the project add your personal github token to the environment variable 'GITHUB_NODE_AUTH_TOKEN'.
+How to generate the token: https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/How-to-create-a-GitHub-Personal-Access-Token-example
+
 First, run the development server
 by pressing F5 in Visual Studio Code (check out .vscode/lauch.json for configurations) \
 or by running the following scripts:
