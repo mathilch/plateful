@@ -15,7 +15,7 @@ export default defineConfig({
       },
     },
     input: {
-      target: 'http://localhost:5121/swagger/v1/swagger.json',
+      target: '../../../openapi.json',
     },
   },
 });
