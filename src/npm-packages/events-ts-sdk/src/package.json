@@ -1,5 +1,5 @@
 {
-  "name": "@foodclub/events-api-sdk",
+  "name": "@Rameez349/events-api-sdk",
   "version": "1.0.4",
   "description": "foodclub events service sdk",
   "license": "ISC",
@@ -7,7 +7,7 @@
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Rameez349/foodclubapp.git"
+    "url": "git+https://github.com/Rameez349/foodclubapp.git"
   },
   "main": "dist/generated/eventsApi.js",
   "types": "dist/generated/eventsApi.d.ts",
