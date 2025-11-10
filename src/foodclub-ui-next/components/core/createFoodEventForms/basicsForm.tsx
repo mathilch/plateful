@@ -65,7 +65,7 @@ export default function BasicsForm() {
         // md:grid-cols-[2fr_1fr] 
         <div id="mainWrapper" className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10">
 
-            <form onSubmit={onSubmit} >
+            <form id="createFoodEventForm" onSubmit={onSubmit} >
                 <ComponentsWrapper id="basicsForm">
 
                     <CreateEventFormInput
@@ -92,7 +92,7 @@ export default function BasicsForm() {
                     </div>
 
 
-                    <input type="submit"></input>
+                    {/* <button type="submit" className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Save & Continue</button> */}
 
 
                     {/* </div> */}
@@ -100,10 +100,14 @@ export default function BasicsForm() {
             </form>
 
 
-            <ComponentsWrapper id="livePreview">
-                <h3>Live Preview</h3>
-                <MealCard key={123} {...eventDetail} />
-            </ComponentsWrapper>
+            <div className="flex flex-col">
+                <ComponentsWrapper id="livePreview">
+                    <h3>Live Preview</h3>
+                    <MealCard key={123} {...eventDetail} />
+                </ComponentsWrapper>
+
+                 <button type="submit" form="createFoodEventForm" className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Save & Continue</button>
+            </div>
 
 
         </div>

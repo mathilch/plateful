@@ -10,7 +10,7 @@ export default function ComponentsWrapper({ className, children, ...props }: Rea
 
     return (
         <div
-            className={cn("flex border-1 border-gray-200 p-8 flex-col gap-4 rounded-xl", className)}
+            className={cn("flex border-1 border-gray-200 p-8 my-8 flex-col gap-4 rounded-xl", className)}
             {...props}
         >
             {children}
