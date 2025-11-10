@@ -72,7 +72,6 @@ export default function WhenWhereForm() {
                             labelText="End time (optional)"
                             type="time"
                             // placeholder="e.g., Cozy Curry Night"
-                            required
                         />
 
                     </div>
