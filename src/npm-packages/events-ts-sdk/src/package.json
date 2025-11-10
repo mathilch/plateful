@@ -1,11 +1,14 @@
 {
-  "name": "@prvacy/events-api-sdk",
+  "name": "@foodclub/events-api-sdk",
   "version": "1.0.4",
   "description": "foodclub events service sdk",
   "license": "ISC",
   "author": "foodclub",
   "type": "commonjs",
-  "repository": "https://github.com/prvacy/foodclubapp.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rameez349/foodclubapp.git"
+  },
   "main": "dist/generated/eventsApi.js",
   "types": "dist/generated/eventsApi.d.ts",
   "publishConfig": {

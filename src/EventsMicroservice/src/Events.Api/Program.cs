@@ -15,8 +15,11 @@ public class Program
 
         builder.Services.ConfigureApplicationServices(builder.Configuration);
         builder.Services.ConfigureInfrastructureServices();
-        builder.Services.ConfigureDatabase(builder.Configuration);
-        builder.Services.ApplyMigrations();
+        if(!builder.Environment.IsEnvironment("CICD"))
+        {
+            builder.Services.ConfigureDatabase(builder.Configuration);
+            builder.Services.ApplyMigrations();
+        }
 
         builder.Services.AddControllers();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -45,12 +48,12 @@ public class Program
 
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("CICD"))
         {
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Events API v1");
                 c.RoutePrefix = string.Empty;
             });
         }
