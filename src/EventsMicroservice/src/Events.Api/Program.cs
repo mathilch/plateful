@@ -15,7 +15,7 @@ public class Program
 
         builder.Services.ConfigureApplicationServices(builder.Configuration);
         builder.Services.ConfigureInfrastructureServices();
-        if(!builder.Environment.IsEnvironment("CICD"))
+        if (!builder.Environment.IsEnvironment("CICD"))
         {
             builder.Services.ConfigureDatabase(builder.Configuration);
             builder.Services.ApplyMigrations();
@@ -41,7 +41,7 @@ public class Program
 
         builder.Services.AddHttpClient("UserApiClient", client =>
         {
-            client.BaseAddress = new Uri("https://plateful-users-api.azurewebsites.net/");
+            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("UserApi:BaseAddress"));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.Timeout = TimeSpan.FromSeconds(30);
         });
