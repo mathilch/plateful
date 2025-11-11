@@ -48,12 +48,10 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         return e.ToDto();
     }
 
-    public async Task<List<EventDto>> GetEventsByUserId(Guid loggedInUserId)
+    public async Task<List<EventOverviewDto>> GetEventsByUserId(Guid loggedInUserId)
     {
         var events = await eventRepository.GetEventsByUserId(loggedInUserId);
-        return events
-            .Where(e => e.IsPublic ||
-                        e.EventParticipants.Any(pe => pe.UserId == loggedInUserId))
+        return events.Select(x => x.ToEventOverviewDto(currentUser.Username))
             .ToList();
     }
 

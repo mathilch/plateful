@@ -1,3 +1,5 @@
+"use client";
+
 import "./home.css";
 import Link from "next/link";
 import {
@@ -6,13 +8,37 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import MealCard from "@/components/core/meal-card/meal-card";
 import { getRecentEventsForHomePage } from "@/services/api/events-api.service";
 import { EventOverviewDto } from "@/types/event-details.type";
+import { parseJwt } from "@/lib/jwt-decoder.helper";
 
-export default async function Home() {
-  //const eventDetails = eventDetailsMocks;
-  const eventDetails: EventOverviewDto[] = await getRecentEventsForHomePage();
+export default function Home() {
+  const [eventDetails, setEvents] = useState<Array<EventOverviewDto>>([]);
+  useEffect(() => {
+    let isSubscribed = true;
+    const controller = new AbortController();
+
+    const fetchEvents = async () => {
+      try {
+        const events = await getRecentEventsForHomePage();
+        if (isSubscribed) {
+          setEvents(events);
+        }
+      } catch (err) {
+        console.error("Failed to fetch event details:", err);
+      }
+    };
+
+    fetchEvents();
+
+    return () => {
+      isSubscribed = false;
+      controller.abort();
+    };
+  }, []);
+  //const eventDetails: EventOverviewDto[] = await getRecentEventsForHomePage();
   return (
     <div>
       <div className="banner">

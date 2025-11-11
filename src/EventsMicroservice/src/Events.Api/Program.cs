@@ -15,7 +15,7 @@ public class Program
 
         builder.Services.ConfigureApplicationServices(builder.Configuration);
         builder.Services.ConfigureInfrastructureServices();
-        if(!builder.Environment.IsEnvironment("CICD"))
+        if (!builder.Environment.IsEnvironment("CICD"))
         {
             builder.Services.ConfigureDatabase(builder.Configuration);
             builder.Services.ApplyMigrations();
@@ -41,22 +41,18 @@ public class Program
 
         builder.Services.AddHttpClient("UserApiClient", client =>
         {
-            client.BaseAddress = new Uri("https://localhost:7083/");
+            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("UserApi:BaseAddress"));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.Timeout = TimeSpan.FromSeconds(30);
         });
 
         var app = builder.Build();
-
-        if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("CICD"))
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
         {
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Events API v1");
-                c.RoutePrefix = string.Empty;
-            });
-        }
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Events API v1");
+            c.RoutePrefix = string.Empty;
+        });
 
         app.UseExceptionHandler(options => { });
         app.UseHttpsRedirection();
