@@ -15,8 +15,11 @@ public class Program
 
         builder.Services.ConfigureApplicationServices(builder.Configuration);
         builder.Services.ConfigureInfrastructureServices();
-        builder.Services.ConfigureDatabase(builder.Configuration);
-        builder.Services.ApplyMigrations();
+        if(!builder.Environment.IsEnvironment("CICD"))
+        {
+            builder.Services.ConfigureDatabase(builder.Configuration);
+            builder.Services.ApplyMigrations();
+        }
 
         builder.Services.AddControllers();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
