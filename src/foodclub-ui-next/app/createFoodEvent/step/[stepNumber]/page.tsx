@@ -5,7 +5,7 @@ import DietAllergensForm from "@/components/core/createFoodEventForms/dietAllerg
 import PreviewForm from "@/components/core/createFoodEventForms/previewForm";
 import { notFound } from "next/navigation";
 
-
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 const stepForms: React.ComponentType<any>[] = [CreateFoodEvent, WhenWhereForm, PriceCapacityForm, DietAllergensForm, PreviewForm];
 
 export default async function ReturnStepForm({ params }: { params: { stepNumber: string } }) {

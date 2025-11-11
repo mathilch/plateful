@@ -9,7 +9,7 @@ public interface IEventService
     // Basic CRUD
     Task<EventDto> AddEvent(CreateEventRequestDto createEvent);
     Task<EventDto> GetEventByEventId(Guid eventId);
-    Task<List<EventDto>> GetEventsByUserId(Guid userId);
+    Task<List<EventOverviewDto>> GetEventsByUserId(Guid userId);
     Task<List<EventDto>> GetAllEvents();
     Task<List<EventOverviewDto>> GetRecentEvents(PaginationDto paginationDto);
     Task<EventDto> UpdateEvent(Guid eventId, UpdateEventRequestDto updateReq);

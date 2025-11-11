@@ -8,20 +8,45 @@ export async function getRecentEventsForHomePage() {
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
-        // If you want to force fresh data: next: { revalidate: 0 } (optional)
       }
     );
 
     if (!res.ok) {
-      // either return an empty array or throw to be handled by caller
       console.error("Events fetch failed:", res.status, res.statusText);
-      return []; // fallback
+      return [];
     }
 
     const data = await res.json();
-    return data; // return parsed JSON array of events
+    return data;
   } catch (err) {
     console.error("Events fetch error:", err);
-    return []; // fallback
+    return [];
+  }
+}
+
+export async function getEventsByUserId(userId: string, accessToken: string) {
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/user/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Events fetch failed:", res.status, res.statusText);
+      return [];
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Events fetch error:", err);
+    return [];
   }
 }
