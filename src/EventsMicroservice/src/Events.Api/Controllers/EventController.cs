@@ -3,6 +3,7 @@ using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace Events.Api.Controllers;
 
@@ -44,5 +45,36 @@ public class EventController(IEventService _eventService) : ControllerBase
     {
         var deleted = await _eventService.DeleteEvent(id);
         return deleted is null ? NotFound() : Ok(deleted);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("stripe/webhhok")]
+    public async Task<IActionResult> StripeWebhook()
+    {
+        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+        var endpointSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET");
+
+        try
+        {
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                Request.Headers["Stripe-Signature"],
+                endpointSecret
+            );
+
+            if (stripeEvent.Type == "payment_intent.succeeded")
+            {
+                var paymentIntent = stripeEvent.Data.Object as Stripe.PaymentIntent;
+                var paymentIntentId = paymentIntent.Id;
+
+                await _eventService.HandlePaymentSuccess(paymentIntentId);
+            }
+
+            return Ok();
+        }
+        catch (StripeException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }
