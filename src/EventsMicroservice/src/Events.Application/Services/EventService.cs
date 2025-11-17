@@ -7,10 +7,15 @@ using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Events.Application.Exceptions;
 using Events.Application.Mappers;
+using Events.Domain.Enums;
 
 namespace Events.Application.Services;
 
-public class EventService(IEventRepository eventRepository, CurrentUser currentUser, IUserApiService userApiService) : IEventService
+public class EventService(
+    IEventRepository eventRepository, 
+    CurrentUser currentUser, 
+    IUserApiService userApiService,
+    IPaymentService paymentService) : IEventService
 {
     // Helper methods to avoid code duplication
     private async Task EnsureThatUserOwnsTheEvent(Guid eventId)
@@ -117,6 +122,22 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
             return e.ToDto();
         }
 
+        var participants = await eventRepository.GetEventParticipants(eventId);
+
+        foreach (var participant in participants)
+        {
+            var paymentIntent = await paymentService.CreatePaymentIntent(
+                amount: 200,
+                metadata: new Dictionary<string, string>
+                {
+                    { "EventId", e.EventId.ToString() },
+                    { "ParticipantsUserId", participant.UserId.ToString() }
+                }
+            );
+
+            participant.PaymentIntentId = paymentIntent.Id;
+        }
+
         return await eventRepository.UpdateEvent(eventId, @event => @event.IsPublic = false);
     }
 
@@ -167,9 +188,10 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
     }
 
     // TODO should everybody be able to see who's signed up for an event?
-    public async Task<List<Guid>> ViewEventParticipants(Guid eventId)
+    public async Task<List<EventParticipantDto>> ViewEventParticipants(Guid eventId)
     {
-        return await eventRepository.GetEventParticipants(eventId);
+        var participants = await eventRepository.GetEventParticipants(eventId);
+        return participants.Select(ep => ep.ToDto()).ToList();
     }
 
     public async Task<EventReviewDto> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq)
@@ -178,7 +200,7 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
         var e = await eventRepository.GetEventById(eventId);
         var participants = await eventRepository.GetEventParticipants(eventId);
 
-        if (!participants.Any(id => id == userId) || e.IsActive)
+        if (!participants.Any(id => id.UserId == userId) || e.IsActive)
         {
             throw new CannotReviewException(eventId);
         }
@@ -255,6 +277,15 @@ public class EventService(IEventRepository eventRepository, CurrentUser currentU
     {
         var fd = await eventRepository.RemoveEventFoodDetails(eventId);
         return fd.ToDto();
+    }
+
+    public async Task HandlePaymentSuccess(string paymentIntentId)
+    {
+        var participant = await eventRepository.GetEventParticipantByPaymentIntentId(paymentIntentId);
+        await eventRepository.UpdateEventParticipant(participant, ep =>
+        {
+            ep.PaymentStatus = PaymentStatus.Paid;
+        });
     }
 
     private static int CalculateAge(DateOnly birthday)

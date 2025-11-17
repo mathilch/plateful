@@ -22,8 +22,10 @@ public interface IEventRepository
      */
     Task<Event> AddEventParticipant(Guid eventId, Guid userId);
     Task<Event> RemoveEventParticipant(Guid eventId, Guid userId);
-    Task<List<Guid>> GetEventParticipants(Guid eventId);
+    Task<List<EventParticipant>> GetEventParticipants(Guid eventId);
     Task<bool> IsUserParticipant(Guid eventId, Guid userId);
+    Task<EventParticipant> GetEventParticipantByPaymentIntentId(string paymentIntentId);
+    Task<EventParticipant> UpdateEventParticipant(EventParticipant participant, Action<EventParticipant> op);
 
 
     /* ===========================================================================
@@ -55,4 +57,5 @@ public interface IEventRepository
     Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op);
     Task<EventFoodDetails> GetEventFoodDetails(Guid eventId);
     Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId);
+    
 }

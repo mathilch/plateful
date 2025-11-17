@@ -106,11 +106,10 @@ public class EventRepository : IEventRepository
         return await GetEventById(eventId);
     }
 
-    public async Task<List<Guid>> GetEventParticipants(Guid eventId)
+    public async Task<List<EventParticipant>> GetEventParticipants(Guid eventId)
     {
         return await _context.EventParticipants
-            .Select(ep => ep.UserId)
-            .Where(ep => ep == eventId)
+            .Where(ep => ep.EventId == eventId)
             .ToListAsync();
     }
 
@@ -118,6 +117,18 @@ public class EventRepository : IEventRepository
     {
         return await _context.EventParticipants
             .AnyAsync(ep => ep.UserId == userId && ep.EventId == eventId);
+    }
+
+    public async Task<EventParticipant> GetEventParticipantByPaymentIntentId(string paymentIntentId)
+    {
+        return await _context.EventParticipants.Where(ep => ep.PaymentIntentId == paymentIntentId).FirstOrDefaultAsync();
+    }
+
+    public async Task<EventParticipant> UpdateEventParticipant(EventParticipant participant, Action<EventParticipant> op)
+    {
+        op(participant);
+        await _context.SaveChangesAsync();
+        return participant;
     }
 
     public async Task<EventReview> AddEventReview(EventReview review)

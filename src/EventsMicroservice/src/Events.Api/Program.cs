@@ -14,10 +14,12 @@ public class Program
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.ConfigureApplicationServices(builder.Configuration);
-        builder.Services.ConfigureInfrastructureServices();
+        builder.Services.ConfigureInfrastructureServices();     
+        
         if (!builder.Environment.IsEnvironment("CICD"))
         {
             builder.Services.ConfigureDatabase(builder.Configuration);
+            builder.Services.ConfigureExternalApis(builder.Configuration);
             builder.Services.ApplyMigrations();
         }
 

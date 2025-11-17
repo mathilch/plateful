@@ -29,6 +29,15 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection ConfigureExternalApis(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<StripeSettings>(configuration.GetSection("Stripe"));
+        services.AddScoped<IPaymentService, StripeService>();
+        return services;
+    }
+
     public static void ApplyMigrations(this IServiceCollection services)
     {
         using var provider = services.BuildServiceProvider();
