@@ -27,6 +27,10 @@ public class EventParticipantEntityConfiguration : IEntityTypeConfiguration<Even
         builder.Property(ep => ep.PaymentStatus)
             .HasConversion<string>()
             .IsRequired();
+        
+        builder.Property(ep => ep.PaymentIntentId)
+            .HasMaxLength(255)
+            .IsRequired(false);
     }
     
 }

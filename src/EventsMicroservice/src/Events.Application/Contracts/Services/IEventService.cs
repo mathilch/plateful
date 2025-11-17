@@ -23,7 +23,7 @@ public interface IEventService
     // Event participation
     Task<EventDto> SignUpForEvent(Guid eventId, DateOnly userBirthday);
     Task<EventDto> WithdrawFromEvent(Guid eventId);
-    Task<List<Guid>> ViewEventParticipants(Guid eventId);
+    Task<List<EventParticipantDto>> ViewEventParticipants(Guid eventId);
 
     // Event Comments 
     Task<EventReviewDto> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq);
@@ -40,4 +40,7 @@ public interface IEventService
     Task<EventFoodDetailsDto> GetEventFoodDetails(Guid eventId);
     Task<EventFoodDetailsDto> EditFoodDetailsForEvent(Guid eventId, UpdateEventFoodRequest upReq);
     Task<EventFoodDetailsDto> DeleteFoodDetailsForEvent(Guid eventId);
+    
+    // Stripe 
+    Task HandlePaymentSuccess(string paymentIntentId);
 }
