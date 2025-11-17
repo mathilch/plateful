@@ -36,6 +36,14 @@ public class UserController(IUserService _userService) : ControllerBase
         return Ok(users);
     }
 
+    [HttpGet()]
+    public async Task<IActionResult> GetUserById([FromQuery] Guid id)
+    {
+        var users = await _userService.GetUserByIdAsync(id);
+
+        return Ok(users);
+    }
+
     [HttpPatch("{id}/deactivate-user")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]

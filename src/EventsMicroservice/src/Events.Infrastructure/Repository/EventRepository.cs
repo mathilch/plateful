@@ -71,11 +71,12 @@ public class EventRepository : IEventRepository
         return e;
     }
 
-    public async Task<List<EventDto>> GetEventsByUserId(Guid userId)
+    public async Task<List<Event>> GetEventsByUserId(Guid userId)
     {
         return await _context.Events
             .Where(e => e.UserId == userId)
-            .Select(e => e.ToDto())
+            .Include(x => x.EventParticipants)
+            .Include(x => x.EventFoodDetails)
             .ToListAsync();
     }
 

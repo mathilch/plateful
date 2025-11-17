@@ -14,4 +14,14 @@ public class CurrentUser(IHttpContextAccessor httpContext)
             return Guid.Parse(userIdClaim);
         }
     }
+
+    public string Username
+    {
+        get
+        {
+            var userNameClaim = httpContext.HttpContext?.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value ??
+                throw new UnauthorizedAccessException();
+            return userNameClaim;
+        }
+    }
 }
