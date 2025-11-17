@@ -4,7 +4,7 @@ metadata:
   name: events-pvc
 spec:
   #Basically means that the volume can only be mounted as read/write by 1 node at a time 
-  accessMode: 
+  accessModes: 
     - ReadWriteOnce
   resources:
     requests:
