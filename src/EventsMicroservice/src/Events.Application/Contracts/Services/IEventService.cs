@@ -16,6 +16,7 @@ public interface IEventService
     Task<EventDto> DeleteEvent(Guid eventId);
     Task<List<EventOverviewDto>> GetEventsWhereUserIsParticipant(Guid userId);
     Task<List<EventReviewDto>> GetEventReviewsByUserId(Guid userId);
+    Task<List<EventOverviewDto>> GetFilteredAndPaginatedEvents(SearchEventsRequestDto searchEventsRequestDto, PaginationDto paginationDto);
 
     // Event specific
     Task<EventDto> MakeEventPrivate(Guid eventId);

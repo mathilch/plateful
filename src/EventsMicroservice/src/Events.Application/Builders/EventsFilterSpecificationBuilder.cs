@@ -13,27 +13,38 @@ public class EventsFilterSpecificationBuilder
         return this;
     }
 
-    public EventsFilterSpecificationBuilder FilterByPublic(bool isPublic)
+    public EventsFilterSpecificationBuilder FilterByPublic(bool? isPublic)
     {
-        Filters.Add(x => x.IsPublic == isPublic);
+        if (isPublic.HasValue)
+        {
+            Filters.Add(x => x.IsPublic == isPublic);
+        }
         return this;
     }
 
-    public EventsFilterSpecificationBuilder FilterByName(string name)
+    public EventsFilterSpecificationBuilder FilterByName(string? name)
     {
-        Filters.Add(x => x.Name.ToLower().Contains(name.ToLower()));
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            Filters.Add(x => x.Name.ToLower().Contains(name.ToLower()));
+        }
         return this;
     }
 
-    public EventsFilterSpecificationBuilder FilterByMinAndMaxAge(int minAge, int maxAge)
+    public EventsFilterSpecificationBuilder FilterByMinAndMaxAge(int? minAge, int? maxAge)
     {
-        Filters.Add(x => x.MinAllowedAge == minAge && x.MaxAllowedAge == maxAge);
+        Filters.Add(x =>
+        (minAge == null || x.MinAllowedAge >= minAge)
+        && (maxAge == null || x.MaxAllowedAge <= maxAge));
         return this;
     }
 
-    public EventsFilterSpecificationBuilder FilterByActive(bool isActive)
+    public EventsFilterSpecificationBuilder FilterByActive(bool? isActive)
     {
-        Filters.Add(x => x.IsActive == isActive);
+        if (isActive.HasValue)
+        {
+            Filters.Add(x => x.IsActive == isActive);
+        }
         return this;
     }
 
