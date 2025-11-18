@@ -6,15 +6,16 @@ namespace Events.Application.Mappers;
 
 public static class EventReviewMapper
 {
-    public static EventReviewDto ToDto(this EventReview ec)
+    public static EventReviewDto ToDto(this EventReview entity, IEnumerable<UserDto> users)
     {
         return new EventReviewDto(
-            ec.Id,
-            ec.EventId,
-            ec.UserId,
-            ec.ReviewStars,
-            ec.ReviewComment,
-            ec.CreatedDate
+            entity.Id,
+            entity.EventId,
+            entity.UserId,
+            users.Where(x => x.Id == entity.UserId).FirstOrDefault()?.Name ?? string.Empty,
+            entity.ReviewStars,
+            entity.ReviewComment,
+            entity.CreatedDate
         );
     }
 

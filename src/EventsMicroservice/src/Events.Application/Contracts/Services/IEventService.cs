@@ -14,6 +14,8 @@ public interface IEventService
     Task<List<EventOverviewDto>> GetRecentEvents(PaginationDto paginationDto);
     Task<EventDto> UpdateEvent(Guid eventId, UpdateEventRequestDto updateReq);
     Task<EventDto> DeleteEvent(Guid eventId);
+    Task<List<EventOverviewDto>> GetEventsWhereUserIsParticipant(Guid userId);
+    Task<List<EventReviewDto>> GetEventReviewsByUserId(Guid userId);
 
     // Event specific
     Task<EventDto> MakeEventPrivate(Guid eventId);
@@ -26,9 +28,9 @@ public interface IEventService
     Task<List<EventParticipantDto>> ViewEventParticipants(Guid eventId);
 
     // Event Comments 
-    Task<EventReviewDto> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq);
-    Task<EventReviewDto> DeleteReview(Guid reviewId);
-    Task<EventReviewDto> EditReview(Guid reviewId, UpdateEventReviewRequestDto updateReq);
+    Task<Guid> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq);
+    Task DeleteReview(Guid reviewId);
+    Task<Guid> EditReview(Guid reviewId, UpdateEventReviewRequestDto updateReq);
     Task<List<EventReviewDto>> GetAllReviewsForAnEvent(Guid eventId);
 
     // EventImages
@@ -40,7 +42,7 @@ public interface IEventService
     Task<EventFoodDetailsDto> GetEventFoodDetails(Guid eventId);
     Task<EventFoodDetailsDto> EditFoodDetailsForEvent(Guid eventId, UpdateEventFoodRequest upReq);
     Task<EventFoodDetailsDto> DeleteFoodDetailsForEvent(Guid eventId);
-    
+
     // Stripe 
     Task HandlePaymentSuccess(string paymentIntentId);
 }

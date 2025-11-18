@@ -39,11 +39,17 @@ public class UserRepository : IUserRepository
 
     public async Task<UserDto> AddUser(CreateUserRequestDto createUser)
     {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        int age = today.Year - createUser.Birthday.Year;
+
         var user = new User
         {
             Name = createUser.Name,
             Email = createUser.Email,
             Password = createUser.Password,
+            Birthday = createUser.Birthday,
+            Age = age
         };
 
         var exists = await _context.Users.AnyAsync(u => u.Email == createUser.Email);

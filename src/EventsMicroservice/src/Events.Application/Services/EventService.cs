@@ -7,13 +7,14 @@ using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Events.Application.Exceptions;
 using Events.Application.Mappers;
+using Events.Domain.Entities;
 using Events.Domain.Enums;
 
 namespace Events.Application.Services;
 
 public class EventService(
-    IEventRepository eventRepository, 
-    CurrentUser currentUser, 
+    IEventRepository eventRepository,
+    CurrentUser currentUser,
     IUserApiService userApiService,
     IPaymentService paymentService) : IEventService
 {
@@ -194,7 +195,7 @@ public class EventService(
         return participants.Select(ep => ep.ToDto()).ToList();
     }
 
-    public async Task<EventReviewDto> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq)
+    public async Task<Guid> CreateReview(Guid eventId, CreateEventReviewRequestDto createReq)
     {
         Guid userId = currentUser.UserId;
         var e = await eventRepository.GetEventById(eventId);
@@ -207,17 +208,16 @@ public class EventService(
 
         var reviewEntity = createReq.ToEntity(eventId, userId);
         await eventRepository.AddEventReview(reviewEntity);
-        return reviewEntity.ToDto();
+        return reviewEntity.Id;
     }
 
-    public async Task<EventReviewDto> DeleteReview(Guid reviewId)
+    public async Task DeleteReview(Guid reviewId)
     {
         await EnsureThatUserOwnsTheReview(reviewId);
         var review = await eventRepository.DeleteEventReview(reviewId);
-        return review.ToDto();
     }
 
-    public async Task<EventReviewDto> EditReview(Guid reviewId, UpdateEventReviewRequestDto updateReq)
+    public async Task<Guid> EditReview(Guid reviewId, UpdateEventReviewRequestDto updateReq)
     {
         await EnsureThatUserOwnsTheReview(reviewId);
         var updatedReview = await eventRepository.UpdateEventReview(reviewId, review =>
@@ -225,16 +225,21 @@ public class EventService(
             review.ReviewStars = updateReq.Stars;
             review.ReviewComment = updateReq.Comment;
         });
-        return updatedReview.ToDto();
+        return reviewId;
     }
 
 
     public async Task<List<EventReviewDto>> GetAllReviewsForAnEvent(Guid eventId)
     {
-        var e = await eventRepository.GetEventById(eventId);
-        return e.EventReviews
-            .Select(ec => ec.ToDto())
-            .ToList();
+        var eventEntity = await eventRepository.GetEventById(eventId);
+        if (eventEntity.EventReviews is not null)
+        {
+            var userIds = eventEntity.EventReviews.Select(x => x.UserId).Distinct().ToList();
+            var users = await userApiService.GetUsersByIds(userIds);
+
+            return eventEntity.EventReviews.Select(x => x.ToDto(users)).ToList();
+        }
+        return Enumerable.Empty<EventReviewDto>().ToList();
     }
 
     public async Task<EventImageDto> AddEventImage(Guid eventId, AddEventImageRequestDto createReq)
@@ -298,5 +303,29 @@ public class EventService(
             age--;
         }
         return age;
+    }
+
+    public async Task<List<EventOverviewDto>> GetEventsWhereUserIsParticipant(Guid userId)
+    {
+        var events = await eventRepository.GetEventsByUserAsParticipant(userId);
+        if (events is not null)
+        {
+            return events.Select(x => x.ToEventOverviewDto(currentUser.Username))
+            .ToList();
+        }
+        return Enumerable.Empty<EventOverviewDto>().ToList();
+    }
+
+    public async Task<List<EventReviewDto>> GetEventReviewsByUserId(Guid userId)
+    {
+        var eventReviews = await eventRepository.GetEventReviewsByUserId(userId);
+        if (eventReviews is not null)
+        {
+            var userIds = eventReviews.Select(x => x.UserId).Distinct().ToList();
+            var users = await userApiService.GetUsersByIds(userIds);
+
+            return eventReviews.Select(x => x.ToDto(users)).ToList();
+        }
+        return Enumerable.Empty<EventReviewDto>().ToList();
     }
 }

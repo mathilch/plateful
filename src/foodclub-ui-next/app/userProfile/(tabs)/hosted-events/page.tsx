@@ -42,7 +42,7 @@ export default function HostedEvents() {
       isSubscribed = false;
       controller.abort();
     };
-  }, []); // Remove router from dependencies
+  }, []);
   return (
     <div>
       <h2 className="text-xl font-bold mb-6">List of Events</h2>

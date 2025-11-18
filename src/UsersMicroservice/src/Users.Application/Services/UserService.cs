@@ -85,7 +85,7 @@ public class UserService(IUserRepository _userRepository, ITokenService _tokenSe
         await _userRepository.DeactivateUser(id);
     }
 
-    private T GetValidator<T>()
+    private T GetValidator<T>() where T : notnull
     {
         var scope = _httpContextAccessor.HttpContext.RequestServices.CreateScope();
         return scope.ServiceProvider.GetRequiredService<T>();

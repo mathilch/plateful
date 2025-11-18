@@ -40,6 +40,14 @@ public class EventController(IEventService _eventService) : ControllerBase
     public async Task<IActionResult> GetByUser(Guid userId)
         => Ok(await _eventService.GetEventsByUserId(userId));
 
+    [HttpGet("user-as-participant/{userId:guid}")]
+    public async Task<IActionResult> GetByUserParticipant(Guid userId)
+        => Ok(await _eventService.GetEventsWhereUserIsParticipant(userId));
+
+    [HttpGet("user-reviews-as-host/{userId:guid}")]
+    public async Task<IActionResult> GetEventReviewsByUserId(Guid userId)
+        => Ok(await _eventService.GetEventReviewsByUserId(userId));
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
