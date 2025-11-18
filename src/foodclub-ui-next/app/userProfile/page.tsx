@@ -47,7 +47,7 @@ export default function UserProfile() {
       <div className="bg-white rounded-lg p-6 mb-8 flex items-start gap-6">
         <div className="relative">
           <div className="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center text-2xl font-semibold">
-            {userDetails?.name.substring(0, 1).toUpperCase()}
+            {userDetails?.name.substring(0, 1).toUpperCase()}{userDetails?.name.substring(1, 2).toUpperCase()}
           </div>
         </div>
 

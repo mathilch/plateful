@@ -265,4 +265,23 @@ public class EventRepository : IEventRepository
             .Include(x => x.EventFoodDetails)
             .ToListAsync();
     }
+
+    public async Task<List<Event>> GetEventsByUserAsParticipant(Guid userId)
+    {
+        return await _context.Events
+            .AsNoTracking()
+            .Include(x => x.EventParticipants)
+            .Where(x => x.EventParticipants.Any(x => x.UserId == userId))
+            .ToListAsync();
+    }
+
+    public async Task<List<EventReview>> GetEventReviewsByUserId(Guid userId)
+    {
+        return await _context.Events
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Include(x => x.EventReviews)
+            .SelectMany(x => x.EventReviews)
+            .ToListAsync();
+    }
 }

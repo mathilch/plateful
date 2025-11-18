@@ -15,6 +15,7 @@ public interface IEventRepository
     Task<EventDto> UpdateEvent(Guid id, Action<Event> op);
     Task<Event> DeleteEvent(Guid id);
     Task<List<Event>> GetEventsByUserId(Guid userId);
+    Task<List<Event>> GetEventsByUserAsParticipant(Guid userId);
 
     /* ===========================================================================
      * =============== P A R T I C I P A N T S ===================================
@@ -37,6 +38,7 @@ public interface IEventRepository
     Task<EventReview> DeleteEventReview(Guid commentId);
     Task<List<EventReview>> GetEventReviews(Guid eventId);
     Task<EventReview> GetEventReviewById(Guid reviewId);
+    Task<List<EventReview>> GetEventReviewsByUserId(Guid userId);
 
     /*
      * ===========================================================================
@@ -57,5 +59,5 @@ public interface IEventRepository
     Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op);
     Task<EventFoodDetails> GetEventFoodDetails(Guid eventId);
     Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId);
-    
+
 }
