@@ -1,5 +1,7 @@
 //import { CreateEventRequestDto } from "@prvacy/events-api-sdk/dist/generated/model";
+import { SearchEventsRequestDto } from "@/types/search-events.type";
 import { eventDetailsMocks } from "../mocks/event-details-mocks";
+import { toQueryParams } from "@/lib/utils";
 //import { postApiEvent } from "@prvacy/events-api-sdk"
 
 export async function getRecentEventsForHomePage() {
@@ -21,6 +23,37 @@ export async function getRecentEventsForHomePage() {
     const data = await res.json();
     return data;
   } catch (err) {
+    console.error("Events fetch error:", err);
+    return [];
+  }
+}
+
+export async function searchEventsBySelectedFilters(
+  searchEventsRequestDto: Partial<SearchEventsRequestDto>,
+  signal?: AbortSignal
+) {
+  const queryParams = toQueryParams(searchEventsRequestDto as Partial<SearchEventsRequestDto>);
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const url = `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/search${queryParams}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      signal,
+    });
+
+    if (!res.ok) {
+      console.error("Events fetch failed:", res.status, res.statusText);
+      return [];
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    if ((err as any)?.name === "AbortError") {
+      // request was aborted
+      return [];
+    }
     console.error("Events fetch error:", err);
     return [];
   }

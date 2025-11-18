@@ -7,7 +7,6 @@ using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
 using Events.Application.Exceptions;
 using Events.Application.Mappers;
-using Events.Domain.Entities;
 using Events.Domain.Enums;
 
 namespace Events.Application.Services;
@@ -327,5 +326,27 @@ public class EventService(
             return eventReviews.Select(x => x.ToDto(users)).ToList();
         }
         return Enumerable.Empty<EventReviewDto>().ToList();
+    }
+
+    public async Task<List<EventOverviewDto>> GetFilteredAndPaginatedEvents(SearchEventsRequestDto searchEventsRequestDto, PaginationDto paginationDto)
+    {
+        var filterSpecification = new EventsFilterSpecificationBuilder();
+        var filters = filterSpecification
+            .FilterByActive(true)
+            .FilterByPublic(searchEventsRequestDto.IsPublic)
+            .FilterByName(searchEventsRequestDto.LocationOrEventName)
+            .FilterByMinAndMaxAge(searchEventsRequestDto.MinAge, searchEventsRequestDto.MaxAge)
+            .Build();
+
+        var events = await eventRepository.GetPaginatedAndFilteredEvents(filters, paginationDto);
+        if (events is not null)
+        {
+            var userIds = events.Select(x => x.UserId).Distinct().ToList();
+            var users = await userApiService.GetUsersByIds(userIds);
+
+            var eventDtos = events.Select(x => x.ToEventOverviewDto(users)).ToList();
+            return eventDtos;
+        }
+        return Enumerable.Empty<EventOverviewDto>().ToList();
     }
 }

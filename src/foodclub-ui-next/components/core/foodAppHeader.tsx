@@ -90,7 +90,7 @@ export default function FoodAppHeader() {
 
         <div className="flex h-14 gap-10">
           <Link
-            href="#"
+            href="/discoverEvents"
             className="py-4 px-1 text-primary-gray text-base font-bold font-['Poppins'] hover:bg-muted hover:text-foreground transition-colors"
           >
             Discover

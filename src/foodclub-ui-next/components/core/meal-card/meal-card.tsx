@@ -13,7 +13,7 @@ export default function MealCard(eventDetails: EventOverviewDto) {
   return (
     <Card className="max-w-sm border-gray-200 shadow-sm">
       <CardContent>
-        <div className="h-48 w-84 overflow-hidden">
+        <div className="overflow-hidden">
           <img
             src={eventDetails.imageThumbnail}
             className="rounded-t-lg w-full h-full object-cover"

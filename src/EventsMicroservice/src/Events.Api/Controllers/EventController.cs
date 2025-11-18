@@ -19,8 +19,12 @@ public class EventController(IEventService _eventService) : ControllerBase
         return Ok(await _eventService.GetRecentEvents(new PaginationDto(0, 10)));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll() => Ok(await _eventService.GetAllEvents());
+    [AllowAnonymous]
+    [HttpGet("search")]
+    public async Task<IActionResult> GetFilteredEvents(SearchEventsRequestDto searchEventsRequestDto)
+    {
+        return Ok(await _eventService.GetFilteredAndPaginatedEvents(searchEventsRequestDto, new PaginationDto(0, 10)));
+    }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
@@ -47,6 +51,8 @@ public class EventController(IEventService _eventService) : ControllerBase
     [HttpGet("user-reviews-as-host/{userId:guid}")]
     public async Task<IActionResult> GetEventReviewsByUserId(Guid userId)
         => Ok(await _eventService.GetEventReviewsByUserId(userId));
+
+
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
