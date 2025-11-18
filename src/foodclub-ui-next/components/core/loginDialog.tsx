@@ -136,8 +136,6 @@ export default function LoginDialog({
               {error}
             </p>
           )}
-
-          {/* <DialogFooter className="flex-col gap-2"> */}
           <Button
             type="submit"
             className="h-9 bg-primary-green font-bold cursor-pointer"
@@ -155,17 +153,8 @@ export default function LoginDialog({
         </a>
 
         <Button variant="outline" className="h-9 cursor-pointer">
-          Login with Google
-        </Button>
-
-        {/* <Separator /> */}
-        <p className="justify-self-center">Or</p>
-
-        <Button variant="outline" className="h-9 cursor-pointer">
           Sign Up
         </Button>
-
-        {/* </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );
