@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using Events.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,9 +32,10 @@ public static class DbInitializer
                 MaxAllowedParticipants = 5,
                 MinAllowedAge = 18,
                 MaxAllowedAge = 25,
-                StartDate = new DateTime(2025, 12, 24, 18, 0, 0),
-                ReservationEndDate = new DateTime(2025, 12, 24, 20, 0, 0),
-                CreatedDate = DateTime.Now,
+                StartDate = new DateTime(2025, 12, 24, 18, 0, 0, DateTimeKind.Utc),
+                ReservationEndDate = new DateTime(2025, 12, 24, 20, 0, 0, DateTimeKind.Utc),
+                ImageThumbnail = "",
+                CreatedDate = DateTime.UtcNow,
                 IsActive = true,
                 IsPublic = true,
                 EventFoodDetails = fd1
@@ -63,9 +63,10 @@ public static class DbInitializer
                 MaxAllowedParticipants = 10,
                 MinAllowedAge = 21,
                 MaxAllowedAge = 35,
-                StartDate = new DateTime(2026, 1, 15, 19, 30, 0),
-                ReservationEndDate = new DateTime(2026, 1, 15, 22, 0, 0),
-                CreatedDate = DateTime.Now,
+                StartDate = new DateTime(2026, 1, 15, 19, 30, 0, DateTimeKind.Utc),
+                ReservationEndDate = new DateTime(2026, 1, 15, 22, 0, 0, DateTimeKind.Utc),
+                ImageThumbnail = "",
+                CreatedDate = DateTime.UtcNow,
                 IsActive = true,
                 IsPublic = true,
                 EventFoodDetails = fd2
@@ -91,9 +92,10 @@ public static class DbInitializer
                 MaxAllowedParticipants = 20,
                 MinAllowedAge = 18,
                 MaxAllowedAge = 40,
-                StartDate = new DateTime(2026, 6, 20, 16, 0, 0),
-                ReservationEndDate = new DateTime(2026, 6, 20, 23, 0, 0),
-                CreatedDate = DateTime.Now,
+                StartDate = new DateTime(2026, 6, 20, 16, 0, 0, DateTimeKind.Utc),
+                ReservationEndDate = new DateTime(2026, 6, 20, 23, 0, 0, DateTimeKind.Utc),
+                ImageThumbnail = "",
+                CreatedDate = DateTime.UtcNow,
                 IsActive = true,
                 IsPublic = true,
                 EventFoodDetails = fd3
