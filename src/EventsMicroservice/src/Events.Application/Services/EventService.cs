@@ -40,10 +40,7 @@ public class EventService(
     {
         var eventEntity = createEvent.ToEntity(currentUser.UserId);
         var e = await eventRepository.AddEvent(eventEntity);
-
-        createEvent.Images.Select(async image => await eventRepository.AddImageToEvent(e.EventId, image));
-        await eventRepository.AddEventFoodDetails(e.EventId, createEvent.EventFoodDetails);
-
+        
         return e.ToDto();
     }
 
@@ -104,7 +101,6 @@ public class EventService(
 
         var e = await eventRepository.DeleteEvent(eventId);
         await eventRepository.RemoveAllImagesFromEvent(eventId);
-        await eventRepository.RemoveEventFoodDetails(eventId);
 
         return e.ToDto();
     }
@@ -246,7 +242,7 @@ public class EventService(
         await EnsureThatUserOwnsTheEvent(currentUser.UserId);
 
         var image = createReq.ToEntity(eventId);
-        await eventRepository.AddImageToEvent(eventId, image);
+        //await eventRepository.AddImageToEvent(eventId, image);
         return image.ToDto();
     }
 
@@ -259,28 +255,31 @@ public class EventService(
 
     public async Task<EventFoodDetailsDto> GetEventFoodDetails(Guid eventId)
     {
+        throw new NotImplementedException();
         // Make sure user is logged in? or is it enough to have it on event
-        var fd = await eventRepository.GetEventFoodDetails(eventId);
-        return fd.ToDto();
+        // var fd = await eventRepository.GetEventFoodDetails(eventId);
+        // return fd.ToDto();
     }
 
     public async Task<EventFoodDetailsDto> EditFoodDetailsForEvent(Guid eventId, UpdateEventFoodRequest upReq)
     {
-        await EnsureThatUserOwnsTheEvent(eventId);
-        var fd = await eventRepository.UpdateEventFoodDetails(eventId, food =>
-        {
-            food.Name = upReq.Name;
-            food.Ingredients = upReq.Ingredients;
-            food.AdditionalFoodItems = upReq.AdditionalFoodItems;
-        });
-
-        return fd.ToDto();
+        throw new NotImplementedException();
+        // await EnsureThatUserOwnsTheEvent(eventId);
+        // var fd = await eventRepository.UpdateEventFoodDetails(eventId, food =>
+        // {
+        //     food.Name = upReq.Name;
+        //     food.Ingredients = upReq.Ingredients;
+        //     food.AdditionalFoodItems = upReq.AdditionalFoodItems;
+        // });
+        //
+        // return fd.ToDto();
     }
 
     public async Task<EventFoodDetailsDto> DeleteFoodDetailsForEvent(Guid eventId)
     {
-        var fd = await eventRepository.RemoveEventFoodDetails(eventId);
-        return fd.ToDto();
+        throw new NotImplementedException();
+        // var fd = await eventRepository.RemoveEventFoodDetails(eventId);
+        // return fd.ToDto();
     }
 
     public async Task HandlePaymentSuccess(string paymentIntentId)

@@ -176,12 +176,13 @@ public class EventRepository : IEventRepository
             ?? throw new ReviewIdNotFoundException(reviewId);
     }
 
-    public async Task<EventImage> AddImageToEvent(Guid eventId, EventImage image)
+    public EventImage AddImageToEvent(Guid eventId, EventImage image)
     {
         image.Id = Guid.NewGuid();
         image.EventId = eventId;
         _context.EventImages.Add(image);
-        await _context.SaveChangesAsync();
+        // No need to save here, as the transaction will be commited at this point
+        // await _context.SaveChangesAsync();
         return image;
     }
 
@@ -209,40 +210,40 @@ public class EventRepository : IEventRepository
         return images;
     }
 
-    public async Task<EventFoodDetails> AddEventFoodDetails(Guid eventId, EventFoodDetails foodDetails)
-    {
-        foodDetails.Id = Guid.NewGuid();
-        foodDetails.EventId = eventId;
-        _context.EventFoodDetails.Add(foodDetails);
-        await _context.SaveChangesAsync();
-        return foodDetails;
-    }
-
-    public async Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op)
-    {
-        var foodDetails = await
-                              _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
-                          ?? throw new NoFoodDetailsForEventException(eventId);
-
-        op(foodDetails);
-        await _context.SaveChangesAsync();
-        return foodDetails;
-    }
-
-    public async Task<EventFoodDetails> GetEventFoodDetails(Guid eventId)
-    {
-        return await _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
-                          ?? throw new NoFoodDetailsForEventException(eventId);
-    }
-
-    public async Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId)
-    {
-        var foodDetails = await _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
-                          ?? throw new NoFoodDetailsForEventException(eventId);
-        _context.EventFoodDetails.Remove(foodDetails);
-        await _context.SaveChangesAsync();
-        return foodDetails;
-    }
+    // public async Task<EventFoodDetails> AddEventFoodDetails(Guid eventId, EventFoodDetails foodDetails)
+    // {
+    //     foodDetails.Id = Guid.NewGuid();
+    //     foodDetails.EventId = eventId;
+    //     _context.EventFoodDetails.Add(foodDetails);
+    //     await _context.SaveChangesAsync();
+    //     return foodDetails;
+    // }
+    //
+    // public async Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op)
+    // {
+    //     var foodDetails = await
+    //                           _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
+    //                       ?? throw new NoFoodDetailsForEventException(eventId);
+    //
+    //     op(foodDetails);
+    //     await _context.SaveChangesAsync();
+    //     return foodDetails;
+    // }
+    //
+    // public async Task<EventFoodDetails> GetEventFoodDetails(Guid eventId)
+    // {
+    //     return await _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
+    //                       ?? throw new NoFoodDetailsForEventException(eventId);
+    // }
+    //
+    // public async Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId)
+    // {
+    //     var foodDetails = await _context.EventFoodDetails.FirstOrDefaultAsync(fd => fd.EventId == eventId)
+    //                       ?? throw new NoFoodDetailsForEventException(eventId);
+    //     _context.EventFoodDetails.Remove(foodDetails);
+    //     await _context.SaveChangesAsync();
+    //     return foodDetails;
+    // }
 
     public async Task<List<Event>> GetPaginatedAndFilteredEvents(List<Expression<Func<Event, bool>>> eventFilters, PaginationDto? paginationDto = null)
     {

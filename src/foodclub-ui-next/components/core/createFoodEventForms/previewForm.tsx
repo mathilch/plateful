@@ -1,8 +1,8 @@
 "use client";
 
+import { CreateEventRequestDto } from "@Rameez349/events-api-sdk/dist/generated/model/createEventRequestDto";
 import { postEvent } from "@/services/api/events-api.service";
 import { useFormWizardContext } from "./formWizardContext";
-import { CreateEventRequestDto } from "@prvacy/events-api-sdk/dist/generated/model";
 
 
 export default function PreviewForm() {

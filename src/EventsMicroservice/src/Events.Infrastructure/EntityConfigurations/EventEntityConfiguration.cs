@@ -32,6 +32,30 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
         builder.Property(e => e.IsActive);
+        
+        builder.OwnsOne(e => e.EventAddress, address =>
+        {
+            address.Property(a => a.StreetAddress).HasMaxLength(256).IsRequired();
+            address.Property(a => a.PostalCode).HasMaxLength(32).IsRequired();
+            address.Property(a => a.City).HasMaxLength(128).IsRequired();
+            address.Property(a => a.Region).HasMaxLength(128).IsRequired();
+
+            address.WithOwner();
+        });
+
+        builder.OwnsMany(e => e.EventFoodDetails, details =>
+        {
+            // Store as JSONB 
+            details.ToJson();
+
+            details.Property(ef => ef.Name).HasMaxLength(150);
+            details.Property(ef => ef.Ingredients).HasMaxLength(500);
+            details.Property(ef => ef.AdditionalFoodItems).HasMaxLength(500);
+            
+            details.Property(f => f.AdditionalFoodItems)
+                .HasMaxLength(1000);
+        });
+
 
         builder
             .HasMany(e => e.EventParticipants)
