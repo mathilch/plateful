@@ -2,7 +2,36 @@
 import { SearchEventsRequestDto } from "@/types/search-events.type";
 import { eventDetailsMocks } from "../mocks/event-details-mocks";
 import { toQueryParams } from "@/lib/utils";
+import {EventOverviewDto} from "@/types/event-details.type";
 //import { postApiEvent } from "@prvacy/events-api-sdk"
+
+
+export async function getEventById(eventId: string, accessToken: string) {
+    try {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/events/${eventId}`, 
+            {
+                method: "GET",
+                headers: { 
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}` 
+                },
+            }
+        );
+
+        if (!res.ok) {
+            console.error("Events fetch failed:", res.status, res.statusText);
+            return [];
+        }
+        const data = await res.json();
+        return data;
+        
+    } catch (err) {
+        console.error("Events fetch error:", err);
+        return [];
+    }
+} 
 
 export async function getRecentEventsForHomePage() {
   try {
