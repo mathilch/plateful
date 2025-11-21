@@ -8,3 +8,4 @@ public class EventAddress
     public string Region { get; set; } = string.Empty;
 }
 
+
