@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "../imageDropzone";
 import ComponentsWrapper from "../wrappers/componentsWrapper";
@@ -9,50 +10,43 @@ import MealCard from "../meal-card/meal-card";
 import { EventOverviewDto } from "@/types/event-details.type";
 import { FormBasics, FormWizardActionType, FormWizardStep, useFormWizardContext } from "./formWizardContext";
 import { useRouter } from "next/navigation";
+import { parseJwt } from "@/lib/jwt-decoder.helper";
+import { createEventDefaultData } from "@/services/mocks/createEventDefaultData";
 
 
 export default function BasicsForm() {
-    let eventDetail: EventOverviewDto = {
-        eventId: "5d92825a-133e-4ac8-8fa5-da8696a486a8",
-        userId: "user-123",
-        hostName: "Anna S.",
-        hostRating: 4.8,
-        name: "Noodles & More at Vesterport",
-        maxAllowedParticipants: 7,
-        minAllowedAge: 18,
-        maxAllowedAge: 99,
-        startDate: "2024-06-15",
-        startTime: "19:00",
-        reservationEndDate: "2024-06-14",
-        tags: ["Vegetarian", "Gluten-Free"],
-        participantsCount: 2,
-        imageThumbnail:
-            "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
-        createdDate: "2024-06-01",
-        price: 55,
-        isActive: true,
-        isPublic: true,
-        eventFoodDetails: {
-            id: "food-123",
-            eventId: "5d92825a-133e-4ac8-8fa5-da8696a486a8",
-            name: "Noodles & More",
-            ingredients: "Noodles, vegetables, spices",
-            additionalFoodItems: "Dessert included",
-        },
-    };
+
 
     const [formState, formDispatch] = useFormWizardContext();
     const router = useRouter();
 
+    const [title, setTitle] = useState(formState.basics?.title ?? "");
+    const [description, setDescription] = useState(formState.basics?.description ?? "");
+    const [username, setUsername] = useState<string>("");
+
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            try {
+                const decoded = parseJwt(token);
+                setUsername(decoded.unique_name || "");
+            } catch (err) {
+                console.error("Failed to decode token:", err);
+            }
+        }
+    }, []);
+
+    let eventDetail: EventOverviewDto = {
+        ...createEventDefaultData,
+        name: title
+    };
+
     function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-        const form = e.target as HTMLFormElement;
-        const formData = new FormData(form);
-
 
         const formDataObj: FormBasics = {
-            title: formData.get("mealTitle") as string,
-            description: formData.get("descriptionTextArea") as string,
+            title: title,
+            description: description,
         };
 
         formDispatch({ type: FormWizardActionType.Set, step: FormWizardStep.CreateFoodEvent, value: { basics: formDataObj } });
@@ -73,6 +67,8 @@ export default function BasicsForm() {
                         labelText="Meal Title"
                         type="text"
                         placeholder="e.g., Cozy Curry Night"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                         required
                     />
 
@@ -82,6 +78,8 @@ export default function BasicsForm() {
                         required
                         placeholder="Describe your menu, vibe, BYOB, etc."
                         className="h-48 bg-gray-50 text-sm font-normal text-[#9CA3AF] font-['Poppins']"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                     />
 
 
@@ -103,10 +101,10 @@ export default function BasicsForm() {
             <div className="flex flex-col">
                 <ComponentsWrapper id="livePreview">
                     <h3>Live Preview</h3>
-                    <MealCard key={123} {...eventDetail} />
+                    <MealCard key={123} {...eventDetail} name={title || eventDetail.name} hostName={username || eventDetail.hostName} />
                 </ComponentsWrapper>
 
-                 <button type="submit" form="createFoodEventForm" className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Save & Continue</button>
+                <button type="submit" form="createFoodEventForm" className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Save & Continue</button>
             </div>
 
 

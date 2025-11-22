@@ -7,67 +7,56 @@ import ComponentsWrapper from "../wrappers/componentsWrapper";
 import MealCard from "../meal-card/meal-card";
 import { EventOverviewDto } from "@/types/event-details.type";
 import { parse } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { parseJwt } from "@/lib/jwt-decoder.helper";
+import { createEventDefaultData } from "@/services/mocks/createEventDefaultData";
+import { useRouter } from "next/navigation";
 
 
 export default function PreviewForm() {
-    let eventDetail: EventOverviewDto = {
-        eventId: "5d92825a-133e-4ac8-8fa5-da8696a486a8",
-        userId: "user-123",
-        hostName: "Anna S.",
-        hostRating: 4.8,
-        name: "Noodles & More at Vesterport",
-        maxAllowedParticipants: 7,
-        minAllowedAge: 18,
-        maxAllowedAge: 99,
-        startDate: "2024-06-15",
-        startTime: "19:00",
-        reservationEndDate: "2024-06-14",
-        tags: ["Vegetarian", "Gluten-Free"],
-        participantsCount: 2,
-        imageThumbnail:
-            "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
-        createdDate: "2024-06-01",
-        price: 55,
-        isActive: true,
-        isPublic: true,
-        eventFoodDetails: {
-            id: "food-123",
-            eventId: "5d92825a-133e-4ac8-8fa5-da8696a486a8",
-            name: "Noodles & More",
-            ingredients: "Noodles, vegetables, spices",
-            additionalFoodItems: "Dessert included",
-        },
-    };
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [username, setUsername] = useState<string>("");
+    const [token, setToken] = useState<string | null>(null);
+    const router = useRouter();
 
+    // TODO: refactor, move to a module 
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            try {
+                const decoded = parseJwt(token);
+                setUsername(decoded.unique_name || "");
+                setToken(token);
+            } catch (err) {
+                console.error("Failed to decode token:", err);
+            }
+        }
+    }, []);
 
     const [formState, formDispatch] = useFormWizardContext();
 
-    // Mock data for CreateEventRequestDto
-    const mockCreateEventRequest = {
-        name: "(test)Noodles & More at Vesterport",
-        description: "Join us for a delightful evening of noodles and more!",
-        maxAllowedParticipants: 7,
-        minAllowedAge: 0,
-        maxAllowedAge: 99,
-        startDate: "2024-06-15",
-        reservationEndDate: "2024-06-14",
-        price: 55,
-        imageThumbnail: "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
-        isPublic: true,
-        streetAddress: "Vesterport 123",
-        postalCode: "2100",
-        city: "Copenhagen",
-        region: "Capital Region",
-        country: "Denmark",
-        eventFoodDetails: {
-            name: "Noodles & More",
-            ingredients: "Noodles, vegetables, spices",
-            additionalFoodItems: "Dessert included",
-        },
-    } as CreateEventRequestDto;
+    // TODO: handle these errors properly
+    if (!formState.basics || !formState.whenWhere || !formState.priceCapacity || !formState.dietAllergens) {
+        throw new Error("Previous form steps must be completed before this step");
+    }
+
+    let eventDetail: EventOverviewDto = {
+        ...createEventDefaultData,
+
+        hostName: username,
+        name: formState.basics?.title,
+        startDate: formState.whenWhere?.date,
+        startTime: formState.whenWhere?.startTime,
+        tags: formState.dietAllergens?.dietaryPreferences,
+        participantsCount: 0,
+        price: formState.priceCapacity?.pricePerSeat,
+    };
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
+        setError(null);
+        setLoading(true);
 
         const startDatetimeStr = formState.whenWhere?.date + " " + formState.whenWhere?.startTime;
         const endDatetimeStr = formState.whenWhere?.date + " " + formState.whenWhere?.endTime;
@@ -102,8 +91,19 @@ export default function PreviewForm() {
             region: formState.whenWhere?.region ?? "",
         };
 
-        const res = await postEvent(createEventReq);
-        console.log("Event created result:", res);
+        const errMsg = "Failed to create event. Please try again or contact support.";
+        try {
+            const res = await postEvent(createEventReq, token ?? "");
+            console.log("Event created result:", res);
+
+            if (!res || res.status < 200 || res.status >= 300) {
+                setError(errMsg);
+            }
+        } catch (err) {
+            setError(errMsg);
+        }
+
+        router.push("/userProfile");
     }
 
     return (
@@ -113,7 +113,21 @@ export default function PreviewForm() {
                 <form id="livePreviewForm" className="contents" onSubmit={onSubmit}>
                     <h3>Live Preview</h3>
                     <MealCard key={123} {...eventDetail} />
-                    <button type="submit" form="livePreviewForm" className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Save & Continue</button>
+
+                    {error && (
+                        <p className="text-sm text-red-600 mt-4 text-center" role="alert">
+                            {error}
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        form="livePreviewForm"
+                        disabled={loading}
+                        className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {loading ? "Creating Event..." : "Save & Continue"}
+                    </button>
                 </form>
             </ComponentsWrapper>
 

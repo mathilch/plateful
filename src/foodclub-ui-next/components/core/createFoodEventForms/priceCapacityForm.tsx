@@ -13,17 +13,17 @@ import { useRouter } from "next/navigation";
 
 
 export default function PriceCapacityForm() {
-    const [seatsAvailable, setSeatsAvailable] = useState(6);
-    const [pricePerSeat, setPricePerSeat] = useState(65);
+    const [formState, formDispatch] = useFormWizardContext();
+    const router = useRouter();
+
+    const [seatsAvailable, setSeatsAvailable] = useState(formState.priceCapacity?.seatsAvailable ?? 6);
+    const [pricePerSeat, setPricePerSeat] = useState(formState.priceCapacity?.pricePerSeat ?? 65);
     const [ingredientCost] = useState(228);
 
     // Calculations
     const totalRevenue = seatsAvailable * pricePerSeat;
     const platformFee = 30;
     const potentialEarnings = totalRevenue - platformFee - ingredientCost;
-
-    const [formState, formDispatch] = useFormWizardContext();
-    const router = useRouter();
 
     function onSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -63,9 +63,10 @@ export default function PriceCapacityForm() {
                             id="pricePerSeat"
                             labelText="Price per seat (DKK)"
                             type="number"
-                            value={pricePerSeat}
+                            value={pricePerSeat.toString()}
                             onChange={(e) => setPricePerSeat(Number(e.target.value))}
                             min={0}
+                            max={1_000_000}
                             required
                         />
 
@@ -108,6 +109,7 @@ export default function PriceCapacityForm() {
                         labelText="Notes for guests (optional)"
                         placeholder="e.g., BYOB, slippers welcome, allergy heads-up..."
                         className="h-32"
+                        defaultValue={formState.priceCapacity?.guestsNotes ?? ""}
                     />
 
                 </ComponentsWrapper>
