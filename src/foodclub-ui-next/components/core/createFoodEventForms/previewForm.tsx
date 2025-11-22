@@ -50,6 +50,7 @@ export default function PreviewForm() {
         startTime: formState.whenWhere?.startTime,
         tags: formState.dietAllergens?.dietaryPreferences,
         participantsCount: 0,
+        maxAllowedParticipants: formState.priceCapacity?.seatsAvailable,
         price: formState.priceCapacity?.pricePerSeat,
     };
 
