@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Events.Domain.Entities;
 
 namespace Events.Application.Dtos.Requests;
@@ -24,11 +23,7 @@ namespace Events.Application.Dtos.Requests;
 /// <param name="City">City in which the event is hosted (required, max 128 chars).</param>
 /// <param name="Region">State, province or broader region for the address (required, max 128 chars).</param>
 public record CreateEventRequestDto(
-    [property: Required]
-    [property: MaxLength(150)]
     string Name,
-    [property: Required]
-    [property: MaxLength(150)]
     string Description,
     int MaxAllowedParticipants,
     double PricePerSeat,
@@ -37,22 +32,12 @@ public record CreateEventRequestDto(
     DateTime StartDate,
     DateTime? EndDate,
     DateTime ReservationEndDate,
-    [property: Required]
-    [property: MaxLength(150)]
     string ImageThumbnail,
     bool IsPublic,
     EventFoodDetails EventFoodDetails,
     IEnumerable<EventImage> Images,
-    [property: Required]
-    [property: MaxLength(256)]
     string StreetAddress,
-    [property: Required]
-    [property: MaxLength(32)]
     string PostalCode,
-    [property: Required]
-    [property: MaxLength(128)]
     string City,
-    [property: Required]
-    [property: MaxLength(128)]
     string Region
 );

@@ -16,9 +16,23 @@ export type FormWhenWhere = {
     region: string
 }
 
+export type FormPriceCapacity = {
+    seatsAvailable: number,
+    pricePerSeat: number,
+    guestsNotes?: string,
+}
+
+export type FormDietAllergens = {
+    dietaryPreferences: string[],
+    allergens: string[],
+    guestsNotes?: string,
+}
+
 export type FormWizardState = {
     basics?: FormBasics,
-    whenWhere?: FormWhenWhere
+    whenWhere?: FormWhenWhere,
+    priceCapacity?: FormPriceCapacity,
+    dietAllergens?: FormDietAllergens,
 }
 
 export enum FormWizardStep { CreateFoodEvent, WhenWhereForm, PriceCapacityForm, DietAllergensForm, PreviewForm }
@@ -41,11 +55,9 @@ function formWizardReducer(currentValue: FormWizardState, action: FormWizardActi
             case FormWizardStep.WhenWhereForm:
                 return { ...currentValue, whenWhere: action.value.whenWhere };
             case FormWizardStep.PriceCapacityForm:
-                throw new Error("Not implemented yet");
-            //return { ...currentValue, priceCapacity: action.value.priceCapacity };
+                return { ...currentValue, priceCapacity: action.value.priceCapacity };
             case FormWizardStep.DietAllergensForm:
-                throw new Error("Not implemented yet");
-            //return { ...currentValue, dietAllergens: action.value.dietAllergens };
+                return { ...currentValue, dietAllergens: action.value.dietAllergens };
             case FormWizardStep.PreviewForm:
                 throw new Error("Not implemented yet");
             //return { ...currentValue, preview: action.value.preview };
