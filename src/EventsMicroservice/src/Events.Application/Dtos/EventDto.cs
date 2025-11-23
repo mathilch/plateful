@@ -8,15 +8,18 @@ public record EventDto(
     string Name,
     string Description,
     int MaxAllowedParticipants,
+    double PricePerSeat,
     int MinAllowedAge,
     int MaxAllowedAge,
     DateTime StartDate,
+    DateTime? EndDate,
     DateTime ReservationEndDate,
     string ImageThumbnail,
     DateTime CreatedDate,
     bool IsActive,
     bool IsPublic,
-    EventFoodDetails EventFoodDetails,
-    ICollection<EventParticipant> EventParticipants,
-    ICollection<EventImage> EventImages
+    EventAddress EventAddress,
+    IEnumerable<EventFoodDetails> EventFoodDetails,
+    IEnumerable<EventParticipant> EventParticipants,
+    IEnumerable<EventImage> EventImages
 );

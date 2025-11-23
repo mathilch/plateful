@@ -47,6 +47,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddSwaggerGen(options =>
         {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "FoodClub Events API",
+                Version = "1.1"
+            });
+            
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",

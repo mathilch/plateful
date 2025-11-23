@@ -22,11 +22,11 @@ export function Counter({ value, onChange, min = 0, max = Infinity, step = 1 }: 
     };
     return (
         <div className="inline-flex items-center space-x-2">
-            <Button variant="outline" onClick={handleDecrement} disabled={value <= min}>
+            <Button type="button" variant="outline" onClick={handleDecrement} disabled={value <= min}>
                 <Minus className="h-4 w-4" />
             </Button>
             <span className="text-sm font-medium">{value}</span>
-            <Button variant="outline" onClick={handleIncrement} disabled={value >= max}>
+            <Button type="button" variant="outline" onClick={handleIncrement} disabled={value >= max}>
                 <Plus className="h-4 w-4" />
             </Button>
         </div>

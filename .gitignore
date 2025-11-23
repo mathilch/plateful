@@ -412,3 +412,4 @@ next-env.d.ts
 # Custom ignores
 src/npm-packages/events-ts-sdk/src/dist/
 src/npm-packages/events-ts-sdk/src/generated/
+/openapi.json
