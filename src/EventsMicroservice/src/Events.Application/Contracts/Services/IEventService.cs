@@ -24,7 +24,7 @@ public interface IEventService
     Task<EventDto> CancelEvent(Guid eventId);
 
     // Event participation
-    Task<EventDto> SignUpForEvent(Guid eventId, DateOnly userBirthday);
+    Task<EventDto> SignUpForEvent(Guid eventId);
     Task<EventDto> WithdrawFromEvent(Guid eventId);
     Task<List<EventParticipantDto>> ViewEventParticipants(Guid eventId);
 

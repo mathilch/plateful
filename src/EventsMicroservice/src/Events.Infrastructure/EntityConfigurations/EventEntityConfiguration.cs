@@ -43,20 +43,12 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
             address.WithOwner();
         });
 
-        builder.OwnsMany(e => e.EventFoodDetails, details =>
-        {
-            // Store as JSONB 
-            details.ToJson();
-
-            details.Property(ef => ef.Name).HasMaxLength(150);
-            details.Property(ef => ef.Ingredients).HasMaxLength(500);
-            details.Property(ef => ef.AdditionalFoodItems).HasMaxLength(500);
-            
-            details.Property(f => f.AdditionalFoodItems)
-                .HasMaxLength(1000);
-        });
-
-
+        builder
+            .HasOne(e => e.EventFoodDetails)
+            .WithOne()
+            .HasForeignKey<EventFoodDetails>(fd => fd.EventId)
+            .IsRequired();
+        
         builder
             .HasMany(e => e.EventParticipants)
             .WithOne()

@@ -160,14 +160,15 @@ public class EventService(
         return await eventRepository.UpdateEvent(eventId, @event => @event.IsActive = false);
     }
 
-    public async Task<EventDto> SignUpForEvent(Guid eventId, DateOnly userBirthday)
+    public async Task<EventDto> SignUpForEvent(Guid eventId)
     {
         var e = await eventRepository.GetEventById(eventId);
-        var userAge = CalculateAge(userBirthday);
+        /* var userAge = CalculateAge(userBirthday);
         if (userAge < e.MinAllowedAge || userAge > e.MaxAllowedAge)
         {
             throw new UserIsNotTheRightAgeException(currentUser.UserId, e.MinAllowedAge, e.MaxAllowedAge);
         }
+        */
         await eventRepository.AddEventParticipant(eventId, currentUser.UserId);
         return e.ToDto();
     }
