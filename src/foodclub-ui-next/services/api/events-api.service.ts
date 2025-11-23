@@ -175,6 +175,67 @@ export async function getEventReviewsByHostUserId(
   }
 }
 
+export async function signUpForEvent(
+    eventId: string,
+    token: string
+) {
+    try {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/participate`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        
+        if (!res.ok) {
+            console.error("Cannot sign up for event:", res.status, res.statusText);
+            return [];
+        }
+        
+        const data = await res.json();
+        return data;
+    } catch (err) {
+        console.error("Events fetch error:", err);
+        return [];
+    }
+}
+
+export async function withdrawFromEvent(
+    eventId: string,
+    token: string
+) {
+    try {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/withdraw`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+    
+        if (!res.ok) {
+            console.error("Cannot sign up for event:", res.status, res.statusText);
+            return [];
+        }
+    
+        const data = await res.json();
+        return data;
+        
+    } catch (err) {
+        console.error("Events fetch error:", err);
+        return [];
+    }
+}
+
 function addAuthHeaders(): HeadersInit {
   return {
     // TODO: work on proper authentication flow
