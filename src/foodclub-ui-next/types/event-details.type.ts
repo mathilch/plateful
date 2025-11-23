@@ -41,6 +41,7 @@ export type EventDetails = {
     createdDate: string;
     isActive: boolean;
     isPublic: boolean;
+    eventAddress: string;
     eventFoodDetails: EventFoodDetails;
     eventParticipants: EventParticipantDto[];
     eventImages: EventImage[];
