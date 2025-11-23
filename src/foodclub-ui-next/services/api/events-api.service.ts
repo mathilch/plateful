@@ -1,8 +1,7 @@
-//import { CreateEventRequestDto } from "@prvacy/events-api-sdk/dist/generated/model";
 import { SearchEventsRequestDto } from "@/types/search-events.type";
-import { eventDetailsMocks } from "../mocks/event-details-mocks";
 import { toQueryParams } from "@/lib/utils";
-//import { postApiEvent } from "@prvacy/events-api-sdk"
+import { CreateEventRequestDto } from "@Rameez349/events-api-sdk/dist/generated/model";
+import { postApiEvent } from "@Rameez349/events-api-sdk";
 
 export async function getRecentEventsForHomePage() {
   try {
@@ -146,10 +145,10 @@ export async function getEventReviewsByHostUserId(
   }
 }
 
-function addAuthHeaders(): HeadersInit {
+function addAuthHeaders(accessToken: string): HeadersInit {
   return {
     // TODO: work on proper authentication flow
-    Authorization: "Bearer token123",
+    Authorization: `Bearer ${accessToken}`,
   };
   const token = localStorage.getItem("accessToken");
   if (token) {
@@ -157,8 +156,8 @@ function addAuthHeaders(): HeadersInit {
   }
 }
 
-// export async function postEvent(createEventRequest: CreateEventRequestDto) {
+export async function postEvent(createEventRequest: CreateEventRequestDto, accessToken: string) {
 
-//   const resp = await postApiEvent(createEventRequest, { headers: addAuthHeaders() });
-//   return resp.data;
-// }
+  const resp = await postApiEvent(createEventRequest, { headers: addAuthHeaders(accessToken) });
+  return resp;
+}

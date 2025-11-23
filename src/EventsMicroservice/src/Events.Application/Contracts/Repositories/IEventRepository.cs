@@ -45,7 +45,7 @@ public interface IEventRepository
      * =========================== I M A G E S ===================================
      * ===========================================================================
      */
-    Task<EventImage> AddImageToEvent(Guid eventId, EventImage image);
+    EventImage AddImageToEvent(Guid eventId, EventImage image);
     Task<EventImage> RemoveImageFromEvent(Guid imageId);
     Task<List<EventImage>> RemoveAllImagesFromEvent(Guid eventId);
 
@@ -55,9 +55,9 @@ public interface IEventRepository
      * ===========================================================================
      */
 
-    Task<EventFoodDetails> AddEventFoodDetails(Guid eventId, EventFoodDetails foodDetails);
-    Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op);
-    Task<EventFoodDetails> GetEventFoodDetails(Guid eventId);
-    Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId);
+    // Task<EventFoodDetails> AddEventFoodDetails(Guid eventId, EventFoodDetails foodDetails);
+    // Task<EventFoodDetails> UpdateEventFoodDetails(Guid eventId, Action<EventFoodDetails> op);
+    // Task<EventFoodDetails> GetEventFoodDetails(Guid eventId);
+    // Task<EventFoodDetails> RemoveEventFoodDetails(Guid eventId);
 
 }

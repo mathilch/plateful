@@ -16,10 +16,18 @@ export interface LocationDetails {
 }
 
 export default function WhenWhereForm() {
-    const [formLocationDetails, setFormLocationDetails] = useState<LocationDetails | null>(null);
-
     const [formState, formDispatch] = useFormWizardContext();
     const router = useRouter();
+
+    // Initialize location details from context if available
+    const [formLocationDetails, setFormLocationDetails] = useState<LocationDetails | null>(
+        formState.whenWhere ? {
+            streetNumber: formState.whenWhere.streetAddress,
+            postalCode: formState.whenWhere.postalCode,
+            city: formState.whenWhere.city,
+            region: formState.whenWhere.region,
+        } : null
+    );
 
     function onSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -47,7 +55,7 @@ export default function WhenWhereForm() {
         // md:grid-cols-[2fr_1fr] 
         <div id="mainWrapper" className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10">
 
-            <form onSubmit={onSubmit} >
+            <form id="whenWhereForm" onSubmit={onSubmit} >
                 <ComponentsWrapper id="whenWhereForm">
 
                     <div className="flex flex-col md:flex-row gap-5">
@@ -55,7 +63,7 @@ export default function WhenWhereForm() {
                             id="date"
                             labelText="Date"
                             type="date"
-                            // placeholder="e.g., Cozy Curry Night"
+                            defaultValue={formState.whenWhere?.date ?? ""}
                             required
                         />
 
@@ -63,7 +71,7 @@ export default function WhenWhereForm() {
                             id="startTime"
                             labelText="Start time"
                             type="time"
-                            // placeholder="e.g., Cozy Curry Night"
+                            defaultValue={formState.whenWhere?.startTime ?? ""}
                             required
                         />
 
@@ -71,7 +79,7 @@ export default function WhenWhereForm() {
                             id="endTime"
                             labelText="End time (optional)"
                             type="time"
-                            // placeholder="e.g., Cozy Curry Night"
+                            defaultValue={formState.whenWhere?.endTime ?? ""}
                         />
 
                     </div>
@@ -87,7 +95,7 @@ export default function WhenWhereForm() {
                         labelText="Street address"
                         type="text"
                         placeholder="Street & number"
-                        value={formLocationDetails?.streetNumber}
+                        value={formLocationDetails?.streetNumber ?? formState.whenWhere?.streetAddress ?? ""}
                         onChange={e => setFormLocationDetails(prev => ({
                             ...prev,
                             streetNumber: e.target.value
@@ -103,7 +111,7 @@ export default function WhenWhereForm() {
                                 labelText="Postal code"
                                 type="text"
                                 placeholder="2200"
-                                value={formLocationDetails?.postalCode}
+                                value={formLocationDetails?.postalCode ?? formState.whenWhere?.postalCode ?? ""}
                                 wrapperClassName="flex-1"
                                 onChange={e => setFormLocationDetails(prev => ({
                                     ...prev,
@@ -117,7 +125,7 @@ export default function WhenWhereForm() {
                                 labelText="City"
                                 type="text"
                                 placeholder="Copenhagen"
-                                value={formLocationDetails?.city}
+                                value={formLocationDetails?.city ?? formState.whenWhere?.city ?? ""}
                                 wrapperClassName="flex-1"
                                 onChange={e => setFormLocationDetails(prev => ({
                                     ...prev,
@@ -131,7 +139,7 @@ export default function WhenWhereForm() {
                                 labelText="Region"
                                 type="text"
                                 placeholder="Capital Region"
-                                value={formLocationDetails?.region}
+                                value={formLocationDetails?.region ?? formState.whenWhere?.region ?? ""}
                                 wrapperClassName="flex-1"
                                 onChange={e => setFormLocationDetails(prev => ({
                                     ...prev,
@@ -159,20 +167,21 @@ export default function WhenWhereForm() {
                         <p className="text-muted-gray text-xs font-bold">Your exact address is only shared with confirmed guests.</p>
                     </OrangeWrapper>
 
-                    <input type="submit" />
-
-                    {/* </div> */}
+                    
                 </ComponentsWrapper>
 
             </form>
 
 
-            {/* TODO: work on the map component, remove hardcoded width */}
-            <ComponentsWrapper id="locationPreview" className="w-100">
-                <h3>Location Preview</h3>
-                {/* <MealCard key={123} {...eventDetail} /> */}
-            </ComponentsWrapper>
+            <div className="flex flex-col">
+                {/* TODO: work on the map component, remove hardcoded width */}
+                <ComponentsWrapper id="locationPreview" className="w-100">
+                    <h3>Location Preview</h3>
+                    {/* <MealCard key={123} {...eventDetail} /> */}
+                </ComponentsWrapper>
 
+                <button type="submit" form="whenWhereForm" className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Save & Continue</button>
+            </div>
 
         </div>
     );
