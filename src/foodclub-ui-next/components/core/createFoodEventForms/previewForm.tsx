@@ -99,14 +99,12 @@ export default function PreviewForm() {
 
             if (!res || res.status < 200 || res.status >= 300) {
                 setError(errMsg);
+            } else {
+                router.push("/userProfile");
             }
         } catch (err) {
             setError(errMsg);
         }
-
-        router.push("/userProfile");
-    }
-
     return (
         <div className="flex justify-center">
 
