@@ -4,6 +4,7 @@ import { CreateEventRequestDto } from "@Rameez349/events-api-sdk/dist/generated/
 import { postEvent } from "@/services/api/events-api.service";
 import { useFormWizardContext } from "./formWizardContext";
 import ComponentsWrapper from "../wrappers/componentsWrapper";
+import OrangeWrapper from "../wrappers/orangeWrapper";
 import MealCard from "../meal-card/meal-card";
 import { EventOverviewDto } from "@/types/event-details.type";
 import { parse } from 'date-fns';
@@ -45,10 +46,15 @@ export default function PreviewForm() {
         ...createEventDefaultData,
 
         hostName: username,
-        name: formState.basics?.title,
+        name: formState.whenWhere?.city 
+            ? `${formState.basics?.title}, ${formState.whenWhere.city}`
+            : formState.basics?.title,
+        description: formState.basics?.description,
+        imageThumbnail: formState.basics?.coverImage || createEventDefaultData.imageThumbnail,
         startDate: formState.whenWhere?.date,
         startTime: formState.whenWhere?.startTime,
         tags: formState.dietAllergens?.dietaryPreferences,
+        allergens: formState.dietAllergens?.allergens,
         participantsCount: 0,
         maxAllowedParticipants: formState.priceCapacity?.seatsAvailable,
         price: formState.priceCapacity?.pricePerSeat,
@@ -79,7 +85,7 @@ export default function PreviewForm() {
             startDate: eventStartDateTime.toISOString(),
             reservationEndDate: reservationEndDateTime.toISOString(),
             endDate: eventEndDateTime ? eventEndDateTime.toISOString() : undefined,
-            imageThumbnail: "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
+            imageThumbnail: formState.basics?.coverImage || "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
             isPublic: true,
             eventFoodDetails: {
                 dietaryStyles: formState.dietAllergens?.dietaryPreferences ?? [],
@@ -105,30 +111,51 @@ export default function PreviewForm() {
         } catch (err) {
             setError(errMsg);
         }
+    }
+
     return (
         <div className="flex justify-center">
 
-            <ComponentsWrapper id="livePreview">
-                <form id="livePreviewForm" className="contents" onSubmit={onSubmit}>
-                    <h3>Live Preview</h3>
-                    <MealCard key={123} {...eventDetail} />
+            <form id="livePreviewForm" className="contents" onSubmit={onSubmit}>
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                    {/* Left Column: Preview Card */}
+                    <ComponentsWrapper id="livePreview">
+                        <h3>Live Preview</h3>
+                        <MealCard key={123} {...eventDetail} />
+                    </ComponentsWrapper>
 
-                    {error && (
-                        <p className="text-sm text-red-600 mt-4 text-center" role="alert">
-                            {error}
-                        </p>
-                    )}
+                    {/* Right Column: Actions */}
+                    <div className="flex flex-col gap-4 w-full md:w-64 mt-8">
+                        <OrangeWrapper>
+                            <p className="text-xs font-semibold text-gray-800">
+                                By publishing, you agree to our Host Guidelines and confirm allergen accuracy.
+                            </p>
+                        </OrangeWrapper>
 
-                    <button
-                        type="submit"
-                        form="livePreviewForm"
-                        disabled={loading}
-                        className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {loading ? "Creating Event..." : "Save & Continue"}
-                    </button>
-                </form>
-            </ComponentsWrapper>
+                        {error && (
+                            <p className="text-sm text-red-600 text-center" role="alert">
+                                {error}
+                            </p>
+                        )}
+                        
+                        <button
+                            type="button"
+                            disabled={loading}
+                            className="w-full py-2 border-1 cursor-pointer border-black text-black text-base font-bold font-['Poppins'] bg-white rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Save as Draft
+                        </button>
+                        
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-2 border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loading ? "Publishing..." : "Publish"}
+                        </button>
+                    </div>
+                </div>
+            </form>
 
         </div>
     );
