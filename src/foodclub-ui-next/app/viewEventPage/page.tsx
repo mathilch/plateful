@@ -49,8 +49,6 @@ export default function EventDetailsPage() {
         }
         
         try {
-            const _ = parseJwt(token);
-
             (async () => {
                 try {
                     const eventData = await getEventById(id as string, token);
@@ -135,7 +133,7 @@ export default function EventDetailsPage() {
                         {event?.startDate}
                     </div>
                     <div className="text-sm text-gray-600 mb-4">
-                        her skal der være event.address (migrate)
+                        {event?.eventAddress}
                     </div>
 
                     <div className="mb-4">
@@ -190,7 +188,7 @@ export default function EventDetailsPage() {
                     <div className="flex flex-col">
             <span className="font-medium"> 
                 {host?.name} • <span className="text-green-700">
-                     event.verified (migrate)
+                     host.verified (migrate)
                 </span>
             </span>
                         <span className="text-sm text-orange-600 font-semibold">★ host.score (migrate) </span>
