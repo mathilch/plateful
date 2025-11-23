@@ -63,7 +63,7 @@ export default function WhenWhereForm() {
                             id="date"
                             labelText="Date"
                             type="date"
-                            defaultValue={formState.whenWhere?.date ?? ""}
+                            defaultValue={formState.whenWhere?.date ?? new Date().toISOString().split('T')[0]}
                             required
                         />
 
@@ -71,7 +71,7 @@ export default function WhenWhereForm() {
                             id="startTime"
                             labelText="Start time"
                             type="time"
-                            defaultValue={formState.whenWhere?.startTime ?? ""}
+                            defaultValue={formState.whenWhere?.startTime ?? "12:30"}
                             required
                         />
 

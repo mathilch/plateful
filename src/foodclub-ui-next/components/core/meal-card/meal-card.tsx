@@ -25,9 +25,13 @@ export default function MealCard(eventDetails: EventOverviewDto) {
           {eventDetails.name}
         </CardTitle>
         <CardDescription className="text-md">
+          {eventDetails.description && (
+            <div className="mb-2 text-gray-700">
+              {eventDetails.description}
+            </div>
+          )}
           <div className="host-details">
-            <div>Hosted by {eventDetails.hostName}</div>
-            <div>{eventDetails.hostRating}</div>
+            <div>Hosted by {eventDetails.hostName} · {eventDetails.hostRating} ★</div>
           </div>
           <div className="tags">
             {eventDetails.tags.map((tag) => (

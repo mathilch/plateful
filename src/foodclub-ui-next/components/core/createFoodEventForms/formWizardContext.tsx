@@ -3,6 +3,7 @@ import { ActionDispatch, createContext, Dispatch, useContext, useReducer } from 
 export type FormBasics = {
     title: string,
     description: string,
+    coverImage?: string,
 }
 
 export type FormWhenWhere = {

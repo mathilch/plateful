@@ -22,6 +22,7 @@ export default function BasicsForm() {
 
     const [title, setTitle] = useState(formState.basics?.title ?? "");
     const [description, setDescription] = useState(formState.basics?.description ?? "");
+    const [coverImage, setCoverImage] = useState(formState.basics?.coverImage ?? "");
     const [username, setUsername] = useState<string>("");
 
     useEffect(() => {
@@ -38,7 +39,9 @@ export default function BasicsForm() {
 
     let eventDetail: EventOverviewDto = {
         ...createEventDefaultData,
-        name: title
+        name: title || createEventDefaultData.name,
+        description: description || createEventDefaultData.description,
+        imageThumbnail: coverImage || createEventDefaultData.imageThumbnail,
     };
 
     function onSubmit(e: React.FormEvent) {
@@ -47,6 +50,7 @@ export default function BasicsForm() {
         const formDataObj: FormBasics = {
             title: title,
             description: description,
+            coverImage: coverImage,
         };
 
         formDispatch({ type: FormWizardActionType.Set, step: FormWizardStep.CreateFoodEvent, value: { basics: formDataObj } });
@@ -77,7 +81,7 @@ export default function BasicsForm() {
                         labelText="Description"
                         required
                         placeholder="Describe your menu, vibe, BYOB, etc."
-                        className="h-48 bg-gray-50 text-sm font-normal text-[#9CA3AF] font-['Poppins']"
+                        className="h-48 bg-gray-50 text-sm font-normal text-[#9CA3AF] font-['Poppins'] resize-none"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
@@ -86,7 +90,7 @@ export default function BasicsForm() {
 
                     <div className="grid gap-2">
                         <Label htmlFor="coverPhotoDropzone" className="text-xs text-muted-gray font-bold">Cover Photo</Label>
-                        <ImageDropzone />
+                        <ImageDropzone value={coverImage} onChange={setCoverImage} />
                     </div>
 
 

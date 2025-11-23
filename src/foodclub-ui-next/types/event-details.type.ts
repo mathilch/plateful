@@ -6,6 +6,7 @@ export type EventOverviewDto = {
   hostName: string;
   hostRating: number;
   name: string;
+  description?: string;
   maxAllowedParticipants: number;
   minAllowedAge: number;
   maxAllowedAge: number;
