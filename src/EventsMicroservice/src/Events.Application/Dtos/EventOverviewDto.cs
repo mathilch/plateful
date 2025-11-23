@@ -24,7 +24,7 @@ public record EventOverviewDto(
     bool IsActive,
     bool IsPublic,
     EventAddress EventAddress,
-    IEnumerable<EventFoodDetails> EventFoodDetails,
+    EventFoodDetails EventFoodDetails,
     IEnumerable<EventParticipant> EventParticipants,
     IEnumerable<EventImage> EventImages
     );
