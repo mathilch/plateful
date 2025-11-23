@@ -1,5 +1,6 @@
 using Events.Api.Middlewares;
 using Events.Application.ServiceCollectionExtensions;
+using Events.Infrastructure.Context;
 using Events.Infrastructure.ServiceExtensions;
 using FluentValidation;
 
@@ -56,6 +57,12 @@ public class Program
             c.RoutePrefix = string.Empty;
         });
 
+        using (var scope = app.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetService<EventsDbContext>();
+            DbInitializer.Seed(context);
+        }
+        
         app.UseExceptionHandler(options => { });
         app.UseHttpsRedirection();
         app.UseAuthentication();

@@ -16,6 +16,7 @@ spec:
       containers:
         - name: events-api  
           image: mathilch/events-api:latest
+          imagePullPolicy: Always
           ports: 
             - containerPort: 8080
           env: 
