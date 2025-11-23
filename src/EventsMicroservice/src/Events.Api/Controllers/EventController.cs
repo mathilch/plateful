@@ -33,6 +33,15 @@ public class EventController(IEventService _eventService) : ControllerBase
         return dto is null ? NotFound() : Ok(dto);
     }
 
+    [HttpPut("{eventId:guid}/participate")]
+    public async Task<IActionResult> SignUpForEvent(Guid eventId)
+        => Ok(await _eventService.SignUpForEvent(eventId));
+    
+    [HttpPut("{eventId:guid}/withdraw")]
+    public async Task<IActionResult> WithdrawFromEvent(Guid eventId)
+        => Ok(await _eventService.WithdrawFromEvent(eventId));
+    
+    
     [HttpPost]
     public async Task<IActionResult> Create(CreateEventRequestDto req)
     {
