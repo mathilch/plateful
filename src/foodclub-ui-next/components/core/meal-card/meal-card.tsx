@@ -33,13 +33,22 @@ export default function MealCard(eventDetails: EventOverviewDto) {
           <div className="host-details">
             <div>Hosted by {eventDetails.hostName} · {eventDetails.hostRating} ★</div>
           </div>
-          <div className="tags">
+          <div className="tags flex flex-wrap gap-1">
             {eventDetails.tags.map((tag) => (
               <Badge key={tag} variant="success">
                 {tag}
               </Badge>
             ))}
           </div>
+          {eventDetails.allergens && eventDetails.allergens.length > 0 && (
+            <div className="allergens flex flex-wrap gap-1 mt-2 mb-2">
+              {eventDetails.allergens.map((allergen) => (
+                <Badge key={allergen} variant="warning" className="bg-orange-200 text-orange-900 border-none">
+                  {allergen}
+                </Badge>
+              ))}
+            </div>
+          )}
           <div>
             {eventDetails.startDate} · {eventDetails.startTime}
           </div>

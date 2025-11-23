@@ -14,6 +14,7 @@ export const createEventDefaultData: EventOverviewDto = {
         startTime: "12:30",
         reservationEndDate: "2024-06-14",
         tags: ["Vegetarian", "Gluten-Free"],
+        allergens: ["Gluten", "Nuts"],
         participantsCount: 0,
         imageThumbnail:
             "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",

@@ -17,6 +17,7 @@ export type EventOverviewDto = {
   startTime: string;
   reservationEndDate: string;
   tags: string[];
+  allergens?: string[];
   participantsCount: number;
   imageThumbnail: string;
   createdDate: string;

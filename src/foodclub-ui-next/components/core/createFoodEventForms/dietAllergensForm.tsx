@@ -39,8 +39,7 @@ export default function DietAllergensForm() {
             ? formState.dietAllergens.dietaryPreferences
             : [
                 "Vegetarian",
-                "Vegan",
-                "Pescatarian"
+                "Vegan"
             ]
     );
 
@@ -49,9 +48,7 @@ export default function DietAllergensForm() {
             ? formState.dietAllergens.allergens
             : [
                 "Gluten",
-                "Nuts",
-                "Dairy",
-                "Eggs"
+                "Nuts"
             ]
     );
 
@@ -79,13 +76,18 @@ export default function DietAllergensForm() {
     let eventDetail: EventOverviewDto = {
         ...createEventDefaultData,
         hostName: username,
-        name: formState.basics?.title,
+        name: formState.whenWhere?.city 
+            ? `${formState.basics?.title}, ${formState.whenWhere.city}`
+            : formState.basics?.title,
+        description: formState.basics?.description,
+        imageThumbnail: formState.basics?.coverImage || createEventDefaultData.imageThumbnail,
         maxAllowedParticipants: formState.priceCapacity?.seatsAvailable,
 
 
         startDate: formState.whenWhere?.date,
         startTime: formState.whenWhere?.startTime,
         tags: selectedDietaryStyles,
+        allergens: selectedAllergens,
         participantsCount: 0,
 
         price: formState.priceCapacity?.pricePerSeat,
@@ -168,11 +170,12 @@ export default function DietAllergensForm() {
                                         key={allergen.id}
                                         type="button"
                                         onClick={() => toggleAllergen(allergen.id)}
-                                        className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${isSelected
+                                        className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${isSelected
                                             ? "bg-orange-200 text-orange-900 border border-orange-400"
                                             : "bg-gray-100 text-gray-600 border border-gray-300"
                                             }`}
                                     >
+                                        {<Check className={`h-4 w-4 ${isSelected? "flex" : "hidden"}`} />}
                                         {allergen.label}
                                     </button>
                                 );
@@ -184,7 +187,7 @@ export default function DietAllergensForm() {
                         id="notesForGuests"
                         labelText="Notes for guests (optional)"
                         placeholder="e.g., Traces of nuts possible; soy-free substitutes used."
-                        className="h-32"
+                        className="h-32 resize-none"
                         value={notesForGuests}
                         onChange={(e) => setNotesForGuests(e.target.value)}
                     />
