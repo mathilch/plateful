@@ -234,17 +234,18 @@ export async function withdrawFromEvent(
     }
 }
 
-function addAuthHeaders(): HeadersInit {
+
 function addAuthHeaders(accessToken: string): HeadersInit {
-  return {
-    // TODO: work on proper authentication flow
-    Authorization: `Bearer ${accessToken}`,
-  };
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    //return token;
-  }
+    return {
+        // TODO: work on proper authentication flow
+        Authorization: `Bearer ${accessToken}`,
+    };
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+        //return token;
+    }
 }
+
 
 export async function postEvent(createEventRequest: CreateEventRequestDto, accessToken: string) {
 

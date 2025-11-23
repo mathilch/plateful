@@ -23,7 +23,7 @@ public class Event
     public EventAddress EventAddress { get; set; } = new();
 
     // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/navigations
-    public ICollection<EventFoodDetails> EventFoodDetails { get; set; } = [];
+    public EventFoodDetails EventFoodDetails { get; set; }
     public ICollection<EventParticipant> EventParticipants { get; set; } = new List<EventParticipant>();
     public ICollection<EventImage> EventImages { get; set; } = new List<EventImage>();
     public ICollection<EventReview> EventReviews { get; set; } = new List<EventReview>();

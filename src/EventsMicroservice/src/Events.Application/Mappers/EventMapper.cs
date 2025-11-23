@@ -54,7 +54,7 @@ public static class EventMapper
             e.StartDate.Date.ToString("dd/MM/yyyy"),
             e.StartDate.ToString("hh:mm"),
             e.ReservationEndDate,
-            e.EventFoodDetails?.Select(d => d.Ingredients?.Split(',')).SelectMany(x => x ?? []).ToArray() ?? [],
+            e.EventFoodDetails?.Ingredients?.Split(',') ?? Array.Empty<String>(),
             e.EventParticipants.Count,
             mockImageThumbnails[new Random().Next(0, 2)],
             e.CreatedDate,
@@ -91,7 +91,7 @@ public static class EventMapper
             e.StartDate.Date.ToString("dd/MM/yyyy"),
             e.StartDate.ToString("hh:mm"),
             e.ReservationEndDate,
-            e.EventFoodDetails?.Select(d => d.Ingredients?.Split(',')).SelectMany(x => x ?? []).ToArray() ?? [],
+            e.EventFoodDetails?.Ingredients?.Split(',') ?? Array.Empty<String>(),
             e.EventParticipants.Count,
             mockImageThumbnails[new Random().Next(0, 2)],
             e.CreatedDate,
@@ -122,11 +122,7 @@ public static class EventMapper
             ImageThumbnail = dto.ImageThumbnail,
             IsActive = true,
             IsPublic = dto.IsPublic,
-            EventFoodDetails =
-            [
-                // Fine for now
-                dto.EventFoodDetails
-            ],
+            EventFoodDetails = dto.EventFoodDetails,
             EventParticipants = Enumerable.Empty<EventParticipant>().ToList(),
             EventImages = dto.Images.ToList(),
             EventAddress = new EventAddress

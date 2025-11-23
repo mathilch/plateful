@@ -16,8 +16,8 @@ public static class DbInitializer
             var e1Id = Guid.NewGuid();
             var fd1 = new EventFoodDetails
             {
-                Id = Guid.NewGuid(),
-                EventId = e1Id,
+                DietaryStyles = [],
+                Allergens = [],
                 Name = "Pizza",
                 Ingredients = "Flour, water, meat, cheese",
                 AdditionalFoodItems = "Monster Energy Nitro"
@@ -47,8 +47,8 @@ public static class DbInitializer
             var e2Id = Guid.NewGuid();
             var fd2 = new EventFoodDetails
             {
-                Id = Guid.NewGuid(),
-                EventId = e2Id,
+                DietaryStyles = [],
+                Allergens = [],
                 Name = "Sushi Platter",
                 Ingredients = "Rice, fish, seaweed, wasabi",
                 AdditionalFoodItems = "Green Tea"
@@ -76,8 +76,8 @@ public static class DbInitializer
             var e3Id = Guid.NewGuid();
             var fd3 = new EventFoodDetails
             {
-                Id = Guid.NewGuid(),
-                EventId = e3Id,
+                DietaryStyles = [],
+                Allergens = [],
                 Name = "BBQ Feast",
                 Ingredients = "Beef, chicken, sausages, veggies",
                 AdditionalFoodItems = "Lemonade, Beer"
