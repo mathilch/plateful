@@ -101,6 +101,7 @@ export default function InputAddressAutocomplete({
                                         region: getRegionByMunicipality(a.adresse.kommunekode)
                                     };
                                     setFormLocationDetailsAction(formData);
+                                    setInputSearchQuery('');
                                     setPopoverOpen(false);
                                 }}
                             >

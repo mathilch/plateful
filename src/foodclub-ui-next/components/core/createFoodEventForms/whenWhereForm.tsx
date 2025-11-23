@@ -5,6 +5,7 @@ import ComponentsWrapper from "../wrappers/componentsWrapper";
 import OrangeWrapper from "../wrappers/orangeWrapper";
 import CreateEventFormInput from "./createEventFormInput";
 import InputAddressAutocomplete from "./inputAddressAutocomplete";
+import LocationMiniMap from "./locationMiniMap";
 import { FormBasics, FormWhenWhere, FormWizardActionType, FormWizardStep, useFormWizardContext } from "./formWizardContext";
 import { useRouter } from "next/navigation";
 
@@ -85,7 +86,7 @@ export default function WhenWhereForm() {
                     </div>
 
                     <InputAddressAutocomplete
-                        labelText={"Enter your address"}
+                        labelText={"Search your address"}
                         placeholder="e.g. Nørrebrostræde 123, 2. tv"
                         id={"addressAutocomplete"}
                         setFormLocationDetailsAction={setFormLocationDetails} />
@@ -174,10 +175,13 @@ export default function WhenWhereForm() {
 
 
             <div className="flex flex-col">
-                {/* TODO: work on the map component, remove hardcoded width */}
                 <ComponentsWrapper id="locationPreview" className="w-100">
                     <h3>Location Preview</h3>
-                    {/* <MealCard key={123} {...eventDetail} /> */}
+                    <LocationMiniMap 
+                        address={formLocationDetails?.streetNumber}
+                        city={formLocationDetails?.city}
+                        postalCode={formLocationDetails?.postalCode}
+                    />
                 </ComponentsWrapper>
 
                 <button type="submit" form="whenWhereForm" className="py-2 px-12 w-75 self-center border-1 cursor-pointer border-black text-white text-base font-bold font-['Poppins'] bg-primary-green rounded-xl hover:bg-muted hover:text-foreground transition-colors">Save & Continue</button>
