@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@Rameez349/events-api-sdk':
-        specifier: ~1.1.5
-        version: 1.1.5
+        specifier: ~1.1.11
+        version: 1.1.11
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -90,8 +90,8 @@ importers:
 
 packages:
 
-  '@Rameez349/events-api-sdk@1.1.5':
-    resolution: {integrity: sha512-YRdr02HWHPp1Epwh/HsukMtQsCWQfEW075wZc6p+vwRUYaSk6UsDDD0xF1BpQ6M0lfiJqqT9CM7JcQ4wsCTpsw==, tarball: https://npm.pkg.github.com/download/@Rameez349/events-api-sdk/1.1.5/950deac76cd412a79c04a9407977acd94d50b21e}
+  '@Rameez349/events-api-sdk@1.1.11':
+    resolution: {integrity: sha512-/cGBRmqe1QnUbKglzPRhQuDsk/xJaopMQGuOs7Ru2v3UYUhdkxAi2KiRTdsWEGxwxCbJ6INDqI+v+Ugx1FLkKQ==, tarball: https://npm.pkg.github.com/download/@Rameez349/events-api-sdk/1.1.11/43fc0bd61173db4b0dad2a3bb581b41e559ad7cc}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -1069,8 +1069,8 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  caniuse-lite@1.0.30001756:
-    resolution: {integrity: sha512-4HnCNKbMLkLdhJz3TToeVWHSnfJvPaq6vu/eRP0Ahub/07n484XHhBF5AJoSGHdVrS8tKFauUQz8Bp9P7LVx7A==}
+  caniuse-lite@1.0.30001757:
+    resolution: {integrity: sha512-r0nnL/I28Zi/yjk1el6ilj27tKcdjLsNqAOZr0yVjWPrSQyHgKI2INaEWw21bAQSv2LXRt1XuCS/GomNpWOxsQ==}
 
   chalk@4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
@@ -2223,7 +2223,7 @@ packages:
 
 snapshots:
 
-  '@Rameez349/events-api-sdk@1.1.5':
+  '@Rameez349/events-api-sdk@1.1.11':
     dependencies:
       '@types/node': 24.10.1
       typescript: 5.9.3
@@ -3126,7 +3126,7 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  caniuse-lite@1.0.30001756: {}
+  caniuse-lite@1.0.30001757: {}
 
   chalk@4.1.2:
     dependencies:
@@ -3949,7 +3949,7 @@ snapshots:
     dependencies:
       '@next/env': 15.5.4
       '@swc/helpers': 0.5.15
-      caniuse-lite: 1.0.30001756
+      caniuse-lite: 1.0.30001757
       postcss: 8.4.31
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)

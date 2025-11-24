@@ -88,6 +88,7 @@ export default function PreviewForm() {
             imageThumbnail: formState.basics?.coverImage || "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
             isPublic: true,
             eventFoodDetails: {
+                name: formState.basics?.title ?? "",
                 dietaryStyles: formState.dietAllergens?.dietaryPreferences ?? [],
                 allergens: formState.dietAllergens?.allergens ?? [],
             },
