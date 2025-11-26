@@ -12,8 +12,8 @@ export default function DiscoverEvents() {
   const [price, setPrice] = useState<number>(500);
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
-  const [minAge, setMinAge] = useState<number>(18);
-  const [maxAge, setMaxAge] = useState<number>(36);
+  const [minAge, setMinAge] = useState<number | null>(null);
+  const [maxAge, setMaxAge] = useState<number | null>(null);
   const [isPublic, setIsPublic] = useState<boolean>(true);
 
   const [events, setEvents] = useState<EventOverviewDto[]>([]);
@@ -48,6 +48,7 @@ export default function DiscoverEvents() {
     };
 
     try {
+      window.dispatchEvent(new CustomEvent("app:fetch-start"));
       const result = await searchEventsBySelectedFilters(
         dto as Partial<SearchEventsRequestDto>,
         controller.signal
@@ -58,6 +59,7 @@ export default function DiscoverEvents() {
       console.error(err);
       setError("Failed to fetch events");
     } finally {
+      window.dispatchEvent(new CustomEvent("app:fetch-end"));
       setLoading(false);
     }
   };
@@ -87,7 +89,7 @@ export default function DiscoverEvents() {
               placeholder="Search city or meal..."
               className="flex-1 h-10 px-3 rounded-md border bg-gray-50 mb-4"
             />
-            
+
             <label className="block text-xs text-muted-gray font-bold mb-2 gap-6">
               Price (DKK)
             </label>
@@ -142,7 +144,7 @@ export default function DiscoverEvents() {
                 type="number"
                 min={18}
                 max={98}
-                value={minAge}
+                value={minAge ?? undefined}
                 onChange={(e) => setMinAge(Number(e.target.value))}
                 className="h-10 px-3 rounded-md border w-20"
                 aria-label="Minimum age"
@@ -153,7 +155,7 @@ export default function DiscoverEvents() {
                 type="number"
                 min={19}
                 max={99}
-                value={maxAge}
+                value={maxAge ?? undefined}
                 onChange={(e) => setMaxAge(Number(e.target.value))}
                 className="h-10 px-3 rounded-md border w-20"
                 aria-label="Maximum age"
