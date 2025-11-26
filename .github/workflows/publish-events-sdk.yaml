@@ -36,8 +36,32 @@ jobs:
         run: |
           dotnet run --project ./src/EventsMicroservice/src/Events.Api \
             --configuration Release --no-build --no-launch-profile \
-            --urls "http://127.0.0.1:5050" &
-          echo $! > api.pid
+            --urls "http://127.0.0.1:5050" > api.log 2>&1 &
+          api_pid=$!
+          echo $api_pid > api.pid
+          
+          echo "Waiting for API to start..."
+          for i in {1..30}; do
+            if grep -q "Application started." api.log 2>/dev/null; then
+              echo "✓ API started successfully"
+              break
+            fi
+            
+            if ! kill -0 $api_pid 2>/dev/null; then
+              echo "✗ API process died unexpectedly. Log output:"
+              cat api.log || true
+              exit 1
+            fi
+            
+            echo "  Still waiting... ($i/30)"
+            sleep 2
+          done
+          
+          if ! grep -q "Application started." api.log 2>/dev/null; then
+            echo "✗ API did not start in time. Log output:"
+            cat api.log || true
+            exit 1
+          fi
 
       - name: Wait for Swagger JSON
         run: |

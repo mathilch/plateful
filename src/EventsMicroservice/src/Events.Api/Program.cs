@@ -15,8 +15,8 @@ public class Program
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.ConfigureApplicationServices(builder.Configuration);
-        builder.Services.ConfigureInfrastructureServices();     
-        
+        builder.Services.ConfigureInfrastructureServices();
+
         if (!builder.Environment.IsEnvironment("CICD"))
         {
             builder.Services.ConfigureDatabase(builder.Configuration);
@@ -37,8 +37,8 @@ public class Program
             options.AddDefaultPolicy(policy =>
             {
                 policy.AllowAnyOrigin()
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
         });
 
@@ -57,12 +57,13 @@ public class Program
             c.RoutePrefix = string.Empty;
         });
 
-        using (var scope = app.Services.CreateScope())
+        if (!builder.Environment.IsEnvironment("CICD"))
         {
+            using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<EventsDbContext>();
-            DbInitializer.Seed(context);
+            DbInitializer.Seed(context!);
         }
-        
+
         app.UseExceptionHandler(options => { });
         app.UseHttpsRedirection();
         app.UseAuthentication();
