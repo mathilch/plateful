@@ -8,6 +8,7 @@ import SignUpDialog from "./signUpDialog";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import GlobalProgress from "@/components/ui/global-progress";
 
 export default function FoodAppHeader() {
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
@@ -67,7 +68,8 @@ export default function FoodAppHeader() {
         setOpenAction={setOpenSignUpDialog}
       />
 
-      <header className="flex justify-evenly items-center gap-5 h-20 outline-1 outline-gray-200">
+      <header className="relative flex justify-evenly items-center gap-5 h-20 outline-1 outline-gray-200">
+        <GlobalProgress />
         <div className="flex h-20 gap-4 items-center">
           <Link
             href="/"

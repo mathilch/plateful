@@ -48,6 +48,7 @@ export default function DiscoverEvents() {
     };
 
     try {
+      window.dispatchEvent(new CustomEvent("app:fetch-start"));
       const result = await searchEventsBySelectedFilters(
         dto as Partial<SearchEventsRequestDto>,
         controller.signal
@@ -58,6 +59,7 @@ export default function DiscoverEvents() {
       console.error(err);
       setError("Failed to fetch events");
     } finally {
+      window.dispatchEvent(new CustomEvent("app:fetch-end"));
       setLoading(false);
     }
   };

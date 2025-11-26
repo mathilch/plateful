@@ -1,4 +1,19 @@
 import { SearchEventsRequestDto } from "@/types/search-events.type";
+function dispatchFetchStart() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("app:fetch-start"));
+}
+function dispatchFetchEnd() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("app:fetch-end"));
+}
+async function fetchWithLoader(input: RequestInfo, init?: RequestInit) {
+  dispatchFetchStart();
+  try {
+    const res = await fetch(input, init);
+    return res;
+  } finally {
+    dispatchFetchEnd();
+  }
+}
 import { toQueryParams } from "@/lib/utils";
 import { CreateEventRequestDto } from "@Rameez349/events-api-sdk/dist/generated/model";
 import { postApiEvent } from "@Rameez349/events-api-sdk";
@@ -34,7 +49,7 @@ export async function getEventById(eventId: string, accessToken: string) {
 export async function getRecentEventsForHomePage() {
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    const res = await fetch(
+    const res = await fetchWithLoader(
       `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/recent`,
       {
         method: "GET",
@@ -63,7 +78,7 @@ export async function searchEventsBySelectedFilters(
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     const url = `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/search${queryParams}`;
-    const res = await fetch(url, {
+    const res = await fetchWithLoader(url, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       signal,
@@ -89,7 +104,7 @@ export async function searchEventsBySelectedFilters(
 export async function getEventsByUserId(userId: string, accessToken: string) {
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    const res = await fetch(
+    const res = await fetchWithLoader(
       `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/user/${userId}`,
       {
         method: "GET",
@@ -119,7 +134,7 @@ export async function getEventsByUserAsParticipant(
 ) {
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    const res = await fetch(
+    const res = await fetchWithLoader(
       `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/user-as-participant/${userId}`,
       {
         method: "GET",
@@ -149,7 +164,7 @@ export async function getEventReviewsByHostUserId(
 ) {
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    const res = await fetch(
+    const res = await fetchWithLoader(
       `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/user-reviews-as-host/${userId}`,
       {
         method: "GET",
@@ -179,7 +194,7 @@ export async function signUpForEvent(
 ) {
     try {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        const res = await fetch(
+        const res = await fetchWithLoader(
             `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/participate`,
             {
                 method: "PUT",
@@ -209,7 +224,7 @@ export async function withdrawFromEvent(
 ) {
     try {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        const res = await fetch(
+        const res = await fetchWithLoader(
             `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/withdraw`,
             {
                 method: "PUT",
