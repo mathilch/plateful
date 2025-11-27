@@ -1,5 +1,17 @@
 -- Mock Data for FoodClub Events
 
+-- Clear existing mock data (optional - remove if you want to keep existing events)
+DELETE FROM "EventFoodDetails" WHERE "EventId" IN (
+    '11111111-1111-1111-1111-111111111111',
+    '22222222-2222-2222-2222-222222222222',
+    '33333333-3333-3333-3333-333333333333'
+);
+DELETE FROM "Events" WHERE "EventId" IN (
+    '11111111-1111-1111-1111-111111111111',
+    '22222222-2222-2222-2222-222222222222',
+    '33333333-3333-3333-3333-333333333333'
+);
+
 -- Event 1: Italian Pasta Night
 INSERT INTO "Events" (
     "EventId", "UserId", "Name", "Description", "GuestNotes", 
