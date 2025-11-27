@@ -24,6 +24,12 @@ export type EventOverviewDto = {
   price: number;
   isActive: boolean;
   isPublic: boolean;
+  eventAddress: {
+    streetAddress: string;
+    postalCode: string;
+    city: string;
+    region: string;
+  };
   eventFoodDetails: EventFoodDetails;
 };
 

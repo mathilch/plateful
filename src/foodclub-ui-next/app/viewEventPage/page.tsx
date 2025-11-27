@@ -1,6 +1,6 @@
 "use client";
 
-import {useParams, useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {useEffect, useState} from "react";
 import { EventDetails } from "@/types/event-details.type";
 import { UserDetails } from "@/types/user-details.type";
@@ -14,7 +14,8 @@ import {getUserById} from "@/services/api/user-api.service";
 
 export default function EventDetailsPage() {
     
-    const { id } = useParams();
+    const searchParams = useSearchParams();
+    const id = searchParams.get('id');
     const router = useRouter();
     
     const [event, setEvent] = useState<EventDetails | null>(null);
