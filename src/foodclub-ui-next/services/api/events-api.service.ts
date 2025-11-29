@@ -20,10 +20,11 @@ import { postApiEvent } from "@Rameez349/events-api-sdk";
 
 
 export async function getEventById(eventId: string, accessToken: string) {
+    console.log("Fetching event with id ", eventId);
     try {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/events/${eventId}`, 
+            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}`, 
             {
                 method: "GET",
                 headers: { 
