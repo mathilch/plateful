@@ -37,7 +37,7 @@ export default function MealCard(eventDetails: EventOverviewDto) {
               {eventDetails.name}
             </h3>
             <p className="text-white/90 text-sm drop-shadow">
-              {eventDetails.eventAddress.city}
+              {eventDetails.eventAddress?.city}
             </p>
           </div>
         </div>

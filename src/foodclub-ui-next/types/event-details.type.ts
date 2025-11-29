@@ -2,6 +2,7 @@ import { EventFoodDetails } from "./event-food-details.type";
 import {EventParticipantDto} from "@/types/event-participant";
 import {EventImage} from "@Rameez349/events-api-sdk/generated/model";
 import {EventReviewDto} from "@/types/event-review.type";
+import {EventAddress} from "@/types/event-address";
 
 export type EventOverviewDto = {
   eventId: string;
@@ -21,15 +22,10 @@ export type EventOverviewDto = {
   participantsCount: number;
   imageThumbnail: string;
   createdDate: string;
-  price: number;
+  pricePerSeat: number;
   isActive: boolean;
   isPublic: boolean;
-  eventAddress: {
-    streetAddress: string;
-    postalCode: string;
-    city: string;
-    region: string;
-  };
+  eventAddress: EventAddress
   eventFoodDetails: EventFoodDetails;
 };
 
@@ -38,6 +34,7 @@ export type EventDetails = {
     userId: string;
     name: string;
     description: string;
+    pricePerSeat: number;
     maxAllowedParticipants: number;
     minAllowedAge: number;
     maxAllowedAge: number;
@@ -47,7 +44,7 @@ export type EventDetails = {
     createdDate: string;
     isActive: boolean;
     isPublic: boolean;
-    eventAddress: string;
+    eventAddress: EventAddress;
     eventFoodDetails: EventFoodDetails;
     eventParticipants: EventParticipantDto[];
     eventImages: EventImage[];

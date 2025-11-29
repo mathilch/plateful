@@ -9,6 +9,7 @@ import { parseJwt } from "@/lib/jwt-decoder.helper";
 import {getEventById, withdrawFromEvent} from "@/services/api/events-api.service";
 import { signUpForEvent } from "@/services/api/events-api.service";
 import {getUserById} from "@/services/api/user-api.service";
+import LocationMiniMap from "@/components/core/createFoodEventForms/locationMiniMap"
 
 
 
@@ -33,7 +34,7 @@ export default function EventDetailsPage() {
             .join("")
             .toLowerCase()
     }
-    const ingredients = event?.eventFoodDetails.ingredients;
+    const ingredients = event?.eventFoodDetails?.ingredients;
     const ingredientsArray = Array.isArray(ingredients) 
         ? ingredients 
         : typeof ingredients === "string" 
@@ -54,7 +55,7 @@ export default function EventDetailsPage() {
                 try {
                     const eventData = await getEventById(id as string, token);
                     setEvent(eventData);
-                    const hostData = await getUserById(event!.userId)
+                    const hostData = await getUserById(eventData.userId)
                     setHost(hostData);
                     const decoded = parseJwt(token);
                     const userData = await getUserById(decoded.sub)
@@ -82,8 +83,8 @@ export default function EventDetailsPage() {
         const spotsLeft = event.maxAllowedParticipants - event.eventParticipants.length
         const correctAge = event.minAllowedAge <= age && age <= event.maxAllowedAge
         
-        
         if (spotsLeft <= 0) return { text: "Unable to sign up", disabled: true, reason: "No more space" };
+        if (age > 120) return { text: "Unable to sign up", disabled: true, reason: "User need to set his birthday before signing up" };
         if (!correctAge) return { text: "Unable to sign up", disabled: true, reason: "Age constraints" };
         if (isParticipating) return { text: "Cancel reservation", disabled: false}
         
@@ -124,17 +125,30 @@ export default function EventDetailsPage() {
                 {/* Image placeholder */}
                 <div className="lg:col-span-2">
                     <div className="w-full h-80 bg-amber-100 rounded-xl">
-                        {event?.imageThumbnail}
+                        {event?.imageThumbnail && (
+                            <img
+                                src={event?.imageThumbnail}
+                                className="w-full h-full object-cover rounded-xl" 
+                            />
+                        )}
                     </div> 
                 </div>
 
                 {/* Side card */}
                 <div className="bg-white border rounded-xl p-6 h-fit shadow-sm">
-                    <div className="text-sm text-gray-600">
-                        {event?.startDate}
+                    <div className="text-base font-semibold text-gray-600">
+                        {event?.startDate &&
+                            new Date(event.startDate).toLocaleDateString('en-US', {
+                                weekday: 'long',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })
+                        }
                     </div>
                     <div className="text-sm text-gray-600 mb-4">
-                        {event?.eventAddress}
+                        {event?.eventAddress?.streetAddress}, {event?.eventAddress?.postalCode} {event?.eventAddress?.city}
                     </div>
 
                     <div className="mb-4">
@@ -161,7 +175,7 @@ export default function EventDetailsPage() {
                     <div className="text-gray-800 text-lg font-semibold mb-6">
                         Price per seat <br />
                         <span className="text-green-800 text-2xl font-bold">
-                            DKK event?.price (migrate) 
+                            DKK {event?.pricePerSeat}
                         </span>
                     </div>
 
@@ -178,7 +192,7 @@ export default function EventDetailsPage() {
             {/* Meal content */}
             <div className="mt-10">
                 <h1 className="text-3xl font-extrabold">
-                    {event?.eventFoodDetails.name}
+                    {event?.name}
                 </h1>
 
                 {/* Host */}
@@ -189,16 +203,16 @@ export default function EventDetailsPage() {
                     <div className="flex flex-col">
             <span className="font-medium"> 
                 {host?.name} • <span className="text-green-700">
-                     host.verified (migrate)
+                     {host?.verified ? "Verified ✅" : "Not yet verified ⛔"}
                 </span>
             </span>
-                        <span className="text-sm text-orange-600 font-semibold">★ host.score (migrate) </span>
+                        <span className="text-sm text-orange-600 font-semibold">★ {!host?.score || host?.score === 0 ? "Host has not been rated yet" : host?.score } </span>
                     </div>
-                    {ingredientsArray.map((ingredient) => (
+                    {event?.eventFoodDetails?.allergens.map((ingredient) => (
                         <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
                         {ingredient}
                         </span>    
-                    ))};
+                    ))}
                 </div>
 
                 {/* About */}
@@ -214,7 +228,11 @@ export default function EventDetailsPage() {
 
                     {/* Map */}
                     <div className="bg-blue-100 h-64 rounded-xl flex items-center justify-center text-gray-500">
-                        Map placeholder (TODO)
+                        <LocationMiniMap
+                            address={event?.eventAddress.streetAddress}
+                            city={event?.eventAddress.city}
+                            postalCode={event?.eventAddress.postalCode}
+                        />
                     </div>
 
                     {/* Reviews */}
@@ -222,8 +240,8 @@ export default function EventDetailsPage() {
                         <h2 className="font-semibold text-lg mb-4">Reviews</h2>
 
                         <div className="space-y-4">
-                            {event?.eventReviews.length ? (
-                                event?.eventReviews.map((review) => (
+                            {event?.eventReviews?.length ? (
+                                event?.eventReviews?.map((review) => (
                                     <div
                                         key={review.reviewId}
                                         className="flex items-start gap-3 p-4 bg-white rounded-xl border shadows-sm"
