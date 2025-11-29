@@ -8,7 +8,7 @@ internal class UserDbContextFactory : IDesignTimeDbContextFactory<UserDbContext>
 {
     public UserDbContext CreateDbContext(string[] args)
     {
-        var basePath = Directory.GetCurrentDirectory();
+        var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../Users.Api");
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: true)
