@@ -18,7 +18,8 @@ internal class ChatDbContextFactory : IDesignTimeDbContextFactory<ChatDbContext>
                                ?? throw new InvalidOperationException("Connection string 'FoodClubChatDbConnection' not found.");
 
         var builder = new DbContextOptionsBuilder<ChatDbContext>();
-        builder.UseNpgsql(connectionString, b => b.MigrationsAssembly(typeof(ChatDbContext).Assembly.FullName));
+        builder.UseNpgsql(
+           "Host=localhost;Port=5435;Database=chatdb;Username=postgres;Password=postgres", b => b.MigrationsAssembly(typeof(ChatDbContext).Assembly.FullName));
 
         return new ChatDbContext(builder.Options);
     }
