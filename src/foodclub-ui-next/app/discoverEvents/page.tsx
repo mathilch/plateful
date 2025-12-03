@@ -54,8 +54,8 @@ export default function DiscoverEvents() {
         controller.signal
       );
       setEvents(result || []);
-    } catch (err) {
-      if ((err as any)?.name === "AbortError") return;
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") return;
       console.error(err);
       setError("Failed to fetch events");
     } finally {

@@ -14,6 +14,14 @@ Next.js routing example:
 
 # Getting started
 
+## Important — before commiting your changes
+
+Run lint before committing code to check for errors:
+
+`pnpm lint`     
+or build:\
+`pnpm build`
+
 ## Important — before running the project
 
 Before running the project, add your personal GitHub token to your machine's environment variables as `GITHUB_NODE_AUTH_TOKEN`.
@@ -41,6 +49,25 @@ On Linux/macOS, add it to your shell profile (for example `~/.bashrc` or `~/.zsh
 https://askubuntu.com/questions/58814/how-do-i-add-environment-variables 
 
 For more information about package permissions, see: https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages
+
+## Run the app inside a container 
+
+
+* Run docker build: 
+
+    (powershell)
+    ```powershell
+    docker build -f Dockerfile --secret id=GITHUB_NODE_AUTH_TOKEN,env=GITHUB_NODE_AUTH_TOKEN -t foodclub-ui-next .
+    ```
+
+* Run the container:
+    (powershell)
+    ```powershell
+    docker run --rm -it -p 3000:3000 foodclub-ui-next
+    ```
+
+
+Or just run the compose...
 
 ## Run the development server
 

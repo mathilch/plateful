@@ -73,7 +73,7 @@ export default function DietAllergensForm() {
         { id: "Mustard", label: "Mustard" },
     ];
 
-    let eventDetail: EventOverviewDto = {
+    const eventDetail: EventOverviewDto = {
         ...createEventDefaultData,
         hostName: username,
         name: formState.whenWhere?.city 

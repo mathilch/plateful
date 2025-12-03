@@ -11,7 +11,8 @@ services:
       users-db:
         condition: service_healthy
     networks:
-      - plateful-network
+      - plateful-backend
+      - plateful-frontend
 
   users-db:
     image: postgres:15
@@ -26,7 +27,7 @@ services:
     ports:
       - "5433:5432"
     networks: 
-      - plateful-network
+      - plateful-backend
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -47,7 +48,8 @@ services:
       users-api:
         condition: service_started
     networks:
-      - plateful-network
+      - plateful-backend
+      - plateful-frontend
 
   events-db:
     image: postgres:15
@@ -62,7 +64,7 @@ services:
     ports:
       - "5434:5432"
     networks: 
-      - plateful-network
+      - plateful-backend
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -84,12 +86,40 @@ services:
       events-db:
         condition: service_healthy
     networks:
-      - plateful-network
+      - plateful-backend
+
+  foodclub-ui-next:
+    build:
+      context: ./src/foodclub-ui-next 
+      dockerfile: Dockerfile 
+      secrets:
+        - GITHUB_NODE_AUTH_TOKEN
+      args:
+        NEXT_PUBLIC_USERS_API_BASE_URL: "http://localhost:5001"
+        NEXT_PUBLIC_EVENTS_API_BASE_URL: "http://localhost:5002"
+    container_name: foodclub-ui-next
+    ports:
+      - "3000:3000"
+    depends_on:
+      users-api:
+      # TODO: add healthchecks and use _healthy instead
+        condition: service_started
+      events-db:
+        condition: service_started
+    networks:
+      - plateful-frontend
 
 volumes:
   users_pgdata:
   events_pgdata:
 
 networks: 
-  plateful-network:
+  plateful-frontend:
     driver: bridge
+  plateful-backend:
+    driver: bridge
+
+
+secrets:
+  GITHUB_NODE_AUTH_TOKEN:
+    environment: GITHUB_NODE_AUTH_TOKEN

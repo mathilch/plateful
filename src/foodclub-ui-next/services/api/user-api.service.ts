@@ -48,8 +48,9 @@ export async function createUserOnSignup(
 
     const data = await res.json();
     return data as UserDetails;
-  } catch (err) {
-    if ((err as any)?.name === "AbortError") {
+  }
+  catch (err: unknown) {
+    if (err instanceof Error && err.name === "AbortError") {
       console.log("createUserOnSignup aborted");
       return null;
     }

@@ -27,6 +27,7 @@ export type EventOverviewDto = {
   isPublic: boolean;
   eventAddress: EventAddress
   eventFoodDetails: EventFoodDetails;
+  price: number;
 };
 
 export type EventDetails = {

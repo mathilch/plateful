@@ -37,7 +37,7 @@ export default function BasicsForm() {
         }
     }, []);
 
-    let eventDetail: EventOverviewDto = {
+    const eventDetail: EventOverviewDto = {
         ...createEventDefaultData,
         name: title || createEventDefaultData.name,
         description: description || createEventDefaultData.description,

@@ -1,0 +1,37 @@
+# syntax=docker.io/docker/dockerfile:1
+
+
+# TODO: finish it
+
+FROM node:24-alpine
+
+WORKDIR /app
+
+ARG GITHUB_NODE_AUTH_TOKEN
+ENV GITHUB_NODE_AUTH_TOKEN=$GITHUB_NODE_AUTH_TOKEN
+
+
+# Install dependencies first (for better layer caching)
+COPY package.json package-lock.json* yarn.lock* pnpm-lock.yaml* .npmrc* ./
+RUN \
+    if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm install; \
+    elif [ -f package-lock.json ]; then npm ci; \
+    elif [ -f yarn.lock ]; then yarn install; \
+    else echo "Lockfile not found." && exit 1; \
+    fi
+
+# Copy source (in dev you'll usually bind-mount, this is just a fallback)
+COPY . .
+
+ENV NODE_ENV=development
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+
+EXPOSE 3000
+
+CMD \
+    if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm dev; \
+    elif [ -f package-lock.json ]; then npm run dev; \
+    elif [ -f yarn.lock ]; then yarn dev; \
+    else echo "Lockfile not found." && exit 1; \
+    fi
