@@ -115,7 +115,7 @@ services:
     depends_on:
       users-api:
         condition: service_healthy
-      events-db:
+      events-api:
         condition: service_healthy
     networks:
       - plateful-frontend
