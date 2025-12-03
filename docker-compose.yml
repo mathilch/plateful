@@ -10,6 +10,12 @@ services:
     depends_on:
       users-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
       - plateful-backend
       - plateful-frontend
@@ -47,6 +53,12 @@ services:
         condition: service_healthy
       users-api:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
       - plateful-backend
       - plateful-frontend
@@ -102,10 +114,9 @@ services:
       - "3000:3000"
     depends_on:
       users-api:
-      # TODO: add healthchecks and use _healthy instead
-        condition: service_started
+        condition: service_healthy
       events-db:
-        condition: service_started
+        condition: service_healthy
     networks:
       - plateful-frontend
 
