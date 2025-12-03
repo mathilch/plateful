@@ -1,6 +1,6 @@
 name: Build foodclub next web app
 
-description: Simple action that runs pnpm build and lint to check if there are no build errors. 
+# Simple action that runs pnpm build and lint to check if there are no build errors.
 
 on:
   workflow_dispatch: 
