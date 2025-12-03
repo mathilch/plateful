@@ -1,0 +1,53 @@
+name: Build foodclub next web app
+
+description: Simple action that runs pnpm build and lint to check if there are no build errors. 
+
+on:
+  workflow_dispatch: 
+  pull_request:
+    paths:
+      - "src/foodclub-ui-next/**"
+  push:
+    branches: ["master"]
+    paths:
+      - "src/foodclub-ui-next/**"
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./src/foodclub-ui-next
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+            version: 10
+
+      - name: Install dependencies
+        env:
+          GITHUB_NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Type Check
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_USERS_API_BASE_URL: "http://localhost:5001"
+          NEXT_PUBLIC_EVENTS_API_BASE_URL: "http://localhost:5002"
+        run: pnpm build
