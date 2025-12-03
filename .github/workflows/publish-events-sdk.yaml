@@ -3,9 +3,12 @@ on:
   push:
     branches:
     - master
-    - feature/events-sdk-cicd
     paths:
       - 'src/EventsMicroservice/**'                 
+      - 'src/npm-packages/events-ts-sdk/**'
+  pull_request:
+    paths:
+      - 'src/EventsMicroservice/**' 
       - 'src/npm-packages/events-ts-sdk/**'
   workflow_dispatch:
 
