@@ -1,0 +1,12 @@
+node_modules
+.pnpm-store
+.git
+.gitignore
+Dockerfile*
+.dockerignore
+.env
+.env.*
+npm-debug.log*
+pnpm-debug.log*
+.vscode
+.idea

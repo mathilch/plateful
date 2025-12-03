@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import LoginDialog from "./loginDialog";
 import SignUpDialog from "./signUpDialog";
 import { jwtDecode } from "jwt-decode";
@@ -69,7 +69,9 @@ export default function FoodAppHeader() {
       />
 
       <header className="relative flex justify-evenly items-center gap-5 h-20 outline-1 outline-gray-200">
-        <GlobalProgress />
+        <Suspense fallback={null}>
+          <GlobalProgress />
+        </Suspense>
         <div className="flex h-20 gap-4 items-center">
           <Link
             href="/"

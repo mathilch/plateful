@@ -27,6 +27,8 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
+        builder.Services.AddHealthChecks();
+
         builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
         builder.Services.ConfigureJwtBearerAuthentication(builder.Configuration);
         builder.Services.ConfigureSwagger();
@@ -64,12 +66,15 @@ public class Program
             DbInitializer.Seed(context!);
         }
 
-        app.UseExceptionHandler(options => { });
+        app.UseExceptionHandler();
         app.UseHttpsRedirection();
+        app.UseCors();
+        app.MapHealthChecks("/health");
+        
         app.UseAuthentication();
         app.UseAuthorization();
+        
         app.MapControllers();
-        app.UseCors();
         app.Run();
     }
 }

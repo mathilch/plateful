@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@Rameez349/events-api-sdk':
         specifier: ~1.1.11
-        version: 1.1.11
+        version: 1.1.21
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -90,8 +90,8 @@ importers:
 
 packages:
 
-  '@Rameez349/events-api-sdk@1.1.11':
-    resolution: {integrity: sha512-/cGBRmqe1QnUbKglzPRhQuDsk/xJaopMQGuOs7Ru2v3UYUhdkxAi2KiRTdsWEGxwxCbJ6INDqI+v+Ugx1FLkKQ==, tarball: https://npm.pkg.github.com/download/@Rameez349/events-api-sdk/1.1.11/43fc0bd61173db4b0dad2a3bb581b41e559ad7cc}
+  '@Rameez349/events-api-sdk@1.1.21':
+    resolution: {integrity: sha512-7igsEqrzNg013hl+uroKZT+v/dNpTK5tA3aEbkoPfhgOE2XGZT0AMy/hCTMnREQdN3EOadpk2M/RjQuUi3twVQ==, tarball: https://npm.pkg.github.com/download/@Rameez349/events-api-sdk/1.1.21/e82165a32585ff16ab1a45b133180398c5b3b51b}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -2223,7 +2223,7 @@ packages:
 
 snapshots:
 
-  '@Rameez349/events-api-sdk@1.1.11':
+  '@Rameez349/events-api-sdk@1.1.21':
     dependencies:
       '@types/node': 24.10.1
       typescript: 5.9.3

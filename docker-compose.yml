@@ -10,8 +10,15 @@ services:
     depends_on:
       users-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
-      - plateful-network
+      - plateful-backend
+      - plateful-frontend
 
   users-db:
     image: postgres:15
@@ -26,7 +33,7 @@ services:
     ports:
       - "5433:5432"
     networks: 
-      - plateful-network
+      - plateful-backend
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -46,8 +53,15 @@ services:
         condition: service_healthy
       users-api:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
-      - plateful-network
+      - plateful-backend
+      - plateful-frontend
 
   events-db:
     image: postgres:15
@@ -62,7 +76,7 @@ services:
     ports:
       - "5434:5432"
     networks: 
-      - plateful-network
+      - plateful-backend
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -84,12 +98,39 @@ services:
       events-db:
         condition: service_healthy
     networks:
-      - plateful-network
+      - plateful-backend
+
+  foodclub-ui-next:
+    build:
+      context: ./src/foodclub-ui-next 
+      dockerfile: Dockerfile 
+      secrets:
+        - GITHUB_NODE_AUTH_TOKEN
+      args:
+        NEXT_PUBLIC_USERS_API_BASE_URL: "http://localhost:5001"
+        NEXT_PUBLIC_EVENTS_API_BASE_URL: "http://localhost:5002"
+    container_name: foodclub-ui-next
+    ports:
+      - "3000:3000"
+    depends_on:
+      users-api:
+        condition: service_healthy
+      events-api:
+        condition: service_healthy
+    networks:
+      - plateful-frontend
 
 volumes:
   users_pgdata:
   events_pgdata:
 
 networks: 
-  plateful-network:
+  plateful-frontend:
     driver: bridge
+  plateful-backend:
+    driver: bridge
+
+
+secrets:
+  GITHUB_NODE_AUTH_TOKEN:
+    environment: GITHUB_NODE_AUTH_TOKEN

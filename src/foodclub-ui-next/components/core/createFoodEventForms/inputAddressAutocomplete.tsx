@@ -24,7 +24,8 @@ export default function InputAddressAutocomplete({
     const [inputSearchQuery, setInputSearchQuery] = useState('');
     const [autocompleteContent, setAutocompleteContent] = useState<AddressAutocompleteItem[] | null>(null);
     const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
-    const [kommuner, setKommuner] = useState<any[] | null>(null);
+    type Kommune = { kode: string; region?: { navn: string; } | null; }
+    const [kommuner, setKommuner] = useState<Kommune[] | null>(null);
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
         const inpVal = e.target.value;
@@ -53,7 +54,7 @@ export default function InputAddressAutocomplete({
         return () => { cancelled = true };
     }, []);
 
-    function getRegionByMunicipality(kode?: string|null) {
+    function getRegionByMunicipality(kode?: string | null) {
         if (!kode || !Array.isArray(kommuner)) return "Unknown";
         const kommune = kommuner.find((k: { kode: string; }) => k.kode === kode);
         return kommune?.region?.navn ?? "Unknown";
