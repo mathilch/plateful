@@ -14,91 +14,40 @@ internal static class TestData
 {
     private static DateTime DefaultStartDate => DateTime.UtcNow.AddDays(7).Date.AddHours(18);
 
-    public static CreateEventRequestDto NewCreateEventRequest(string name = "Integration Feast")
-    {
-        return new CreateEventRequestDto(
-            Name: name,
-            Description: "Dinner with integration tests",
-            MaxAllowedParticipants: 8,
-            PricePerSeat: 25,
-            MinAllowedAge: 18,
-            MaxAllowedAge: 80,
-            StartDate: DefaultStartDate,
-            EndDate: null,
-            ReservationEndDate: DefaultStartDate.AddDays(-1),
-            ImageThumbnail: "thumbnail.png",
-            IsPublic: true,
-            EventFoodDetails: new EventFoodDetails
-            {
-                Name = "Tasting Menu",
-                Ingredients = "Pasta,Tomato,Cheese",
-                DietaryStyles = new List<string> { "Vegetarian" },
-                Allergens = new List<string> { "Gluten" },
-                AdditionalFoodItems = "Sparkling water"
-            },
-            Images: Array.Empty<EventImage>(),
-            StreetAddress: "123 Test Street",
-            PostalCode: "12345",
-            City: "Testville",
-            Region: "TestState"
-        );
-    }
-
     /// <summary>
-    /// Creates a CreateEventRequestDto with customizable fields for validation testing.
+    /// Creates a valid CreateEventRequestDto with default values.
+    /// Use with expression to override: TestData.ValidRequest() with { Name = "Custom" }
     /// </summary>
-    public static CreateEventRequestDto NewCreateEventRequestWith(
-        string? name = "Integration Feast",
-        string? description = "Dinner with integration tests",
-        int maxAllowedParticipants = 8,
-        double pricePerSeat = 25,
-        int minAllowedAge = 18,
-        int maxAllowedAge = 80,
-        DateTime? startDate = null,
-        DateTime? endDate = null,
-        DateTime? reservationEndDate = null,
-        string? imageThumbnail = "thumbnail.png",
-        bool isPublic = true,
-        EventFoodDetails? eventFoodDetails = null,
-        string? streetAddress = "123 Test Street",
-        string? postalCode = "12345",
-        string? city = "Testville",
-        string? region = "TestState")
-    {
-        var start = startDate ?? DefaultStartDate;
-        return new CreateEventRequestDto(
-            Name: name!,
-            Description: description!,
-            MaxAllowedParticipants: maxAllowedParticipants,
-            PricePerSeat: pricePerSeat,
-            MinAllowedAge: minAllowedAge,
-            MaxAllowedAge: maxAllowedAge,
-            StartDate: start,
-            EndDate: endDate,
-            ReservationEndDate: reservationEndDate ?? start.AddDays(-1),
-            ImageThumbnail: imageThumbnail!,
-            IsPublic: isPublic,
-            EventFoodDetails: eventFoodDetails ?? new EventFoodDetails
-            {
-                Name = "Tasting Menu",
-                Ingredients = "Pasta,Tomato,Cheese",
-                DietaryStyles = new List<string> { "Vegetarian" },
-                Allergens = new List<string> { "Gluten" },
-                AdditionalFoodItems = "Sparkling water"
-            },
-            Images: Array.Empty<EventImage>(),
-            StreetAddress: streetAddress!,
-            PostalCode: postalCode!,
-            City: city!,
-            Region: region!
-        );
-    }
+    public static CreateEventRequestDto ValidRequest() => new(
+        Name: "Integration Feast",
+        Description: "Dinner with integration tests",
+        MaxAllowedParticipants: 8,
+        PricePerSeat: 25,
+        MinAllowedAge: 18,
+        MaxAllowedAge: 80,
+        StartDate: DefaultStartDate,
+        EndDate: null,
+        ReservationEndDate: DefaultStartDate.AddDays(-1),
+        ImageThumbnail: "thumbnail.png",
+        IsPublic: true,
+        EventFoodDetails: new EventFoodDetails
+        {
+            Name = "Tasting Menu",
+            Ingredients = "Pasta,Tomato,Cheese",
+            DietaryStyles = new List<string> { "Vegetarian" },
+            Allergens = new List<string> { "Gluten" },
+            AdditionalFoodItems = "Sparkling water"
+        },
+        Images: Array.Empty<EventImage>(),
+        StreetAddress: "123 Test Street",
+        PostalCode: "12345",
+        City: "Testville",
+        Region: "TestState"
+    );
 
     /// <summary>
     /// Asserts that an EventDto matches the expected values from a CreateEventRequestDto.
     /// </summary>
-    /// <param name="actual">The actual EventDto returned from the API.</param>
-    /// <param name="expected">The expected CreateEventRequestDto.</param>
     public static void AssertEventMatchesRequest(EventDto actual, CreateEventRequestDto expected)
     {
         actual.Should().NotBeNull();

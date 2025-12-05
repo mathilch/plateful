@@ -19,14 +19,14 @@ public class UserEventsTests(EventsApiFactory factory) : IClassFixture<EventsApi
     public async Task GetEventsByUser_ShouldReturnUserEvents()
     {
         // Create an event first
-        var payload = TestData.NewCreateEventRequest("User's Event");
-        await _client.PostAsJsonAsync("/api/event", payload);
+        var payload = TestData.ValidRequest() with { Name = "User's Event" };
+        await _client.PostAsJsonAsync("/api/event", payload, cancellationToken: TestContext.Current.CancellationToken);
 
         // Get events for the current user
-        var response = await _client.GetAsync($"/api/event/user/{TestUsers.DefaultUserId}");
+        var response = await _client.GetAsync($"/api/event/user/{TestUsers.DefaultUserId}", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>();
+        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
         events.Should().NotBeNull();
         events!.Should().NotBeEmpty();
         events.Should().AllSatisfy(e => e.UserId.Should().Be(TestUsers.DefaultUserId));
@@ -36,10 +36,10 @@ public class UserEventsTests(EventsApiFactory factory) : IClassFixture<EventsApi
     public async Task GetEventsByUser_WithNoEvents_ShouldReturnEmptyList()
     {
         var otherUserId = Guid.NewGuid();
-        var response = await _client.GetAsync($"/api/event/user/{otherUserId}");
+        var response = await _client.GetAsync($"/api/event/user/{otherUserId}", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>();
+        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
         events.Should().NotBeNull();
         events!.Should().BeEmpty();
     }
@@ -52,13 +52,13 @@ public class UserEventsTests(EventsApiFactory factory) : IClassFixture<EventsApi
         // Create multiple events
         foreach (var name in eventNames)
         {
-            var payload = TestData.NewCreateEventRequest(name);
-            await _client.PostAsJsonAsync("/api/event", payload);
+            var payload = TestData.ValidRequest() with { Name = name };
+            await _client.PostAsJsonAsync("/api/event", payload, cancellationToken: TestContext.Current.CancellationToken);
         }
 
         // Get events for the current user
-        var response = await _client.GetAsync($"/api/event/user/{TestUsers.DefaultUserId}");
-        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>();
+        var response = await _client.GetAsync($"/api/event/user/{TestUsers.DefaultUserId}", TestContext.Current.CancellationToken);
+        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
 
         foreach (var name in eventNames)
         {
@@ -74,10 +74,10 @@ public class UserEventsTests(EventsApiFactory factory) : IClassFixture<EventsApi
     public async Task GetEventsAsParticipant_WhenNotParticipating_ShouldReturnEmptyList()
     {
         var otherUserId = Guid.NewGuid();
-        var response = await _client.GetAsync($"/api/event/user-as-participant/{otherUserId}");
+        var response = await _client.GetAsync($"/api/event/user-as-participant/{otherUserId}", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>();
+        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
         events.Should().NotBeNull();
         events!.Should().BeEmpty();
     }
@@ -89,10 +89,10 @@ public class UserEventsTests(EventsApiFactory factory) : IClassFixture<EventsApi
     [Fact]
     public async Task GetUserReviewsAsHost_WithNoReviews_ShouldReturnEmptyList()
     {
-        var response = await _client.GetAsync($"/api/event/user-reviews-as-host/{TestUsers.DefaultUserId}");
+        var response = await _client.GetAsync($"/api/event/user-reviews-as-host/{TestUsers.DefaultUserId}", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var reviews = await response.Content.ReadFromJsonAsync<List<EventReviewDto>>();
+        var reviews = await response.Content.ReadFromJsonAsync<List<EventReviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
         reviews.Should().NotBeNull();
     }
 
@@ -100,10 +100,10 @@ public class UserEventsTests(EventsApiFactory factory) : IClassFixture<EventsApi
     public async Task GetUserReviewsAsHost_WithNonExistentUser_ShouldReturnEmptyList()
     {
         var nonExistentUserId = Guid.NewGuid();
-        var response = await _client.GetAsync($"/api/event/user-reviews-as-host/{nonExistentUserId}");
+        var response = await _client.GetAsync($"/api/event/user-reviews-as-host/{nonExistentUserId}", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var reviews = await response.Content.ReadFromJsonAsync<List<EventReviewDto>>();
+        var reviews = await response.Content.ReadFromJsonAsync<List<EventReviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
         reviews.Should().NotBeNull();
         reviews!.Should().BeEmpty();
     }

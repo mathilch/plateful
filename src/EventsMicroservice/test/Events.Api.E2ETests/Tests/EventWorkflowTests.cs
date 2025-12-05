@@ -23,23 +23,23 @@ public class EventWorkflowTests(EventsApiFactory factory) : IClassFixture<Events
         // Create multiple events
         foreach (var name in eventNames)
         {
-            var payload = TestData.NewCreateEventRequest(name);
-            var response = await _client.PostAsJsonAsync("/api/event", payload);
+            var payload = TestData.ValidRequest() with { Name = name };
+            var response = await _client.PostAsJsonAsync("/api/event", payload, cancellationToken: TestContext.Current.CancellationToken);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.Content.ReadFromJsonAsync<EventDto>();
+            var created = await response.Content.ReadFromJsonAsync<EventDto>(cancellationToken: TestContext.Current.CancellationToken);
             createdIds.Add(created!.EventId);
         }
 
         // Verify all events exist
         foreach (var id in createdIds)
         {
-            var response = await _client.GetAsync($"/api/event/{id}");
+            var response = await _client.GetAsync($"/api/event/{id}", TestContext.Current.CancellationToken);
             response.EnsureSuccessStatusCode();
         }
 
         // Get user's events - should contain all created events
-        var userEventsResponse = await _client.GetAsync($"/api/event/user/{TestUsers.DefaultUserId}");
-        var userEvents = await userEventsResponse.Content.ReadFromJsonAsync<List<EventOverviewDto>>();
+        var userEventsResponse = await _client.GetAsync($"/api/event/user/{TestUsers.DefaultUserId}", TestContext.Current.CancellationToken);
+        var userEvents = await userEventsResponse.Content.ReadFromJsonAsync<List<EventOverviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
         userEvents!.Select(e => e.EventId).Should().Contain(createdIds);
     }
 
@@ -49,12 +49,12 @@ public class EventWorkflowTests(EventsApiFactory factory) : IClassFixture<Events
         // Create several events to ensure we have more than one page
         for (int i = 0; i < 5; i++)
         {
-            var payload = TestData.NewCreateEventRequest($"Pagination Test Event {i}");
-            await _client.PostAsJsonAsync("/api/event", payload);
+            var payload = TestData.ValidRequest() with { Name = $"Pagination Test Event {i}" };
+            await _client.PostAsJsonAsync("/api/event", payload, cancellationToken: TestContext.Current.CancellationToken);
         }
 
-        var response = await _client.GetAsync("/api/event/recent");
-        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>();
+        var response = await _client.GetAsync("/api/event/recent", TestContext.Current.CancellationToken);
+        var events = await response.Content.ReadFromJsonAsync<List<EventOverviewDto>>(cancellationToken: TestContext.Current.CancellationToken);
 
         // Should return at most 10 events (default page size)
         events!.Count.Should().BeLessThanOrEqualTo(10);
@@ -63,14 +63,14 @@ public class EventWorkflowTests(EventsApiFactory factory) : IClassFixture<Events
     [Fact]
     public async Task GetEventById_AfterCreation_ShouldReturnCorrectData()
     {
-        var payload = TestData.NewCreateEventRequest("Event For GetById Test");
-        var createResponse = await _client.PostAsJsonAsync("/api/event", payload);
-        var created = await createResponse.Content.ReadFromJsonAsync<EventDto>();
+        var payload = TestData.ValidRequest() with { Name = "Event For GetById Test" };
+        var createResponse = await _client.PostAsJsonAsync("/api/event", payload, cancellationToken: TestContext.Current.CancellationToken);
+        var created = await createResponse.Content.ReadFromJsonAsync<EventDto>(cancellationToken: TestContext.Current.CancellationToken);
 
-        var response = await _client.GetAsync($"/api/event/{created!.EventId}");
+        var response = await _client.GetAsync($"/api/event/{created!.EventId}", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var fetched = await response.Content.ReadFromJsonAsync<EventDto>();
+        var fetched = await response.Content.ReadFromJsonAsync<EventDto>(cancellationToken: TestContext.Current.CancellationToken);
         fetched.Should().NotBeNull();
         fetched!.EventId.Should().Be(created.EventId);
         fetched.Name.Should().Be(payload.Name);

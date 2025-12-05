@@ -2,10 +2,21 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Events.Application.Dtos;
+using Events.Application.Dtos.Requests;
 using FluentAssertions;
 using Xunit;
 
 namespace Events.Api.E2ETests.Tests;
+
+/// <summary>
+/// Expected validation result for declarative tests.
+/// </summary>
+public enum Expected { Valid, TooShort, TooLong }
+
+/// <summary>
+/// String field identifiers for declarative validation tests.
+/// </summary>
+public enum Field { Name, Description, StreetAddress, City, PostalCode, Region, ImageThumbnail }
 
 /// <summary>
 /// Tests for event creation endpoint (POST /api/event).
@@ -13,14 +24,14 @@ namespace Events.Api.E2ETests.Tests;
 [Collection("EventsApi")]
 public class EventCreationTests(EventsApiFactory factory) : IClassFixture<EventsApiFactory>, IAsyncDisposable
 {
+
+    #region Setup / Helper methods
+
     private readonly HttpClient _client = factory.CreateClient();
     
-    // Stores last response for logging in teardown
     private HttpResponseMessage? _response;
     private string? _responseBody;
-
-    #region Teardown / Debug Logging
-
+    
     public async ValueTask DisposeAsync()
     {
         if (_response is not null)
@@ -31,10 +42,8 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
 
     private async Task LogResponse()
     {
-        // Read body if not already read
         _responseBody ??= await _response!.Content.ReadAsStringAsync();
         
-        // Try to pretty-print JSON
         string formattedBody;
         try
         {
@@ -54,11 +63,18 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         TestContext.Current.TestOutputHelper?.WriteLine("═══════════════════════════════════════════════════════════");
     }
 
-    private async Task AssertBadRequest(string expectedMessage)
+    private async Task AssertBadRequest(string shouldContain)
     {
         _response!.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         _responseBody = await _response.Content.ReadAsStringAsync();
-        _responseBody.Should().Contain(expectedMessage);
+        _responseBody.Should().Contain(shouldContain);
+    }
+    
+    private async Task AssertBadRequest(string[] shouldContain)
+    {
+        _response!.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _responseBody = await _response.Content.ReadAsStringAsync();
+        _responseBody.Should().ContainAll(shouldContain);
     }
 
     #endregion
@@ -68,11 +84,11 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     [Fact]
     public async Task CreateEvent_WithValidData_ShouldReturnCreated()
     {
-        var request = TestData.NewCreateEventRequest("New Test Event");
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { Name = "New Test Event" };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
@@ -80,16 +96,16 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     [Fact]
     public async Task CreateEvent_ThenGetById_ShouldRoundTrip()
     {
-        var request = TestData.NewCreateEventRequest();
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest();
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
         created.Should().NotBeNull();
 
-        var getResponse = await _client.GetAsync($"/api/event/{created!.EventId}");
+        var getResponse = await _client.GetAsync($"/api/event/{created!.EventId}", TestContext.Current.CancellationToken);
         getResponse.EnsureSuccessStatusCode();
-        var fetched = await getResponse.Content.ReadFromJsonAsync<EventDto>();
+        var fetched = await getResponse.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(fetched!, request);
     }
@@ -97,11 +113,11 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     [Fact]
     public async Task CreateEvent_WithSpecialCharacters_ShouldSucceed()
     {
-        var request = TestData.NewCreateEventRequest("Event with @#$% & Special Chars!");
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { Name = "Event with @#$% & Special Chars!" };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
@@ -109,149 +125,147 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     [Fact]
     public async Task CreateEvent_WithUnicodeCharacters_ShouldSucceed()
     {
-        var request = TestData.NewCreateEventRequest("イベント 🍣 Événement невловимі свинію ямаленький гвинтикпес патрон");
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { Name = "イベント 🍣 Événement невловимі свинію ямаленький гвинтикпес патрон" };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
 
     #endregion
 
-    #region Name Validation Tests
+    #region Declarative String Length Validation Tests
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")] // whitespace only
-    public async Task CreateEvent_WithEmptyOrNullName_ShouldReturnBadRequest(string? invalidName)
+    // Name: min 3, max 150
+    [InlineData(Field.Name, 1, Expected.TooShort)]
+    [InlineData(Field.Name, 2, Expected.TooShort)]
+    [InlineData(Field.Name, 3, Expected.Valid)]
+    [InlineData(Field.Name, 150, Expected.Valid)]
+    [InlineData(Field.Name, 151, Expected.TooLong)]
+    // Description: max 150
+    [InlineData(Field.Description, 1, Expected.Valid)]
+    [InlineData(Field.Description, 150, Expected.Valid)]
+    [InlineData(Field.Description, 151, Expected.TooLong)]
+    // StreetAddress: max 256
+    [InlineData(Field.StreetAddress, 1, Expected.Valid)]
+    [InlineData(Field.StreetAddress, 256, Expected.Valid)]
+    [InlineData(Field.StreetAddress, 257, Expected.TooLong)]
+    // City: max 128
+    [InlineData(Field.City, 1, Expected.Valid)]
+    [InlineData(Field.City, 128, Expected.Valid)]
+    [InlineData(Field.City, 129, Expected.TooLong)]
+    // PostalCode: max 32
+    [InlineData(Field.PostalCode, 1, Expected.Valid)]
+    [InlineData(Field.PostalCode, 32, Expected.Valid)]
+    [InlineData(Field.PostalCode, 33, Expected.TooLong)]
+    // Region: max 128
+    [InlineData(Field.Region, 1, Expected.Valid)]
+    [InlineData(Field.Region, 128, Expected.Valid)]
+    [InlineData(Field.Region, 129, Expected.TooLong)]
+    // ImageThumbnail: max 150
+    [InlineData(Field.ImageThumbnail, 1, Expected.Valid)]
+    [InlineData(Field.ImageThumbnail, 150, Expected.Valid)]
+    [InlineData(Field.ImageThumbnail, 151, Expected.TooLong)]
+    public async Task CreateEvent_StringLengthValidation(Field field, int length, Expected expected)
     {
-        var request = TestData.NewCreateEventRequestWith(name: invalidName);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var value = new string('X', length);
+        var request = WithField(TestData.ValidRequest(), field, value);
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("Name"); // Either "Name is required" or "The Name field is required."
+        switch (expected)
+        {
+            case Expected.Valid:
+                _response.StatusCode.Should().Be(HttpStatusCode.Created, 
+                    $"{field} with length {length} should be valid.");
+                break;
+            case Expected.TooShort:
+                // FluentValidation: "The length of 'Name' must be at least 3 characters. You entered 2 characters."
+                await AssertBadRequest([field.ToString(),"must be at least", $"You entered {length} characters"]);
+                break;
+            case Expected.TooLong:
+                // FluentValidation: "The length of 'City' must be 128 characters or fewer. You entered 129 characters."
+                await AssertBadRequest([field.ToString(),"characters or fewer", $"You entered {length} characters"]);
+                break;
+        }
     }
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(2)]
-    public async Task CreateEvent_WithTooShortName_ShouldReturnBadRequest(int length)
+    [InlineData(Field.Name, null)]
+    [InlineData(Field.Name, "")]
+    [InlineData(Field.Name, "   ")]
+    [InlineData(Field.Description, null)]
+    [InlineData(Field.Description, "")]
+    [InlineData(Field.StreetAddress, null)]
+    [InlineData(Field.StreetAddress, "")]
+    [InlineData(Field.City, null)]
+    [InlineData(Field.City, "")]
+    [InlineData(Field.PostalCode, null)]
+    [InlineData(Field.PostalCode, "")]
+    [InlineData(Field.Region, null)]
+    [InlineData(Field.Region, "")]
+    [InlineData(Field.ImageThumbnail, null)]
+    [InlineData(Field.ImageThumbnail, "")]
+    public async Task CreateEvent_RequiredFieldValidation(Field field, string? value)
     {
-        var shortName = new string('A', length);
-        var request = TestData.NewCreateEventRequestWith(name: shortName);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = WithField(TestData.ValidRequest(), field, value);
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("Name must be at least 3 characters");
+        await AssertBadRequest(field.ToString());
     }
 
-    [Theory]
-    [InlineData(3)]   // minimum valid
-    [InlineData(50)]  // normal
-    [InlineData(150)] // maximum valid (db constraint)
-    public async Task CreateEvent_WithValidNameLength_ShouldSucceed(int length)
-    {
-        var validName = new string('A', length);
-        var request = TestData.NewCreateEventRequestWith(name: validName);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        _response.StatusCode.Should().Be(HttpStatusCode.Created);
-    }
-
-    [Theory]
-    [InlineData(151)]
-    [InlineData(200)]
-    [InlineData(500)]
-    public async Task CreateEvent_WithTooLongName_ShouldReturnBadRequest(int length)
-    {
-        var longName = new string('A', length);
-        var request = TestData.NewCreateEventRequestWith(name: longName);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("Name cannot exceed 150 characters");
-    }
+    private static CreateEventRequestDto WithField(CreateEventRequestDto request, Field field, string? value) =>
+        field switch
+        {
+            Field.Name => request with { Name = value! },
+            Field.Description => request with { Description = value! },
+            Field.StreetAddress => request with { StreetAddress = value! },
+            Field.City => request with { City = value! },
+            Field.PostalCode => request with { PostalCode = value! },
+            Field.Region => request with { Region = value! },
+            Field.ImageThumbnail => request with { ImageThumbnail = value! },
+            _ => throw new ArgumentOutOfRangeException(nameof(field))
+        };
 
     #endregion
 
-    #region Description Validation Tests
+    #region Numeric Validation Tests
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public async Task CreateEvent_WithEmptyDescription_ShouldReturnBadRequest(string? invalidDescription)
+    [InlineData(0, false)]
+    [InlineData(-1, false)]
+    [InlineData(-100, false)]
+    [InlineData(1, true)]
+    [InlineData(10, true)]
+    [InlineData(100, true)]
+    public async Task CreateEvent_MaxParticipantsValidation(int count, bool shouldBeValid)
     {
-        var request = TestData.NewCreateEventRequestWith(description: invalidDescription);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { MaxAllowedParticipants = count };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("Description"); // Either "Description is required" or "The Description field is required."
+        if (shouldBeValid)
+            _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        else
+            await AssertBadRequest("greater than '0'"); // FluentValidation default: "'X' must be greater than '0'."
     }
 
     [Theory]
-    [InlineData(151)]
-    [InlineData(300)]
-    public async Task CreateEvent_WithTooLongDescription_ShouldReturnBadRequest(int length)
+    [InlineData(-1, false)]
+    [InlineData(-100.50, false)]
+    [InlineData(0, true)]
+    [InlineData(10.50, true)]
+    [InlineData(100, true)]
+    public async Task CreateEvent_PriceValidation(double price, bool shouldBeValid)
     {
-        var longDescription = new string('D', length);
-        var request = TestData.NewCreateEventRequestWith(description: longDescription);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { PricePerSeat = price };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("Description cannot exceed 150 characters");
-    }
-
-    #endregion
-
-    #region MaxAllowedParticipants Validation Tests
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    [InlineData(-100)]
-    public async Task CreateEvent_WithInvalidParticipantCount_ShouldReturnBadRequest(int invalidCount)
-    {
-        var request = TestData.NewCreateEventRequestWith(maxAllowedParticipants: invalidCount);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("MaxAllowedParticipants must be at least 1");
-    }
-
-    [Theory]
-    [InlineData(1)]
-    [InlineData(10)]
-    [InlineData(100)]
-    public async Task CreateEvent_WithValidParticipantCount_ShouldSucceed(int validCount)
-    {
-        var request = TestData.NewCreateEventRequestWith(maxAllowedParticipants: validCount);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        _response.StatusCode.Should().Be(HttpStatusCode.Created);
-    }
-
-    #endregion
-
-    #region PricePerSeat Validation Tests
-
-    [Theory]
-    [InlineData(-1)]
-    [InlineData(-100.50)]
-    public async Task CreateEvent_WithNegativePrice_ShouldReturnBadRequest(double invalidPrice)
-    {
-        var request = TestData.NewCreateEventRequestWith(pricePerSeat: invalidPrice);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("PricePerSeat cannot be negative");
-    }
-
-    [Theory]
-    [InlineData(0)]    // free event
-    [InlineData(10.50)]
-    [InlineData(100)]
-    public async Task CreateEvent_WithValidPrice_ShouldSucceed(double validPrice)
-    {
-        var request = TestData.NewCreateEventRequestWith(pricePerSeat: validPrice);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        if (shouldBeValid)
+            _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        else
+            await AssertBadRequest("greater than or equal to '0'"); // FluentValidation default
     }
 
     #endregion
@@ -264,31 +278,32 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     [InlineData(-5, -10)]
     public async Task CreateEvent_WithNegativeAge_ShouldReturnBadRequest(int minAge, int maxAge)
     {
-        var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { MinAllowedAge = minAge, MaxAllowedAge = maxAge };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("cannot be negative");
+        await AssertBadRequest("greater than or equal to '0'"); // FluentValidation default
     }
 
     [Theory]
-    [InlineData(50, 18)]  // min > max
+    [InlineData(50, 18)]
     [InlineData(30, 25)]
     public async Task CreateEvent_WithMinAgeGreaterThanMaxAge_ShouldReturnBadRequest(int minAge, int maxAge)
     {
-        var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { MinAllowedAge = minAge, MaxAllowedAge = maxAge };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("MinAllowedAge cannot be greater than MaxAllowedAge");
+        await AssertBadRequest("less than or equal to"); // FluentValidation default for cross-field
     }
 
     [Theory]
     [InlineData(0, 100)]
     [InlineData(18, 65)]
-    [InlineData(21, 21)] // same age is valid
-    public async Task CreateEvent_WithValidAgeRange_ShouldSucceed(int minAge, int maxAge)
+    [InlineData(21, 21)]
+    [InlineData(0, 150)]
+    public async Task CreateEvent_ValidAgeRange_ShouldSucceed(int minAge, int maxAge)
     {
-        var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { MinAllowedAge = minAge, MaxAllowedAge = maxAge };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
@@ -301,165 +316,53 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithStartDateInPast_ShouldReturnBadRequest()
     {
         var pastDate = DateTime.UtcNow.AddDays(-1);
-        var request = TestData.NewCreateEventRequestWith(startDate: pastDate);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with { StartDate = pastDate };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("StartDate must be in the future");
+        await AssertBadRequest("Start Date"); // FluentValidation uses "Start Date" in message
     }
 
     [Fact]
     public async Task CreateEvent_WithReservationEndDateAfterStartDate_ShouldReturnBadRequest()
     {
         var startDate = DateTime.UtcNow.AddDays(7);
-        var reservationEndDate = startDate.AddDays(1); // after start
-        var request = TestData.NewCreateEventRequestWith(
-            startDate: startDate,
-            reservationEndDate: reservationEndDate);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with 
+        { 
+            StartDate = startDate, 
+            ReservationEndDate = startDate.AddDays(1) 
+        };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("ReservationEndDate must be before or on the StartDate");
+        await AssertBadRequest("Reservation End Date");
     }
 
     [Fact]
     public async Task CreateEvent_WithEndDateBeforeStartDate_ShouldReturnBadRequest()
     {
         var startDate = DateTime.UtcNow.AddDays(7);
-        var endDate = startDate.AddHours(-1); // before start
-        var request = TestData.NewCreateEventRequestWith(
-            startDate: startDate,
-            endDate: endDate);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with 
+        { 
+            StartDate = startDate, 
+            EndDate = startDate.AddHours(-1) 
+        };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest("EndDate must be after StartDate");
+        await AssertBadRequest("End Date");
     }
 
     [Fact]
     public async Task CreateEvent_WithValidDates_ShouldSucceed()
     {
         var startDate = DateTime.UtcNow.AddDays(7);
-        var endDate = startDate.AddHours(3);
-        var reservationEndDate = startDate.AddDays(-1);
-        var request = TestData.NewCreateEventRequestWith(
-            startDate: startDate,
-            endDate: endDate,
-            reservationEndDate: reservationEndDate);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
+        var request = TestData.ValidRequest() with 
+        { 
+            StartDate = startDate, 
+            EndDate = startDate.AddHours(3),
+            ReservationEndDate = startDate.AddDays(-1) 
+        };
+        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-    }
-
-    #endregion
-
-    #region Address Validation Tests
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public async Task CreateEvent_WithEmptyStreetAddress_ShouldReturnBadRequest(string? invalidAddress)
-    {
-        var request = TestData.NewCreateEventRequestWith(streetAddress: invalidAddress);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("StreetAddress"); // Either "StreetAddress is required" or "The StreetAddress field is required."
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public async Task CreateEvent_WithEmptyCity_ShouldReturnBadRequest(string? invalidCity)
-    {
-        var request = TestData.NewCreateEventRequestWith(city: invalidCity);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("City"); // Either "City is required" or "The City field is required."
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public async Task CreateEvent_WithEmptyPostalCode_ShouldReturnBadRequest(string? invalidPostalCode)
-    {
-        var request = TestData.NewCreateEventRequestWith(postalCode: invalidPostalCode);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("PostalCode"); // Either "PostalCode is required" or "The PostalCode field is required."
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public async Task CreateEvent_WithEmptyRegion_ShouldReturnBadRequest(string? invalidRegion)
-    {
-        var request = TestData.NewCreateEventRequestWith(region: invalidRegion);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("Region"); // Either "Region is required" or "The Region field is required."
-    }
-
-    [Fact]
-    public async Task CreateEvent_WithTooLongStreetAddress_ShouldReturnBadRequest()
-    {
-        var longAddress = new string('A', 257); // max is 256
-        var request = TestData.NewCreateEventRequestWith(streetAddress: longAddress);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("StreetAddress cannot exceed 256 characters");
-    }
-
-    [Fact]
-    public async Task CreateEvent_WithTooLongCity_ShouldReturnBadRequest()
-    {
-        var longCity = new string('C', 129); // max is 128
-        var request = TestData.NewCreateEventRequestWith(city: longCity);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("City cannot exceed 128 characters");
-    }
-
-    [Fact]
-    public async Task CreateEvent_WithTooLongPostalCode_ShouldReturnBadRequest()
-    {
-        var longPostalCode = new string('1', 33); // max is 32
-        var request = TestData.NewCreateEventRequestWith(postalCode: longPostalCode);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("PostalCode cannot exceed 32 characters");
-    }
-
-    [Fact]
-    public async Task CreateEvent_WithTooLongRegion_ShouldReturnBadRequest()
-    {
-        var longRegion = new string('R', 129); // max is 128
-        var request = TestData.NewCreateEventRequestWith(region: longRegion);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("Region cannot exceed 128 characters");
-    }
-
-    #endregion
-
-    #region ImageThumbnail Validation Tests
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public async Task CreateEvent_WithEmptyImageThumbnail_ShouldReturnBadRequest(string? invalidImage)
-    {
-        var request = TestData.NewCreateEventRequestWith(imageThumbnail: invalidImage);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("ImageThumbnail"); // Either "ImageThumbnail is required" or "The ImageThumbnail field is required."
-    }
-
-    //TODO: change implementation and the test
-    [Fact]
-    public async Task CreateEvent_WithTooLongImageThumbnail_ShouldReturnBadRequest()
-    {
-        var longImage = new string('i', 151); // max is 150
-        var request = TestData.NewCreateEventRequestWith(imageThumbnail: longImage);
-        _response = await _client.PostAsJsonAsync("/api/event", request);
-
-        await AssertBadRequest("ImageThumbnail cannot exceed 150 characters");
     }
 
     #endregion
