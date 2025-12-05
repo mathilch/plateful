@@ -54,6 +54,13 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         TestContext.Current.TestOutputHelper?.WriteLine("═══════════════════════════════════════════════════════════");
     }
 
+    private async Task AssertBadRequest(string expectedMessage)
+    {
+        _response!.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _responseBody = await _response.Content.ReadAsStringAsync();
+        _responseBody.Should().Contain(expectedMessage);
+    }
+
     #endregion
 
     #region Happy Path Tests
@@ -124,7 +131,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(name: invalidName);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("Name"); // Either "Name is required" or "The Name field is required."
     }
 
     [Theory]
@@ -136,7 +143,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(name: shortName);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("Name must be at least 3 characters");
     }
 
     [Theory]
@@ -162,7 +169,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(name: longName);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("Name cannot exceed 150 characters");
     }
 
     #endregion
@@ -177,7 +184,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(description: invalidDescription);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("Description"); // Either "Description is required" or "The Description field is required."
     }
 
     [Theory]
@@ -189,7 +196,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(description: longDescription);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("Description cannot exceed 150 characters");
     }
 
     #endregion
@@ -205,7 +212,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(maxAllowedParticipants: invalidCount);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("MaxAllowedParticipants must be at least 1");
     }
 
     [Theory]
@@ -232,7 +239,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(pricePerSeat: invalidPrice);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("PricePerSeat cannot be negative");
     }
 
     [Theory]
@@ -260,7 +267,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("cannot be negative");
     }
 
     [Theory]
@@ -271,7 +278,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("MinAllowedAge cannot be greater than MaxAllowedAge");
     }
 
     [Theory]
@@ -297,7 +304,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(startDate: pastDate);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("StartDate must be in the future");
     }
 
     [Fact]
@@ -310,7 +317,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
             reservationEndDate: reservationEndDate);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("ReservationEndDate must be before or on the StartDate");
     }
 
     [Fact]
@@ -323,7 +330,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
             endDate: endDate);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("EndDate must be after StartDate");
     }
 
     [Fact]
@@ -353,7 +360,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(streetAddress: invalidAddress);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("StreetAddress"); // Either "StreetAddress is required" or "The StreetAddress field is required."
     }
 
     [Theory]
@@ -364,7 +371,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(city: invalidCity);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("City"); // Either "City is required" or "The City field is required."
     }
 
     [Theory]
@@ -375,7 +382,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(postalCode: invalidPostalCode);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("PostalCode"); // Either "PostalCode is required" or "The PostalCode field is required."
     }
 
     [Theory]
@@ -386,7 +393,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(region: invalidRegion);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("Region"); // Either "Region is required" or "The Region field is required."
     }
 
     [Fact]
@@ -396,7 +403,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(streetAddress: longAddress);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("StreetAddress cannot exceed 256 characters");
     }
 
     [Fact]
@@ -406,7 +413,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(city: longCity);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("City cannot exceed 128 characters");
     }
 
     [Fact]
@@ -416,7 +423,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(postalCode: longPostalCode);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("PostalCode cannot exceed 32 characters");
     }
 
     [Fact]
@@ -426,7 +433,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(region: longRegion);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("Region cannot exceed 128 characters");
     }
 
     #endregion
@@ -441,7 +448,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(imageThumbnail: invalidImage);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("ImageThumbnail"); // Either "ImageThumbnail is required" or "The ImageThumbnail field is required."
     }
 
     //TODO: change implementation and the test
@@ -452,7 +459,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(imageThumbnail: longImage);
         _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await AssertBadRequest("ImageThumbnail cannot exceed 150 characters");
     }
 
     #endregion
