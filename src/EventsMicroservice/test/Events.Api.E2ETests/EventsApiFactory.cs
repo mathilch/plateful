@@ -61,7 +61,7 @@ public class EventsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         });
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _dbContainer.StartAsync();
         
@@ -75,6 +75,6 @@ public class EventsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         DbInitializer.Seed(context);
     }
 
-    public new async Task DisposeAsync() => await _dbContainer.DisposeAsync();
+    public new async ValueTask DisposeAsync() => await _dbContainer.DisposeAsync();
 }
 

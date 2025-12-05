@@ -1,3 +1,4 @@
+using Events.Api.Filters;
 using Events.Api.Middlewares;
 using Events.Application.ServiceCollectionExtensions;
 using Events.Infrastructure.Context;
@@ -26,7 +27,11 @@ public class Program
             builder.Services.ApplyMigrations();
         }
 
-        builder.Services.AddControllers();
+        builder.Services.AddScoped<ValidationFilter>();
+        builder.Services.AddControllers(options =>
+        {
+            options.Filters.Add<ValidationFilter>();
+        });
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
         

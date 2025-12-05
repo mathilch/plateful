@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Events.Application.Dtos;
 using FluentAssertions;
 using Xunit;
@@ -10,9 +11,50 @@ namespace Events.Api.E2ETests.Tests;
 /// Tests for event creation endpoint (POST /api/event).
 /// </summary>
 [Collection("EventsApi")]
-public class EventCreationTests(EventsApiFactory factory) : IClassFixture<EventsApiFactory>
+public class EventCreationTests(EventsApiFactory factory) : IClassFixture<EventsApiFactory>, IAsyncDisposable
 {
     private readonly HttpClient _client = factory.CreateClient();
+    
+    // Stores last response for logging in teardown
+    private HttpResponseMessage? _response;
+    private string? _responseBody;
+
+    #region Teardown / Debug Logging
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_response is not null)
+        {
+            await LogResponse();
+        }
+    }
+
+    private async Task LogResponse()
+    {
+        // Read body if not already read
+        _responseBody ??= await _response!.Content.ReadAsStringAsync();
+        
+        // Try to pretty-print JSON
+        string formattedBody;
+        try
+        {
+            var json = JsonSerializer.Deserialize<JsonElement>(_responseBody);
+            formattedBody = JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch
+        {
+            formattedBody = _responseBody;
+        }
+
+        var testName = TestContext.Current.Test?.TestDisplayName ?? "Unknown";
+        TestContext.Current.TestOutputHelper?.WriteLine("═══════════════════════════════════════════════════════════");
+        TestContext.Current.TestOutputHelper?.WriteLine($"Test: {testName}");
+        TestContext.Current.TestOutputHelper?.WriteLine($"Status: {(int)_response!.StatusCode} {_response.StatusCode}");
+        TestContext.Current.TestOutputHelper?.WriteLine($"Response Body:\n{formattedBody}");
+        TestContext.Current.TestOutputHelper?.WriteLine("═══════════════════════════════════════════════════════════");
+    }
+
+    #endregion
 
     #region Happy Path Tests
 
@@ -20,10 +62,10 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithValidData_ShouldReturnCreated()
     {
         var request = TestData.NewCreateEventRequest("New Test Event");
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await response.Content.ReadFromJsonAsync<EventDto>();
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
@@ -32,10 +74,10 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_ThenGetById_ShouldRoundTrip()
     {
         var request = TestData.NewCreateEventRequest();
-        var createResponse = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await createResponse.Content.ReadFromJsonAsync<EventDto>();
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
         created.Should().NotBeNull();
 
         var getResponse = await _client.GetAsync($"/api/event/{created!.EventId}");
@@ -49,10 +91,10 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithSpecialCharacters_ShouldSucceed()
     {
         var request = TestData.NewCreateEventRequest("Event with @#$% & Special Chars!");
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await response.Content.ReadFromJsonAsync<EventDto>();
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
@@ -61,10 +103,10 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithUnicodeCharacters_ShouldSucceed()
     {
         var request = TestData.NewCreateEventRequest("イベント 🍣 Événement невловимі свинію ямаленький гвинтикпес патрон");
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await response.Content.ReadFromJsonAsync<EventDto>();
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var created = await _response.Content.ReadFromJsonAsync<EventDto>();
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
@@ -80,9 +122,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEmptyOrNullName_ShouldReturnBadRequest(string? invalidName)
     {
         var request = TestData.NewCreateEventRequestWith(name: invalidName);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -92,9 +134,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var shortName = new string('A', length);
         var request = TestData.NewCreateEventRequestWith(name: shortName);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -105,9 +147,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var validName = new string('A', length);
         var request = TestData.NewCreateEventRequestWith(name: validName);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Theory]
@@ -118,9 +160,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var longName = new string('A', length);
         var request = TestData.NewCreateEventRequestWith(name: longName);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -133,9 +175,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEmptyDescription_ShouldReturnBadRequest(string? invalidDescription)
     {
         var request = TestData.NewCreateEventRequestWith(description: invalidDescription);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -145,9 +187,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var longDescription = new string('D', length);
         var request = TestData.NewCreateEventRequestWith(description: longDescription);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -161,9 +203,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithInvalidParticipantCount_ShouldReturnBadRequest(int invalidCount)
     {
         var request = TestData.NewCreateEventRequestWith(maxAllowedParticipants: invalidCount);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -173,9 +215,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithValidParticipantCount_ShouldSucceed(int validCount)
     {
         var request = TestData.NewCreateEventRequestWith(maxAllowedParticipants: validCount);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     #endregion
@@ -188,9 +230,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithNegativePrice_ShouldReturnBadRequest(double invalidPrice)
     {
         var request = TestData.NewCreateEventRequestWith(pricePerSeat: invalidPrice);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -200,9 +242,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithValidPrice_ShouldSucceed(double validPrice)
     {
         var request = TestData.NewCreateEventRequestWith(pricePerSeat: validPrice);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     #endregion
@@ -216,9 +258,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithNegativeAge_ShouldReturnBadRequest(int minAge, int maxAge)
     {
         var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -227,9 +269,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithMinAgeGreaterThanMaxAge_ShouldReturnBadRequest(int minAge, int maxAge)
     {
         var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -239,9 +281,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithValidAgeRange_ShouldSucceed(int minAge, int maxAge)
     {
         var request = TestData.NewCreateEventRequestWith(minAllowedAge: minAge, maxAllowedAge: maxAge);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     #endregion
@@ -253,9 +295,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var pastDate = DateTime.UtcNow.AddDays(-1);
         var request = TestData.NewCreateEventRequestWith(startDate: pastDate);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -266,9 +308,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(
             startDate: startDate,
             reservationEndDate: reservationEndDate);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -279,9 +321,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var request = TestData.NewCreateEventRequestWith(
             startDate: startDate,
             endDate: endDate);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -294,9 +336,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
             startDate: startDate,
             endDate: endDate,
             reservationEndDate: reservationEndDate);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        _response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     #endregion
@@ -309,9 +351,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEmptyStreetAddress_ShouldReturnBadRequest(string? invalidAddress)
     {
         var request = TestData.NewCreateEventRequestWith(streetAddress: invalidAddress);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -320,9 +362,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEmptyCity_ShouldReturnBadRequest(string? invalidCity)
     {
         var request = TestData.NewCreateEventRequestWith(city: invalidCity);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -331,9 +373,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEmptyPostalCode_ShouldReturnBadRequest(string? invalidPostalCode)
     {
         var request = TestData.NewCreateEventRequestWith(postalCode: invalidPostalCode);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -342,9 +384,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEmptyRegion_ShouldReturnBadRequest(string? invalidRegion)
     {
         var request = TestData.NewCreateEventRequestWith(region: invalidRegion);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -352,9 +394,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var longAddress = new string('A', 257); // max is 256
         var request = TestData.NewCreateEventRequestWith(streetAddress: longAddress);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -362,9 +404,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var longCity = new string('C', 129); // max is 128
         var request = TestData.NewCreateEventRequestWith(city: longCity);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -372,9 +414,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var longPostalCode = new string('1', 33); // max is 32
         var request = TestData.NewCreateEventRequestWith(postalCode: longPostalCode);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -382,9 +424,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var longRegion = new string('R', 129); // max is 128
         var request = TestData.NewCreateEventRequestWith(region: longRegion);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -397,9 +439,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEmptyImageThumbnail_ShouldReturnBadRequest(string? invalidImage)
     {
         var request = TestData.NewCreateEventRequestWith(imageThumbnail: invalidImage);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     //TODO: change implementation and the test
@@ -408,9 +450,9 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var longImage = new string('i', 151); // max is 150
         var request = TestData.NewCreateEventRequestWith(imageThumbnail: longImage);
-        var response = await _client.PostAsJsonAsync("/api/event", request);
+        _response = await _client.PostAsJsonAsync("/api/event", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        _response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     #endregion
