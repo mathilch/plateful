@@ -11,12 +11,26 @@ namespace Events.Api.E2ETests.Tests;
 /// <summary>
 /// Expected validation result for declarative tests.
 /// </summary>
-public enum Expected { Valid, TooShort, TooLong }
+public enum Expected
+{
+    Valid,
+    TooShort,
+    TooLong
+}
 
 /// <summary>
 /// String field identifiers for declarative validation tests.
 /// </summary>
-public enum Field { Name, Description, StreetAddress, City, PostalCode, Region, ImageThumbnail }
+public enum Field
+{
+    Name,
+    Description,
+    StreetAddress,
+    City,
+    PostalCode,
+    Region,
+    ImageThumbnail
+}
 
 /// <summary>
 /// Tests for event creation endpoint (POST /api/event).
@@ -24,14 +38,13 @@ public enum Field { Name, Description, StreetAddress, City, PostalCode, Region, 
 [Collection("EventsApi")]
 public class EventCreationTests(EventsApiFactory factory) : IClassFixture<EventsApiFactory>, IAsyncDisposable
 {
-
     #region Setup / Helper methods
 
     private readonly HttpClient _client = factory.CreateClient();
-    
+
     private HttpResponseMessage? _response;
     private string? _responseBody;
-    
+
     public async ValueTask DisposeAsync()
     {
         if (_response is not null)
@@ -43,7 +56,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     private async Task LogResponse()
     {
         _responseBody ??= await _response!.Content.ReadAsStringAsync();
-        
+
         string formattedBody;
         try
         {
@@ -69,7 +82,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         _responseBody = await _response.Content.ReadAsStringAsync();
         _responseBody.Should().Contain(shouldContain);
     }
-    
+
     private async Task AssertBadRequest(string[] shouldContain)
     {
         _response!.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -103,7 +116,8 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
         created.Should().NotBeNull();
 
-        var getResponse = await _client.GetAsync($"/api/event/{created!.EventId}", TestContext.Current.CancellationToken);
+        var getResponse =
+            await _client.GetAsync($"/api/event/{created!.EventId}", TestContext.Current.CancellationToken);
         getResponse.EnsureSuccessStatusCode();
         var fetched = await getResponse.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
 
@@ -125,7 +139,10 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     [Fact]
     public async Task CreateEvent_WithUnicodeCharacters_ShouldSucceed()
     {
-        var request = TestData.ValidRequest() with { Name = "イベント 🍣 Événement невловимі свинію ямаленький гвинтикпес патрон" };
+        var request = TestData.ValidRequest() with
+        {
+            Name = "イベント 🍣 Événement невловимі свинію ямаленький гвинтикпес патрон"
+        };
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -178,42 +195,39 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         switch (expected)
         {
             case Expected.Valid:
-                _response.StatusCode.Should().Be(HttpStatusCode.Created, 
+                _response.StatusCode.Should().Be(HttpStatusCode.Created,
                     $"{field} with length {length} should be valid.");
                 break;
             case Expected.TooShort:
                 // FluentValidation: "The length of 'Name' must be at least 3 characters. You entered 2 characters."
-                await AssertBadRequest([field.ToString(),"must be at least", $"You entered {length} characters"]);
+                await AssertBadRequest([field.ToString(), "must be at least", $"You entered {length} characters"]);
                 break;
             case Expected.TooLong:
                 // FluentValidation: "The length of 'City' must be 128 characters or fewer. You entered 129 characters."
-                await AssertBadRequest([field.ToString(),"characters or fewer", $"You entered {length} characters"]);
+                await AssertBadRequest([field.ToString(), "characters or fewer", $"You entered {length} characters"]);
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(expected), expected, null);
         }
     }
 
     [Theory]
-    [InlineData(Field.Name, null)]
-    [InlineData(Field.Name, "")]
-    [InlineData(Field.Name, "   ")]
-    [InlineData(Field.Description, null)]
-    [InlineData(Field.Description, "")]
-    [InlineData(Field.StreetAddress, null)]
-    [InlineData(Field.StreetAddress, "")]
-    [InlineData(Field.City, null)]
-    [InlineData(Field.City, "")]
-    [InlineData(Field.PostalCode, null)]
-    [InlineData(Field.PostalCode, "")]
-    [InlineData(Field.Region, null)]
-    [InlineData(Field.Region, "")]
-    [InlineData(Field.ImageThumbnail, null)]
-    [InlineData(Field.ImageThumbnail, "")]
-    public async Task CreateEvent_RequiredFieldValidation(Field field, string? value)
+    [InlineData(Field.Name)]
+    [InlineData(Field.Description)]
+    [InlineData(Field.StreetAddress)]
+    [InlineData(Field.City)]
+    [InlineData(Field.PostalCode)]
+    [InlineData(Field.Region)]
+    [InlineData(Field.ImageThumbnail)]
+    public async Task CreateEvent_RequiredFieldValidation(Field field)
     {
-        var request = WithField(TestData.ValidRequest(), field, value);
-        _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
+        foreach (var requiredTestCaseVariant in new[] { null, "", "  " })
+        {
+            var request = WithField(TestData.ValidRequest(), field, requiredTestCaseVariant);
+            _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
-        await AssertBadRequest(field.ToString());
+            await AssertBadRequest(field.ToString());
+        }
     }
 
     private static CreateEventRequestDto WithField(CreateEventRequestDto request, Field field, string? value) =>
@@ -240,6 +254,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     [InlineData(1, true)]
     [InlineData(10, true)]
     [InlineData(100, true)]
+    [InlineData(101, false)]
     public async Task CreateEvent_MaxParticipantsValidation(int count, bool shouldBeValid)
     {
         var request = TestData.ValidRequest() with { MaxAllowedParticipants = count };
@@ -247,6 +262,8 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
 
         if (shouldBeValid)
             _response.StatusCode.Should().Be(HttpStatusCode.Created);
+        else if (count > 100)
+            await AssertBadRequest("must be less than or equal to"); 
         else
             await AssertBadRequest("greater than '0'"); // FluentValidation default: "'X' must be greater than '0'."
     }
@@ -326,10 +343,10 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithReservationEndDateAfterStartDate_ShouldReturnBadRequest()
     {
         var startDate = DateTime.UtcNow.AddDays(7);
-        var request = TestData.ValidRequest() with 
-        { 
-            StartDate = startDate, 
-            ReservationEndDate = startDate.AddDays(1) 
+        var request = TestData.ValidRequest() with
+        {
+            StartDate = startDate,
+            ReservationEndDate = startDate.AddDays(1)
         };
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
@@ -340,10 +357,10 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithEndDateBeforeStartDate_ShouldReturnBadRequest()
     {
         var startDate = DateTime.UtcNow.AddDays(7);
-        var request = TestData.ValidRequest() with 
-        { 
-            StartDate = startDate, 
-            EndDate = startDate.AddHours(-1) 
+        var request = TestData.ValidRequest() with
+        {
+            StartDate = startDate,
+            EndDate = startDate.AddHours(-1)
         };
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
@@ -354,11 +371,11 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
     public async Task CreateEvent_WithValidDates_ShouldSucceed()
     {
         var startDate = DateTime.UtcNow.AddDays(7);
-        var request = TestData.ValidRequest() with 
-        { 
-            StartDate = startDate, 
+        var request = TestData.ValidRequest() with
+        {
+            StartDate = startDate,
             EndDate = startDate.AddHours(3),
-            ReservationEndDate = startDate.AddDays(-1) 
+            ReservationEndDate = startDate.AddDays(-1)
         };
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 

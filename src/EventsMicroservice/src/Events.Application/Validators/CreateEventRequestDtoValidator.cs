@@ -1,5 +1,6 @@
 ﻿using Events.Application.Dtos.Requests;
 using FluentValidation;
+using FluentValidation.Validators;
 
 namespace Events.Application.Validators;
 
@@ -17,7 +18,9 @@ public class CreateEventRequestDtoValidator : AbstractValidator<CreateEventReque
             .MaximumLength(150);
 
         RuleFor(x => x.MaxAllowedParticipants)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .LessThanOrEqualTo(100)
+            ;
 
         RuleFor(x => x.PricePerSeat)
             .GreaterThanOrEqualTo(0);
