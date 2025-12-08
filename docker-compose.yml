@@ -103,7 +103,7 @@ services:
   foodclub-ui-next:
     build:
       context: ./src/foodclub-ui-next 
-      dockerfile: Dockerfile 
+      dockerfile: Dockerfile
       secrets:
         - GITHUB_NODE_AUTH_TOKEN
       args:

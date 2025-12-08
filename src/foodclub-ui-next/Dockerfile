@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* .npmrc ./
-# Add github secret for the sdk package. pnpm is preferred
+# pnpm is preferred - uses secret for GitHub Package authentication
 RUN --mount=type=secret,id=GITHUB_NODE_AUTH_TOKEN \
     export GITHUB_NODE_AUTH_TOKEN="$(cat /run/secrets/GITHUB_NODE_AUTH_TOKEN)" && \
     if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
