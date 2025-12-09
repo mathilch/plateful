@@ -7,6 +7,14 @@ public static class UserMapper
 {
     public static UserDto ToDto(this User user)
     {
-        return new UserDto(user.Id, user.Name, user.Email, user.Birthday, user.CreatedDate, user.IsActive);
+        return new UserDto(
+            user.Id, 
+            user.Name, 
+            user.Email, 
+            user.Verified,
+            user.Score,
+            user.Birthday, 
+            user.CreatedDate, 
+            user.IsActive);
     }
 }

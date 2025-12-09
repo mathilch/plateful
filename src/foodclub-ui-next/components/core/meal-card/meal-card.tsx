@@ -37,7 +37,7 @@ export default function MealCard(eventDetails: EventOverviewDto) {
               {eventDetails.name}
             </h3>
             <p className="text-white/90 text-sm drop-shadow">
-              {eventDetails.eventAddress.city}
+              {eventDetails.eventAddress?.city}
             </p>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function MealCard(eventDetails: EventOverviewDto) {
                 </Badge>
               ))}
               {eventDetails.tags.length > 3 && (
-                <Badge variant="secondary" className="text-xs">+{eventDetails.tags.length - 3}</Badge>
+                <Badge variant="outline" className="text-xs">+{eventDetails.tags.length - 3}</Badge>
               )}
             </div>
             {eventDetails.allergens && eventDetails.allergens.length > 0 && (

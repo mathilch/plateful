@@ -8,7 +8,7 @@ public class EventsDbContextFactory : IDesignTimeDbContextFactory<EventsDbContex
 {
     public EventsDbContext CreateDbContext(string[] args)
     {
-        var basePath = Directory.GetCurrentDirectory();
+        var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../Events.Api");
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: true)

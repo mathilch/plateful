@@ -22,6 +22,8 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddHttpContextAccessor();
+        
+        builder.Services.AddHealthChecks();
 
         builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -52,14 +54,13 @@ public class Program
         });
 
         app.UseExceptionHandler(options => { });
-
         app.UseHttpsRedirection();
-
+        app.UseCors();
+        app.MapHealthChecks("/health");
+        
         app.UseAuthorization();
 
         app.MapControllers();
-
-        app.UseCors();
 
         app.Run();
     }
