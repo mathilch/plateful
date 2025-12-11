@@ -174,7 +174,11 @@ export default function EventDetailsClient() {
                     <button 
                         onClick={handleReserveSeat}
                         disabled={reserveButtonProps.disabled}
-                        className="w-full py-3 bg-green-800 text-white rounded-full font-medium">
+                        className={`w-full py-3 text-white rounded-full font-medium cursor-pointer ${
+                            reserveButtonProps.text === "Cancel reservation" 
+                                ? "bg-red-600 hover:bg-red-700" 
+                                : "bg-green-800 hover:bg-green-900"
+                        }`}>
                         {reserveButtonProps.text}     
                     </button>
                     {reserveButtonProps.reason && <p className="text-sm text-red-600 mt-1">{reserveButtonProps.reason}</p>}

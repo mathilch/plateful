@@ -27,9 +27,9 @@ public class EventController(IEventService _eventService) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetEventDetailsById(Guid id)
     {
-        var dto = await _eventService.GetEventByEventId(id);
+        var dto = await _eventService.GetEventDetailsByEventId(id);
         return dto is null ? NotFound() : Ok(dto);
     }
 
@@ -46,7 +46,7 @@ public class EventController(IEventService _eventService) : ControllerBase
     public async Task<IActionResult> Create(CreateEventRequestDto req)
     {
         var created = await _eventService.AddEvent(req);
-        return CreatedAtAction(nameof(GetById), new { id = created!.EventId }, created);
+        return CreatedAtAction(nameof(Create), new { id = created!.EventId }, created);
     }
 
     [HttpGet("user/{userId:guid}")]

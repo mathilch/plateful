@@ -40,14 +40,16 @@ public class EventService(
     {
         var eventEntity = createEvent.ToEntity(currentUser.UserId);
         var e = await eventRepository.AddEvent(eventEntity);
-        
+
         return e.ToDto();
     }
 
-    public async Task<EventDto> GetEventByEventId(Guid eventId)
+    public async Task<EventOverviewDto> GetEventDetailsByEventId(Guid eventId)
     {
-        var e = await eventRepository.GetEventById(eventId);
-        return e.ToDto();
+        var e = await eventRepository.GetEventDetailsById(eventId);
+        var userIds = new List<Guid>() { e.UserId };
+        var users = await userApiService.GetUsersByIds(userIds);
+        return e.ToEventOverviewDto(users);
     }
 
     public async Task<List<EventOverviewDto>> GetEventsByUserId(Guid loggedInUserId)
