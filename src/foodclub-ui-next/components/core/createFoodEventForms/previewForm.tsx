@@ -8,7 +8,7 @@ import OrangeWrapper from "../wrappers/orangeWrapper";
 import MealCard from "../meal-card/meal-card";
 import { EventOverviewDto } from "@/types/event-details.type";
 import { parse } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { parseJwt } from "@/lib/jwt-decoder.helper";
 import { createEventDefaultData } from "@/services/mocks/createEventDefaultData";
 import { useRouter } from "next/navigation";
@@ -17,23 +17,22 @@ import { useRouter } from "next/navigation";
 export default function PreviewForm() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [username, setUsername] = useState<string>("");
-    const [token, setToken] = useState<string | null>(null);
     const router = useRouter();
 
     // TODO: refactor, move to a module 
-    useEffect(() => {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
+    const [{ username, token }] = useState(() => {
+        const storedToken = localStorage.getItem("accessToken");
+        if (storedToken) {
             try {
-                const decoded = parseJwt(token);
-                setUsername(decoded.unique_name || "");
-                setToken(token);
+                const decoded = parseJwt(storedToken);
+                return { username: decoded.unique_name || "", token: storedToken };
             } catch (err) {
                 console.error("Failed to decode token:", err);
+                return { username: "", token: null };
             }
         }
-    }, []);
+        return { username: "", token: null };
+    });
 
     const [formState, formDispatch] = useFormWizardContext();
 

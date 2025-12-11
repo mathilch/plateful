@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface LocationMiniMapProps {
     address?: string;
@@ -10,18 +10,24 @@ interface LocationMiniMapProps {
 
 export default function LocationMiniMap({ address, city, postalCode }: LocationMiniMapProps) {
     const [mapUrl, setMapUrl] = useState<string>("");
+    
+    // Compute fullAddress as derived state
+    const fullAddress = useMemo(
+        () => [address, postalCode, city].filter(Boolean).join(", "),
+        [address, postalCode, city]
+    );
 
     useEffect(() => {
-        // Construct the full address for geocoding
-        const fullAddress = [address, postalCode, city].filter(Boolean).join(", ");
-        
         if (!fullAddress) {
-            setMapUrl("");
             return;
         }
 
         // Use OpenStreetMap Nominatim to geocode the address
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}, Denmark`)
+        const controller = new AbortController();
+        
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}, Denmark`, {
+            signal: controller.signal
+        })
             .then(res => res.json())
             .then(data => {
                 if (data && data.length > 0) {
@@ -32,10 +38,13 @@ export default function LocationMiniMap({ address, city, postalCode }: LocationM
                 }
             })
             .catch(err => {
-                console.error("Error geocoding address:", err);
-                setMapUrl("");
+                if (err.name !== 'AbortError') {
+                    console.error("Error geocoding address:", err);
+                }
             });
-    }, [address, city, postalCode]);
+            
+        return () => controller.abort();
+    }, [fullAddress]);
 
     if (!mapUrl) {
         return (

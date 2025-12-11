@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ComponentsWrapper from "../wrappers/componentsWrapper";
 import CreateEventFormTextarea from "./createEventFormTextarea";
@@ -16,23 +16,23 @@ import { createEventDefaultData } from "@/services/mocks/createEventDefaultData"
 export default function DietAllergensForm() {
     const [formState, formDispatch] = useFormWizardContext();
     const router = useRouter();
-    const [username, setUsername] = useState<string>("");
-
-    if (!formState.basics || !formState.whenWhere || !formState.priceCapacity) {
-        throw new Error("Previous form steps must be completed before this step");
-    }
-
-    useEffect(() => {
+    const [username] = useState<string>(() => {
         const token = localStorage.getItem("accessToken");
         if (token) {
             try {
                 const decoded = parseJwt(token);
-                setUsername(decoded.unique_name || "");
+                return decoded.unique_name || "";
             } catch (err) {
                 console.error("Failed to decode token:", err);
+                return "";
             }
         }
-    }, []);
+        return "";
+    });
+
+    if (!formState.basics || !formState.whenWhere || !formState.priceCapacity) {
+        throw new Error("Previous form steps must be completed before this step");
+    }
 
     const [selectedDietaryStyles, setSelectedDietaryStyles] = useState<string[]>(
         formState.dietAllergens?.dietaryPreferences?.length

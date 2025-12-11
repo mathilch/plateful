@@ -14,12 +14,34 @@ export default function FoodAppHeader() {
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
   const [openSignUpDialog, setOpenSignUpDialog] = useState(false);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  // Initialize auth state from localStorage
+  const [{ isAuthenticated, user }, setAuthState] = useState(() => {
+    if (typeof window === "undefined") return { isAuthenticated: false, user: null };
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      try {
+         
+        const decoded: any = jwtDecode(token);
+        return { isAuthenticated: true, user: decoded.unique_name };
+      } catch {
+        return { isAuthenticated: false, user: null };
+      }
+    }
+    return { isAuthenticated: false, user: null };
+  });
   const router = useRouter();
 
   useEffect(() => {
-    checkToken();
+    function checkToken() {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+         
+        const decoded: any = jwtDecode(token);
+        setAuthState({ isAuthenticated: true, user: decoded.unique_name });
+      } else {
+        setAuthState({ isAuthenticated: false, user: null });
+      }
+    }
 
     const onStorage = (e: StorageEvent) => {
       if (e.key === "accessToken") checkToken();
@@ -39,24 +61,13 @@ export default function FoodAppHeader() {
   function handleLogout() {
     try {
       localStorage.removeItem("accessToken");
-    } catch (err) {
+    } catch {
       /* ignore */
     }
-    setIsAuthenticated(false);
+    setAuthState({ isAuthenticated: false, user: null });
     // notify other listeners (same-tab)
     window.dispatchEvent(new Event("authChanged"));
     router.replace("/");
-  }
-
-  function checkToken() {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      /* eslint-disable  @typescript-eslint/no-explicit-any */
-      const decoded: any = jwtDecode(token);
-      setUser(decoded.unique_name);
-
-      setIsAuthenticated(true);
-    }
   }
 
   return (
