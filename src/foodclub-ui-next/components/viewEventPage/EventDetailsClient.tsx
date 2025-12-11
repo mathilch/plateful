@@ -23,7 +23,6 @@ export default function EventDetailsClient() {
 
   const [event, setEvent] = useState<EventDetails | null>(null);
   const [host, setHost] = useState<UserDetails | null>(null);
-  const [user, setUser] = useState<UserDetails | null>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewStars, setReviewStars] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
@@ -47,13 +46,6 @@ export default function EventDetailsClient() {
 
   useEffect(() => {
     if (!id) return;
-
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      router.replace("/");
-      return;
-    }
-
     try {
       (async () => {
         try {
@@ -61,9 +53,6 @@ export default function EventDetailsClient() {
           setEvent(eventData);
           const hostData = await getUserById(eventData.userId);
           setHost(hostData);
-          const decoded = parseJwt(token);
-          const userData = await getUserById(decoded.sub);
-          setUser(userData);
         } catch (err) {
           console.error("Failed to fetch event details:", err);
         }
@@ -87,22 +76,27 @@ export default function EventDetailsClient() {
   }, [event?.eventId]);
 
   const getReserveButtonProps = () => {
-    if (!user || !event)
+    const token = localStorage.getItem("accessToken");
+    if (!token || !event)
       return {
         text: "Reserve a seat",
         disabled: true,
         reason: "Log in required",
       };
 
+    const decoded = parseJwt(token);
+    const userId = decoded.sub;
+    const birthdate = (decoded as any).birthdate;
+
     const today = new Date();
-    const birthday = new Date(user.birthday);
+    const birthday = new Date(birthdate);
     let age = today.getFullYear() - birthday.getFullYear();
     const monthDiff = today.getMonth() - birthday.getMonth();
     const dayDiff = today.getDate() - birthday.getDate();
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) age--;
 
     const isParticipating = event.eventParticipants.some(
-      (p) => p.userId == user.id
+      (p) => p.userId == userId
     );
     const spotsLeft =
       event.maxAllowedParticipants - event.eventParticipants.length;
@@ -134,13 +128,16 @@ export default function EventDetailsClient() {
   const reserveButtonProps = getReserveButtonProps();
 
   const handleReserveSeat = async () => {
-    if (!user || !event) return;
+    if (!event) return;
 
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
 
-      if (event.eventParticipants.every((p) => p.userId != user.id)) {
+      const decoded = parseJwt(token);
+      const userId = decoded.sub;
+
+      if (event.eventParticipants.every((p) => p.userId != userId)) {
         await signUpForEvent(event.eventId, token);
       } else {
         await withdrawFromEvent(event.eventId, token);
@@ -154,7 +151,7 @@ export default function EventDetailsClient() {
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !event || !reviewComment.trim()) return;
+    if (!event || !reviewComment.trim()) return;
 
     setIsSubmittingReview(true);
     try {
@@ -330,10 +327,14 @@ export default function EventDetailsClient() {
               )}
             </div>
 
-            {user &&
-              event &&
-              user.id !== event.userId &&
-              event.eventParticipants.some((p) => p.userId === user.id) && (
+            {(() => {
+              const token = localStorage.getItem("accessToken");
+              if (!token || !event) return null;
+              const decoded = parseJwt(token);
+              const userId = decoded.sub;
+              return userId !== event.userId &&
+                event.eventParticipants.some((p) => p.userId === userId);
+            })() && (
                 <div className="mt-6 p-4 bg-gray-50 rounded-xl border">
                   <h3 className="font-semibold text-md mb-3">Leave a Review</h3>
                   <form onSubmit={handleSubmitReview} className="space-y-3">
