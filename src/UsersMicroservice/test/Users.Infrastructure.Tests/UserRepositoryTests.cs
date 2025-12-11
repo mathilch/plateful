@@ -67,23 +67,23 @@ public sealed class UserRepositoryTests : IAsyncLifetime
      */
 
 
-    private readonly CreateUserRequestDto _mockUser = new CreateUserRequestDto
-    {
-        Name = "Mock User",
-        Email = "mock@example.com",
-        Password = "password"
-    };
+        private readonly CreateUserRequestDto _mockUser = new CreateUserRequestDto
+        {
+            Name = "Mock User",
+            Email = "mock@example.com",
+            Password = "password"
+        };
 
-    [Fact]
-    public async Task AddUser_ShouldAddUser()
-    {
-        var addUser = await _repository.AddUser(_mockUser);
-        var fetchUser = await _repository.GetUserByEmail(_mockUser.Email);
+        [Fact]
+        public async Task AddUser_ShouldAddUser()
+        {
+            var addUser = await _repository.AddUser(_mockUser);
+            var fetchUser = await _repository.GetUserByEmail(_mockUser.Email);
 
-        Assert.NotNull(addUser);
-        Assert.NotNull(fetchUser.userDto);
-        Assert.Equal(addUser.Email, fetchUser.userDto.Email);
-    }
+            Assert.NotNull(addUser);
+            Assert.NotNull(fetchUser.userDto);
+            Assert.Equal(addUser.Email, fetchUser.userDto.Email);
+        }
 
     [Fact]
     public async Task GetUserById_ShouldGetUser()
