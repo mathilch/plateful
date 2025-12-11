@@ -6,7 +6,7 @@ import { EventDetails } from "@/types/event-details.type";
 import { UserDetails } from "@/types/user-details.type";
 import { EventReviewDto } from "@/types/event-review.type";
 
-import { parseJwt } from "@/lib/jwt-decoder.helper";
+import { JwtPayload, parseJwt } from "@/lib/jwt-decoder.helper";
 import {
   getEventById,
   withdrawFromEvent,
@@ -30,10 +30,10 @@ export default function EventDetailsClient() {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem("token");
-        setToken(storedToken);
-    }, []);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
 
   const getInitials = (name?: string) => {
     if (!name) return "";
@@ -48,8 +48,8 @@ export default function EventDetailsClient() {
   const ingredientsArray = Array.isArray(ingredients)
     ? ingredients
     : typeof ingredients === "string"
-    ? ingredients.split(",").map((i) => i.trim())
-    : [];
+      ? ingredients.split(",").map((i) => i.trim())
+      : [];
 
   useEffect(() => {
     if (!id) return;
@@ -90,9 +90,16 @@ export default function EventDetailsClient() {
         reason: "Log in required",
       };
 
-    const decoded = parseJwt(token);
+    const decoded = parseJwt<JwtPayload>(token);
     const userId = decoded.sub;
-    const birthdate = (decoded as any).birthdate;
+    const birthdate = decoded.birthdate;
+
+    if (!birthdate)
+      return {
+        text: "Unable to sign up",
+        disabled: true,
+        reason: "User needs to set their birthday",
+      };
 
     const today = new Date();
     const birthday = new Date(birthdate);
@@ -214,13 +221,12 @@ export default function EventDetailsClient() {
               <div
                 className="bg-green-700 h-2 rounded-full"
                 style={{
-                  width: `${
-                    event && event.maxAllowedParticipants > 0
+                  width: `${event && event.maxAllowedParticipants > 0
                       ? (event.eventParticipants.length /
-                          event.maxAllowedParticipants) *
-                        100
+                        event.maxAllowedParticipants) *
+                      100
                       : 0
-                  }`,
+                    }`,
                 }}
               />
             </div>
@@ -236,11 +242,10 @@ export default function EventDetailsClient() {
           <button
             onClick={handleReserveSeat}
             disabled={reserveButtonProps.disabled}
-            className={`w-full py-3 text-white rounded-full font-medium cursor-pointer ${
-              reserveButtonProps.text === "Cancel reservation"
+            className={`w-full py-3 text-white rounded-full font-medium cursor-pointer ${reserveButtonProps.text === "Cancel reservation"
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-green-800 hover:bg-green-900"
-            }`}
+              }`}
           >
             {reserveButtonProps.text}
           </button>
@@ -352,11 +357,10 @@ export default function EventDetailsClient() {
                             key={star}
                             type="button"
                             onClick={() => setReviewStars(star)}
-                            className={`text-2xl ${
-                              star <= reviewStars
+                            className={`text-2xl ${star <= reviewStars
                                 ? "text-yellow-500"
                                 : "text-gray-300"
-                            } hover:text-yellow-400 transition-colors`}
+                              } hover:text-yellow-400 transition-colors`}
                           >
                             ★
                           </button>
