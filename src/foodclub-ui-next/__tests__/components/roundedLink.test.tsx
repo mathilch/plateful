@@ -6,6 +6,7 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { usePathname } = require('next/navigation');
 
 describe('RoundedLink Component', () => {

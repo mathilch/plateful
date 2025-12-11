@@ -2,6 +2,7 @@
   "name": "foodclub-ui-next",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
@@ -17,7 +18,7 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
-    "@Rameez349/events-api-sdk": "~1.1.11",
+    "@Rameez349/events-api-sdk": "^1.1.25",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
