@@ -26,10 +26,11 @@ public class EventController(IEventService _eventService) : ControllerBase
         return Ok(await _eventService.GetFilteredAndPaginatedEvents(searchEventsRequestDto, new PaginationDto(0, 10)));
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetEventDetailsById(Guid id)
     {
-        var dto = await _eventService.GetEventByEventId(id);
+        var dto = await _eventService.GetEventDetailsByEventId(id);
         return dto is null ? NotFound() : Ok(dto);
     }
 
@@ -41,12 +42,26 @@ public class EventController(IEventService _eventService) : ControllerBase
     public async Task<IActionResult> WithdrawFromEvent(Guid eventId)
         => Ok(await _eventService.WithdrawFromEvent(eventId));
     
-    
     [HttpPost]
     public async Task<IActionResult> Create(CreateEventRequestDto req)
     {
         var created = await _eventService.AddEvent(req);
-        return CreatedAtAction(nameof(GetById), new { id = created!.EventId }, created);
+        return CreatedAtAction(nameof(Create), new { id = created!.EventId }, created);
+    }
+
+    [HttpPost("{eventId:guid}/review")]
+    public async Task<IActionResult> CreateReview(Guid eventId, [FromBody] CreateEventReviewRequestDto req)
+    {
+        var reviewId = await _eventService.CreateReview(eventId, req);
+        return CreatedAtAction(nameof(CreateReview), new { eventId, reviewId }, new { reviewId });
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{eventId:guid}/reviews")]
+    public async Task<IActionResult> GetAllReviewsForEvent(Guid eventId)
+    {
+        var reviews = await _eventService.GetAllReviewsForAnEvent(eventId);
+        return Ok(reviews);
     }
 
     [HttpGet("user/{userId:guid}")]
@@ -60,8 +75,6 @@ public class EventController(IEventService _eventService) : ControllerBase
     [HttpGet("user-reviews-as-host/{userId:guid}")]
     public async Task<IActionResult> GetEventReviewsByUserId(Guid userId)
         => Ok(await _eventService.GetEventReviewsByUserId(userId));
-
-
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)

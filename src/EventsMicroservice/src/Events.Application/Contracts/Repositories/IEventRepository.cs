@@ -9,6 +9,7 @@ namespace Events.Application.Contracts.Repositories;
 public interface IEventRepository
 {
     Task<Event> GetEventById(Guid id);
+    Task<Event> GetEventDetailsById(Guid id);
     Task<List<EventDto>> GetAllEvents(PaginationDto? paginationDto = null);
     Task<List<Event>> GetPaginatedAndFilteredEvents(List<Expression<Func<Event, bool>>> eventFilters, PaginationDto? paginationDto = null);
     Task<Event> AddEvent(Event createEvent);

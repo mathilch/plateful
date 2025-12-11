@@ -26,6 +26,17 @@ public class EventRepository : IEventRepository
         return e;
     }
 
+    public async Task<Event> GetEventDetailsById(Guid id)
+    {
+        var e = await _context.Events
+            .Include(x => x.EventFoodDetails)
+            .Include(x => x.EventParticipants)
+            .Include(x => x.EventReviews)
+            .FirstOrDefaultAsync(x => x.EventId == id) ?? throw new EventIdNotFoundException(id);
+
+        return e;
+    }
+
     public async Task<List<EventDto>> GetAllEvents(PaginationDto? paginationDto = null)
     {
         var query = _context.Events
@@ -87,7 +98,7 @@ public class EventRepository : IEventRepository
             Id = Guid.NewGuid(),
             EventId = eventId,
             UserId = userId,
-            CreatedDate = DateTime.Now
+            CreatedDate = DateTime.UtcNow
         };
 
         _context.EventParticipants.Add(ep);
