@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EventDetails } from "@/types/event-details.type";
 import { UserDetails } from "@/types/user-details.type";
+import { EventReviewDto } from "@/types/event-review.type";
 
 import { parseJwt } from "@/lib/jwt-decoder.helper";
 import {
@@ -23,10 +24,16 @@ export default function EventDetailsClient() {
 
   const [event, setEvent] = useState<EventDetails | null>(null);
   const [host, setHost] = useState<UserDetails | null>(null);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<EventReviewDto[]>([]);
   const [reviewStars, setReviewStars] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+        setToken(storedToken);
+    }, []);
 
   const getInitials = (name?: string) => {
     if (!name) return "";
@@ -51,7 +58,7 @@ export default function EventDetailsClient() {
         try {
           const eventData = await getEventById(id as string);
           setEvent(eventData);
-          const hostData = await getUserById(eventData.userId);
+          const hostData = await getUserById(eventData!.userId);
           setHost(hostData);
         } catch (err) {
           console.error("Failed to fetch event details:", err);
@@ -76,7 +83,6 @@ export default function EventDetailsClient() {
   }, [event?.eventId]);
 
   const getReserveButtonProps = () => {
-    const token = localStorage.getItem("accessToken");
     if (!token || !event)
       return {
         text: "Reserve a seat",
@@ -131,7 +137,6 @@ export default function EventDetailsClient() {
     if (!event) return;
 
     try {
-      const token = localStorage.getItem("accessToken");
       if (!token) return;
 
       const decoded = parseJwt(token);
@@ -155,7 +160,6 @@ export default function EventDetailsClient() {
 
     setIsSubmittingReview(true);
     try {
-      const token = localStorage.getItem("accessToken");
       if (!token) return;
 
       await submitEventReview(event.eventId, reviewStars, reviewComment, token);

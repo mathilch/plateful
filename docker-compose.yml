@@ -93,9 +93,10 @@ services:
     ports:
       - "5003:8080"
     depends_on:
-      - chat-db
+      chat-db:
+        condition: service_healthy
     networks:
-      - plateful-network
+      - plateful-backend
 
   chat-db:
     image: postgres:15
@@ -109,7 +110,14 @@ services:
     ports:
       - "5435:5432"
     networks: 
-      - plateful-network
+      - plateful-backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
 
   pgadmin:
     image: dpage/pgadmin4
