@@ -19,7 +19,7 @@ import { CreateEventRequestDto } from "@Rameez349/events-api-sdk/dist/generated/
 import { postApiEvent } from "@Rameez349/events-api-sdk";
 
 
-export async function getEventById(eventId: string, accessToken: string) {
+export async function getEventById(eventId: string) {
   console.log("Fetching event with id ", eventId);
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -29,7 +29,6 @@ export async function getEventById(eventId: string, accessToken: string) {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`
         },
       }
     );
@@ -189,6 +188,34 @@ export async function getEventReviewsByHostUserId(
   }
 }
 
+export async function getEventReviewsByEventId(
+  eventId: string
+) {
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetchWithLoader(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/reviews`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Event reviews fetch failed:", res.status, res.statusText);
+      return [];
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Event reviews fetch error:", err);
+    return [];
+  }
+}
+
 export async function signUpForEvent(
   eventId: string,
   token: string
@@ -267,4 +294,37 @@ export async function postEvent(createEventRequest: CreateEventRequestDto, acces
 
   const resp = await postApiEvent(createEventRequest, { headers: addAuthHeaders(accessToken) });
   return resp;
+}
+
+export async function submitEventReview(
+  eventId: string,
+  stars: number,
+  comment: string,
+  token: string
+) {
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetchWithLoader(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/review`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ stars, comment }),
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Cannot submit review:", res.status, res.statusText);
+      throw new Error("Failed to submit review");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Review submission error:", err);
+    throw err;
+  }
 }

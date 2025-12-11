@@ -40,6 +40,7 @@ export type EventDetails = {
     minAllowedAge: number;
     maxAllowedAge: number;
     startDate: string;
+    startTime: string;
     reservationEndDate: string;
     imageThumbnail: string;
     createdDate: string;
