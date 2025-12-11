@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "../imageDropzone";
 import ComponentsWrapper from "../wrappers/componentsWrapper";
@@ -23,19 +23,19 @@ export default function BasicsForm() {
     const [title, setTitle] = useState(formState.basics?.title ?? "");
     const [description, setDescription] = useState(formState.basics?.description ?? "");
     const [coverImage, setCoverImage] = useState(formState.basics?.coverImage ?? "");
-    const [username, setUsername] = useState<string>("");
-
-    useEffect(() => {
+    const [username] = useState<string>(() => {
         const token = localStorage.getItem("accessToken");
         if (token) {
             try {
                 const decoded = parseJwt(token);
-                setUsername(decoded.unique_name || "");
+                return decoded.unique_name || "";
             } catch (err) {
                 console.error("Failed to decode token:", err);
+                return "";
             }
         }
-    }, []);
+        return "";
+    });
 
     const eventDetail: EventOverviewDto = {
         ...createEventDefaultData,

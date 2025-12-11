@@ -1,4 +1,4 @@
-import nextJest from 'next/jest';
+import nextJest from 'next/jest.js';
 
 // Path to Next.js app to load next.config.js and .env files test environment
 const createJestConfig = nextJest({

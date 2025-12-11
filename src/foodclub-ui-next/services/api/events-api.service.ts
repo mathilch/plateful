@@ -17,9 +17,11 @@ async function fetchWithLoader(input: RequestInfo, init?: RequestInit) {
 import { toQueryParams } from "@/lib/utils";
 import { CreateEventRequestDto } from "@Rameez349/events-api-sdk/dist/generated/model";
 import { postApiEvent } from "@Rameez349/events-api-sdk";
+import {EventReviewDto} from "@/types/event-review.type";
+import {EventDetails, EventOverviewDto} from "@/types/event-details.type";
 
 
-export async function getEventById(eventId: string) {
+export async function getEventById(eventId: string): Promise<EventDetails | null> {
   console.log("Fetching event with id ", eventId);
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -35,14 +37,13 @@ export async function getEventById(eventId: string) {
 
     if (!res.ok) {
       console.error("Events fetch failed:", res.status, res.statusText);
-      return [];
+      return null;
     }
-    const data = await res.json();
+    const data: EventDetails = await res.json();
     return data;
-
   } catch (err) {
     console.error("Events fetch error:", err);
-    return [];
+    return null;
   }
 }
 
@@ -73,7 +74,7 @@ export async function getRecentEventsForHomePage() {
 export async function searchEventsBySelectedFilters(
   searchEventsRequestDto: Partial<SearchEventsRequestDto>,
   signal?: AbortSignal
-) {
+): Promise<EventOverviewDto[]> {
   const queryParams = toQueryParams(searchEventsRequestDto as Partial<SearchEventsRequestDto>);
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -89,8 +90,14 @@ export async function searchEventsBySelectedFilters(
       return [];
     }
 
-    const data = await res.json();
+    const data = (await res.json()) as EventOverviewDto[];
+    
+    if (!Array.isArray(data)) {
+        console.error("Expected array but got: ", data);
+        return [];
+    }
     return data;
+    
   } catch (err: unknown) {
     if (err instanceof Error && err.name === "AbortError") {
       // request was aborted
@@ -301,7 +308,7 @@ export async function submitEventReview(
   stars: number,
   comment: string,
   token: string
-) {
+): Promise<EventReviewDto> {
   try {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     const res = await fetchWithLoader(

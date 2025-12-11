@@ -69,13 +69,14 @@ public class Program
 
         app.UseExceptionHandler();
         app.UseHttpsRedirection();
-        app.UseCors();
+        
         app.MapHealthChecks("/health");
         
         app.UseAuthentication();
         app.UseAuthorization();
         
         app.MapControllers();
+        app.UseCors();
         app.Run();
     }
 }

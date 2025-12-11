@@ -5,6 +5,7 @@ export interface JwtPayload {
   unique_name: string; // user name
   email: string;
   exp: number; // expiration timestamp
+  birthdate?: string;
 }
 
 export function parseJwt<T = JwtPayload>(token: string): T {
