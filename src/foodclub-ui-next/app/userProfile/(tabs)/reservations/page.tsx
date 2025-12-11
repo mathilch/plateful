@@ -6,6 +6,7 @@ import { getEventsByUserAsParticipant } from "@/services/api/events-api.service"
 import { EventOverviewDto } from "@/types/event-details.type";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Reservations() {
   const [userEvents, setUserEvents] = useState<Array<EventOverviewDto>>([]);
@@ -82,12 +83,14 @@ export default function Reservations() {
                 </p>
               </div>
 
-              <Button
-                variant="outline"
-                className="border-emerald-800 text-emerald-800 hover:bg-emerald-50"
-              >
-                View Details
-              </Button>
+              <Link href={`/viewEventPage?id=${event.eventId}`}>
+                <Button
+                  variant="outline"
+                  className="border-emerald-800 text-emerald-800 hover:bg-emerald-50 cursor-pointer"
+                >
+                  View Details
+                </Button>
+              </Link>
             </div>
           ))
         )}

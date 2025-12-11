@@ -27,6 +27,7 @@ export type EventOverviewDto = {
   isPublic: boolean;
   eventAddress: EventAddress
   eventFoodDetails: EventFoodDetails;
+  price: number;
 };
 
 export type EventDetails = {
@@ -39,6 +40,7 @@ export type EventDetails = {
     minAllowedAge: number;
     maxAllowedAge: number;
     startDate: string;
+    startTime: string;
     reservationEndDate: string;
     imageThumbnail: string;
     createdDate: string;

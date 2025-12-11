@@ -40,14 +40,16 @@ public class EventService(
     {
         var eventEntity = createEvent.ToEntity(currentUser.UserId);
         var e = await eventRepository.AddEvent(eventEntity);
-        
+
         return e.ToDto();
     }
 
-    public async Task<EventDto> GetEventByEventId(Guid eventId)
+    public async Task<EventOverviewDto> GetEventDetailsByEventId(Guid eventId)
     {
-        var e = await eventRepository.GetEventById(eventId);
-        return e.ToDto();
+        var e = await eventRepository.GetEventDetailsById(eventId);
+        var userIds = new List<Guid>() { e.UserId };
+        var users = await userApiService.GetUsersByIds(userIds);
+        return e.ToEventOverviewDto(users);
     }
 
     public async Task<List<EventOverviewDto>> GetEventsByUserId(Guid loggedInUserId)
@@ -197,7 +199,7 @@ public class EventService(
         var e = await eventRepository.GetEventById(eventId);
         var participants = await eventRepository.GetEventParticipants(eventId);
 
-        if (!participants.Any(id => id.UserId == userId) || e.IsActive)
+        if (!participants.Any(id => id.UserId == userId))
         {
             throw new CannotReviewException(eventId);
         }
@@ -227,13 +229,13 @@ public class EventService(
 
     public async Task<List<EventReviewDto>> GetAllReviewsForAnEvent(Guid eventId)
     {
-        var eventEntity = await eventRepository.GetEventById(eventId);
-        if (eventEntity.EventReviews is not null)
+        var eventReviews = await eventRepository.GetEventReviews(eventId);
+        if (eventReviews is not null)
         {
-            var userIds = eventEntity.EventReviews.Select(x => x.UserId).Distinct().ToList();
+            var userIds = eventReviews.Select(x => x.UserId).Distinct().ToList();
             var users = await userApiService.GetUsersByIds(userIds);
 
-            return eventEntity.EventReviews.Select(x => x.ToDto(users)).ToList();
+            return eventReviews.Select(x => x.ToDto(users)).ToList();
         }
         return Enumerable.Empty<EventReviewDto>().ToList();
     }

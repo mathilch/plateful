@@ -17,9 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Infrastructure.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Application", "src\Users.Application\Users.Application.csproj", "{F0E71AE3-8B2A-4298-A1AB-2ED44C290642}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Application.Tests", "test\Users.Application.Tests\Users.Application.Tests.csproj", "{F3AACD88-C46B-4E65-9CDE-DA49644D6C8B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Api.Tests", "test\Users.Api.Tests\Users.Api.Tests.csproj", "{1C1C4D91-B9C7-40EE-B1B3-A74269BB1494}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rootFolder", "rootFolder", "{7985B5C7-ED48-405A-9876-E47728DB9046}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

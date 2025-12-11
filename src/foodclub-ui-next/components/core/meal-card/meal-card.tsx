@@ -58,7 +58,7 @@ export default function MealCard(eventDetails: EventOverviewDto) {
                 </Badge>
               ))}
               {eventDetails.tags.length > 3 && (
-                <Badge variant="secondary" className="text-xs">+{eventDetails.tags.length - 3}</Badge>
+                <Badge variant="outline" className="text-xs">+{eventDetails.tags.length - 3}</Badge>
               )}
             </div>
             {eventDetails.allergens && eventDetails.allergens.length > 0 && (

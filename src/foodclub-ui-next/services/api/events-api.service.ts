@@ -19,33 +19,32 @@ import { CreateEventRequestDto } from "@Rameez349/events-api-sdk/dist/generated/
 import { postApiEvent } from "@Rameez349/events-api-sdk";
 
 
-export async function getEventById(eventId: string, accessToken: string) {
-    console.log("Fetching event with id ", eventId);
-    try {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}`, 
-            {
-                method: "GET",
-                headers: { 
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}` 
-                },
-            }
-        );
+export async function getEventById(eventId: string) {
+  console.log("Fetching event with id ", eventId);
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-        if (!res.ok) {
-            console.error("Events fetch failed:", res.status, res.statusText);
-            return [];
-        }
-        const data = await res.json();
-        return data;
-        
-    } catch (err) {
-        console.error("Events fetch error:", err);
-        return [];
+    if (!res.ok) {
+      console.error("Events fetch failed:", res.status, res.statusText);
+      return [];
     }
-} 
+    const data = await res.json();
+    return data;
+
+  } catch (err) {
+    console.error("Events fetch error:", err);
+    return [];
+  }
+}
 
 export async function getRecentEventsForHomePage() {
   try {
@@ -92,8 +91,8 @@ export async function searchEventsBySelectedFilters(
 
     const data = await res.json();
     return data;
-  } catch (err) {
-    if ((err as any)?.name === "AbortError") {
+  } catch (err: unknown) {
+    if (err instanceof Error && err.name === "AbortError") {
       // request was aborted
       return [];
     }
@@ -189,77 +188,105 @@ export async function getEventReviewsByHostUserId(
   }
 }
 
-export async function signUpForEvent(
-    eventId: string,
-    token: string
+export async function getEventReviewsByEventId(
+  eventId: string
 ) {
-    try {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        const res = await fetchWithLoader(
-            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/participate`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        
-        if (!res.ok) {
-            console.error("Cannot sign up for event:", res.status, res.statusText);
-            return [];
-        }
-        
-        const data = await res.json();
-        return data;
-    } catch (err) {
-        console.error("Events fetch error:", err);
-        return [];
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetchWithLoader(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/reviews`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Event reviews fetch failed:", res.status, res.statusText);
+      return [];
     }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Event reviews fetch error:", err);
+    return [];
+  }
+}
+
+export async function signUpForEvent(
+  eventId: string,
+  token: string
+) {
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetchWithLoader(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/participate`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Cannot sign up for event:", res.status, res.statusText);
+      return [];
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Events fetch error:", err);
+    return [];
+  }
 }
 
 export async function withdrawFromEvent(
-    eventId: string,
-    token: string
+  eventId: string,
+  token: string
 ) {
-    try {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        const res = await fetchWithLoader(
-            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/withdraw`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-    
-        if (!res.ok) {
-            console.error("Cannot sign up for event:", res.status, res.statusText);
-            return [];
-        }
-    
-        const data = await res.json();
-        return data;
-        
-    } catch (err) {
-        console.error("Events fetch error:", err);
-        return [];
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetchWithLoader(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/withdraw`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Cannot sign up for event:", res.status, res.statusText);
+      return [];
     }
+
+    const data = await res.json();
+    return data;
+
+  } catch (err) {
+    console.error("Events fetch error:", err);
+    return [];
+  }
 }
 
 
 function addAuthHeaders(accessToken: string): HeadersInit {
-    return {
-        // TODO: work on proper authentication flow
-        Authorization: `Bearer ${accessToken}`,
-    };
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-        //return token;
-    }
+  return {
+    // TODO: work on proper authentication flow
+    Authorization: `Bearer ${accessToken}`,
+  };
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    //return token;
+  }
 }
 
 
@@ -267,4 +294,37 @@ export async function postEvent(createEventRequest: CreateEventRequestDto, acces
 
   const resp = await postApiEvent(createEventRequest, { headers: addAuthHeaders(accessToken) });
   return resp;
+}
+
+export async function submitEventReview(
+  eventId: string,
+  stars: number,
+  comment: string,
+  token: string
+) {
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const res = await fetchWithLoader(
+      `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/review`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ stars, comment }),
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Cannot submit review:", res.status, res.statusText);
+      throw new Error("Failed to submit review");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Review submission error:", err);
+    throw err;
+  }
 }

@@ -11,6 +11,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 as runtime
 WORKDIR /app
 COPY --from=build /app ./
 
+RUN apt-get update && apt-get install -y curl
+
 # Expose ports 
 EXPOSE 5000
 

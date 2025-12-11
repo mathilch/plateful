@@ -42,7 +42,7 @@ export default function PreviewForm() {
         throw new Error("Previous form steps must be completed before this step");
     }
 
-    let eventDetail: EventOverviewDto = {
+    const eventDetail: EventOverviewDto = {
         ...createEventDefaultData,
 
         hostName: username,
