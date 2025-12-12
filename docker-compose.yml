@@ -99,14 +99,14 @@ services:
       - plateful-backend
 
   chat-db:
-    image: postgres:15
+    image: postgres:18
     container_name: chatmicroservice-db
     environment:
       POSTGRES_USER: postgres 
       POSTGRES_PASSWORD: postgres 
       POSTGRES_DB: chatdb
     volumes:
-      - chat_pgdata:/var/lib/postgresql/data 
+      - chat_pgdata:/var/lib/postgresql 
     ports:
       - "5435:5432"
     networks: 
