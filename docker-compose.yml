@@ -21,7 +21,7 @@ services:
       - plateful-frontend
 
   users-db:
-    image: postgres:15
+    image: postgres:18
     container_name: usersmicroservice-db
     environment:
       POSTGRES_USER: postgres 
@@ -29,7 +29,7 @@ services:
       POSTGRES_DB: usersdb
     volumes:
       # Persist data outside the container so that it isnt lost in case it stops or is deleted
-      - users_pgdata:/var/lib/postgresql/data 
+      - users_pgdata:/var/lib/postgresql 
     ports:
       - "5433:5432"
     networks: 
@@ -64,7 +64,7 @@ services:
       - plateful-frontend
 
   events-db:
-    image: postgres:15
+    image: postgres:18
     container_name: eventsmicroservice-db
     environment:
       POSTGRES_USER: postgres 
@@ -72,7 +72,7 @@ services:
       POSTGRES_DB: eventsdb
     volumes:
       # Persist data outside the container so that it isnt lost in case it stops or is deleted
-      - events_pgdata:/var/lib/postgresql/data 
+      - events_pgdata:/var/lib/postgresql 
     ports:
       - "5434:5432"
     networks: 
@@ -99,14 +99,14 @@ services:
       - plateful-backend
 
   chat-db:
-    image: postgres:15
+    image: postgres:18
     container_name: chatmicroservice-db
     environment:
       POSTGRES_USER: postgres 
       POSTGRES_PASSWORD: postgres 
       POSTGRES_DB: chatdb
     volumes:
-      - chat_pgdata:/var/lib/postgresql/data 
+      - chat_pgdata:/var/lib/postgresql 
     ports:
       - "5435:5432"
     networks: 

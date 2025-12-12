@@ -36,12 +36,12 @@ public class EventService(
         }
     }
 
-    public async Task<EventDto> AddEvent(CreateEventRequestDto createEvent)
+    public async Task<EventOverviewDto> AddEvent(CreateEventRequestDto createEvent)
     {
         var eventEntity = createEvent.ToEntity(currentUser.UserId);
         var e = await eventRepository.AddEvent(eventEntity);
 
-        return e.ToDto();
+        return e.ToEventOverviewDto(currentUser.Username);
     }
 
     public async Task<EventOverviewDto> GetEventDetailsByEventId(Guid eventId)

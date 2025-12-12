@@ -7,7 +7,7 @@ namespace Events.Application.Contracts.Services;
 public interface IEventService
 {
     // Basic CRUD
-    Task<EventDto> AddEvent(CreateEventRequestDto createEvent);
+    Task<EventOverviewDto> AddEvent(CreateEventRequestDto createEvent);
     Task<EventOverviewDto> GetEventDetailsByEventId(Guid eventId);
     Task<List<EventOverviewDto>> GetEventsByUserId(Guid userId);
     Task<List<EventDto>> GetAllEvents();

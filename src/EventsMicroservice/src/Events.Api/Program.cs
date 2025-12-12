@@ -1,3 +1,4 @@
+using Events.Api.Filters;
 using Events.Api.Middlewares;
 using Events.Application.ServiceCollectionExtensions;
 using Events.Infrastructure.Context;
@@ -17,14 +18,20 @@ public class Program
         builder.Services.ConfigureApplicationServices(builder.Configuration);
         builder.Services.ConfigureInfrastructureServices();
 
-        if (!builder.Environment.IsEnvironment("CICD"))
+        var skipDatabaseSetup = builder.Environment.IsEnvironment("CICD") 
+                              || builder.Environment.IsEnvironment("IntegrationTesting");
+        if (!skipDatabaseSetup)
         {
             builder.Services.ConfigureDatabase(builder.Configuration);
             builder.Services.ConfigureExternalApis(builder.Configuration);
             builder.Services.ApplyMigrations();
         }
 
-        builder.Services.AddControllers();
+        builder.Services.AddScoped<ValidationFilter>();
+        builder.Services.AddControllers(options =>
+        {
+            options.Filters.Add<ValidationFilter>();
+        });
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
         
@@ -60,7 +67,7 @@ public class Program
             c.RoutePrefix = string.Empty;
         });
 
-        if (!builder.Environment.IsEnvironment("CICD"))
+        if (!skipDatabaseSetup)
         {
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<EventsDbContext>();

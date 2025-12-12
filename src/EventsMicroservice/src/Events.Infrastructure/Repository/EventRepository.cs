@@ -21,7 +21,12 @@ public class EventRepository : IEventRepository
 
     public async Task<Event> GetEventById(Guid id)
     {
-        var e = await _context.Events.FindAsync(id)
+        var e = await _context.Events
+            .Include(x => x.EventFoodDetails)
+            .Include(x => x.EventAddress)
+            .Include(x => x.EventParticipants)
+            .Include(x => x.EventImages)
+            .FirstOrDefaultAsync(x => x.EventId == id)
             ?? throw new EventIdNotFoundException(id);
         return e;
     }

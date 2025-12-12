@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Infrastructure.Tests", "test\Events.Infrastructure.Tests\Events.Infrastructure.Tests.csproj", "{807C6508-C021-43E4-84E3-F467CC8F13B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Api.E2ETests", "test\Events.Api.E2ETests\Events.Api.E2ETests.csproj", "{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rootFolder", "rootFolder", "{B5CC99AB-4B99-4CF6-B063-9EC9E5349979}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
@@ -95,6 +97,18 @@ Global
 		{807C6508-C021-43E4-84E3-F467CC8F13B3}.Release|x64.Build.0 = Release|Any CPU
 		{807C6508-C021-43E4-84E3-F467CC8F13B3}.Release|x86.ActiveCfg = Release|Any CPU
 		{807C6508-C021-43E4-84E3-F467CC8F13B3}.Release|x86.Build.0 = Release|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Debug|x64.Build.0 = Debug|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Debug|x86.Build.0 = Debug|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Release|x64.ActiveCfg = Release|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Release|x64.Build.0 = Release|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Release|x86.ActiveCfg = Release|Any CPU
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +119,7 @@ Global
 		{D7617C26-8468-4A98-92DB-5E3C25C240F5} = {EC70585D-948C-422A-AC4A-4F0DBC361862}
 		{807C6508-C021-43E4-84E3-F467CC8F13B3} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 		{458D9C0D-9E97-4196-9FA6-1EF191D5C22D} = {EC70585D-948C-422A-AC4A-4F0DBC361862}
+		{6B2F1F1B-7C02-4CFA-9BFA-3E5BC57D4D9C} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8DF08BB-3D9C-4156-A801-AD6959C6422F}
