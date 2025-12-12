@@ -26,7 +26,7 @@ public class EventWorkflowTests(EventsApiFactory factory) : IClassFixture<Events
             var payload = TestData.ValidRequest() with { Name = name };
             var response = await _client.PostAsJsonAsync("/api/event", payload, cancellationToken: TestContext.Current.CancellationToken);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.Content.ReadFromJsonAsync<EventDto>(cancellationToken: TestContext.Current.CancellationToken);
+            var created = await response.Content.ReadFromJsonAsync<EventOverviewDto>(cancellationToken: TestContext.Current.CancellationToken);
             createdIds.Add(created!.EventId);
         }
 
@@ -65,12 +65,12 @@ public class EventWorkflowTests(EventsApiFactory factory) : IClassFixture<Events
     {
         var payload = TestData.ValidRequest() with { Name = "Event For GetById Test" };
         var createResponse = await _client.PostAsJsonAsync("/api/event", payload, cancellationToken: TestContext.Current.CancellationToken);
-        var created = await createResponse.Content.ReadFromJsonAsync<EventDto>(cancellationToken: TestContext.Current.CancellationToken);
+        var created = await createResponse.Content.ReadFromJsonAsync<EventOverviewDto>(cancellationToken: TestContext.Current.CancellationToken);
 
         var response = await _client.GetAsync($"/api/event/{created!.EventId}", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var fetched = await response.Content.ReadFromJsonAsync<EventDto>(cancellationToken: TestContext.Current.CancellationToken);
+        var fetched = await response.Content.ReadFromJsonAsync<EventOverviewDto>(cancellationToken: TestContext.Current.CancellationToken);
         fetched.Should().NotBeNull();
         fetched!.EventId.Should().Be(created.EventId);
         fetched.Name.Should().Be(payload.Name);
