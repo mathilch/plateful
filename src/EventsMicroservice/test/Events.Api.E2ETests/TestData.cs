@@ -46,9 +46,9 @@ internal static class TestData
     );
 
     /// <summary>
-    /// Asserts that an EventDto matches the expected values from a CreateEventRequestDto.
+    /// Asserts that an EventOverviewDto matches the expected values from a CreateEventRequestDto.
     /// </summary>
-    public static void AssertEventMatchesRequest(EventDto actual, CreateEventRequestDto expected)
+    public static void AssertEventMatchesRequest(EventOverviewDto actual, CreateEventRequestDto expected)
     {
         actual.Should().NotBeNull();
         actual.Name.Should().Be(expected.Name);
@@ -58,7 +58,8 @@ internal static class TestData
         actual.MinAllowedAge.Should().Be(expected.MinAllowedAge);
         actual.MaxAllowedAge.Should().Be(expected.MaxAllowedAge);
         actual.IsPublic.Should().Be(expected.IsPublic);
-        actual.StartDate.Should().Be(expected.StartDate);
+        actual.StartDate.Should().Be(expected.StartDate.Date.ToString("dd/MM/yyyy"));
+        actual.StartTime.Should().Be(expected.StartDate.ToString("hh:mm"));
         actual.ReservationEndDate.Should().Be(expected.ReservationEndDate);
         actual.IsActive.Should().BeTrue();
         actual.UserId.Should().Be(TestUsers.DefaultUserId);
@@ -69,11 +70,5 @@ internal static class TestData
         actual.EventAddress.StreetAddress.Should().Be(expected.StreetAddress);
         actual.EventAddress.PostalCode.Should().Be(expected.PostalCode);
         actual.EventAddress.Region.Should().Be(expected.Region);
-
-        // Food details
-        actual.EventFoodDetails.Should().NotBeNull();
-        actual.EventFoodDetails.Name.Should().Be(expected.EventFoodDetails.Name);
-        actual.EventFoodDetails.Ingredients.Should().Be(expected.EventFoodDetails.Ingredients);
-        actual.EventFoodDetails.AdditionalFoodItems.Should().Be(expected.EventFoodDetails.AdditionalFoodItems);
     }
 }

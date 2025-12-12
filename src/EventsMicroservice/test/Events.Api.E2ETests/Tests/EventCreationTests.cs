@@ -101,7 +101,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
+        var created = await _response.Content.ReadFromJsonAsync<EventOverviewDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
@@ -113,13 +113,13 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
+        var created = await _response.Content.ReadFromJsonAsync<EventOverviewDto>(TestContext.Current.CancellationToken);
         created.Should().NotBeNull();
 
         var getResponse =
             await _client.GetAsync($"/api/event/{created!.EventId}", TestContext.Current.CancellationToken);
         getResponse.EnsureSuccessStatusCode();
-        var fetched = await getResponse.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
+        var fetched = await getResponse.Content.ReadFromJsonAsync<EventOverviewDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(fetched!, request);
     }
@@ -131,7 +131,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
+        var created = await _response.Content.ReadFromJsonAsync<EventOverviewDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
@@ -146,7 +146,7 @@ public class EventCreationTests(EventsApiFactory factory) : IClassFixture<Events
         _response = await _client.PostAsJsonAsync("/api/event", request, TestContext.Current.CancellationToken);
 
         _response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var created = await _response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
+        var created = await _response.Content.ReadFromJsonAsync<EventOverviewDto>(TestContext.Current.CancellationToken);
 
         TestData.AssertEventMatchesRequest(created!, request);
     }
