@@ -8,14 +8,21 @@ import { EventReviewDto } from "@/types/event-review.type";
 
 import { JwtPayload, parseJwt } from "@/lib/jwt-decoder.helper";
 import {
-  getEventById,
-  withdrawFromEvent,
-  submitEventReview,
-  getEventReviewsByEventId,
+    getEventById,
+    signUpForEvent,
+    withdrawFromEvent,
+    submitEventReview,
+    getEventReviewsByEventId, 
+    createPaymentIntent,
 } from "@/services/api/events-api.service";
-import { signUpForEvent } from "@/services/api/events-api.service";
+
+import { CardElement, useStripe, useElements, Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+const stripePromise = loadStripe("pk_test_51SRyMG1n8AVsJ3Y6bdMeand820WQ5MfbCEXRUpl0w7eBU3XgO4BG7JfkF9gWEigP0kgvdaDHgj8o3YxksIwM97RW00chx7agcQ")
+
 import { getUserById } from "@/services/api/user-api.service";
 import LocationMiniMap from "@/components/core/createFoodEventForms/locationMiniMap";
+import PaymentModal from "@/components/payment/payment-modal";
 
 export default function EventDetailsClient() {
   const searchParams = useSearchParams();
@@ -29,10 +36,14 @@ export default function EventDetailsClient() {
   const [reviewComment, setReviewComment] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("accessToken");
     setToken(storedToken);
+    setIsClient(true);
   }, []);
 
   const getInitials = (name?: string) => {
@@ -93,16 +104,9 @@ export default function EventDetailsClient() {
     const decoded = parseJwt<JwtPayload>(token);
     const userId = decoded.sub;
     const birthdate = decoded.birthdate;
-
-    if (!birthdate)
-      return {
-        text: "Unable to sign up",
-        disabled: true,
-        reason: "User needs to set their birthday",
-      };
-
+    
     const today = new Date();
-    const birthday = new Date(birthdate);
+    const birthday = new Date(birthdate!);
     let age = today.getFullYear() - birthday.getFullYear();
     const monthDiff = today.getMonth() - birthday.getMonth();
     const dayDiff = today.getDate() - birthday.getDate();
@@ -121,12 +125,7 @@ export default function EventDetailsClient() {
         disabled: true,
         reason: "No more space",
       };
-    if (age > 120)
-      return {
-        text: "Unable to sign up",
-        disabled: true,
-        reason: "User need to set his birthday before signing up",
-      };
+
     if (!correctAge)
       return {
         text: "Unable to sign up",
@@ -140,26 +139,31 @@ export default function EventDetailsClient() {
 
   const reserveButtonProps = getReserveButtonProps();
 
-  const handleReserveSeat = async () => {
-    if (!event) return;
+    const handleReserveSeat = async () => {
+        if (!event || !token) return;
 
-    try {
-      if (!token) return;
+        const decoded = parseJwt(token);
+        const userId = decoded.sub;
 
-      const decoded = parseJwt(token);
-      const userId = decoded.sub;
-
-      if (event.eventParticipants.every((p) => p.userId != userId)) {
-        await signUpForEvent(event.eventId, token);
-      } else {
-        await withdrawFromEvent(event.eventId, token);
-      }
-      const updatedEvent = await getEventById(event.eventId);
-      setEvent(updatedEvent);
-    } catch (err) {
-      console.error("Failed to update event participant", err);
-    }
-  };
+        const isParticipating = event.eventParticipants.some((p) => p.userId == userId);
+        if (isParticipating) {
+            await withdrawFromEvent(event.eventId, token)
+            setEvent(await getEventById(event.eventId));
+            return;
+        }
+        try {
+            const secret = await createPaymentIntent(
+                token,
+                event.eventId,
+                userId,
+                event.pricePerSeat
+            );
+            setClientSecret(secret);
+            setShowPaymentModal(true);
+        } catch (err) {
+            console.log("Stripe error:", err);
+        }
+    };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,6 +191,22 @@ export default function EventDetailsClient() {
   };
 
   return (
+    <>
+      {isClient && showPaymentModal && clientSecret && (
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <PaymentModal
+                  clientSecret={clientSecret}
+                  onClose={() => setShowPaymentModal(false)}
+                  onSuccess={async () => {
+                      if (token && event) {
+                          await signUpForEvent(event.eventId, token);
+                          setEvent(await getEventById(event.eventId));
+                      }
+                  }}
+              />
+          </Elements>
+      )}
+      
     <main className="max-w-6xl mx-auto px-4 py-10">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2">
@@ -212,7 +232,7 @@ export default function EventDetailsClient() {
           <div className="mb-4">
             <div className="flex items-center justify-between text-sm mb-1">
               <span>
-                {event?.eventParticipants.length} /{" "}
+                {event?.maxAllowedParticipants! - event?.eventParticipants.length!} /{" "}
                 {event?.maxAllowedParticipants} seats left
               </span>
             </div>
@@ -226,7 +246,7 @@ export default function EventDetailsClient() {
                         event.maxAllowedParticipants) *
                       100
                       : 0
-                    }`,
+                    }%`,
                 }}
               />
             </div>
@@ -337,7 +357,6 @@ export default function EventDetailsClient() {
             </div>
 
             {(() => {
-              const token = localStorage.getItem("accessToken");
               if (!token || !event) return null;
               const decoded = parseJwt(token);
               const userId = decoded.sub;
@@ -399,5 +418,6 @@ export default function EventDetailsClient() {
         </div>
       </div>
     </main>
+    </>
   );
 }

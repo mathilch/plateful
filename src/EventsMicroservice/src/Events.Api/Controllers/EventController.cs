@@ -1,3 +1,4 @@
+using Events.Application.Contracts.ExternalApis;
 using Events.Application.Contracts.Services;
 using Events.Application.Dtos.Common;
 using Events.Application.Dtos.Requests;
@@ -10,7 +11,7 @@ namespace Events.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/event")]
-public class EventController(IEventService _eventService) : ControllerBase
+public class EventController(IEventService _eventService, IPaymentService _stripeService) : ControllerBase
 {
     [AllowAnonymous]
     [HttpGet("recent")]
@@ -41,6 +42,19 @@ public class EventController(IEventService _eventService) : ControllerBase
     [HttpPut("{eventId:guid}/withdraw")]
     public async Task<IActionResult> WithdrawFromEvent(Guid eventId)
         => Ok(await _eventService.WithdrawFromEvent(eventId));
+    
+    [HttpPost("{eventId:guid}/create-payment-intent")]
+    public async Task<IActionResult> CreatePaymentIntent([FromBody] CreatePaymentRequestDto request)
+    {
+        var metadata = new Dictionary<string, string>
+        {
+            { "eventId", request.EventId.ToString() },
+            { "userId", request.UserId.ToString() }
+        };
+
+        var paymentIntent = await _stripeService.CreatePaymentIntent(request.Amount, metadata);
+        return Ok(new { clientSecret = paymentIntent.ClientSecret });
+    }
     
     [HttpPost]
     public async Task<IActionResult> Create(CreateEventRequestDto req)

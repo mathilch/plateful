@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.OpenApi.Models;
 using Users.Api.Middlewares;
 using Users.Application.ServiceCollectionExtensions;
+using Users.Infrastructure.Context;
 using Users.Infrastructure.ServiceExtensions;
 
 namespace Users.Api;
@@ -53,6 +54,13 @@ public class Program
             c.RoutePrefix = string.Empty;
         });
 
+  
+        using var scope = app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetService<UserDbContext>();
+        DbInitializer.Seed(context!);    
+        
+        
+        
         app.UseExceptionHandler(options => { });
         app.UseHttpsRedirection();
         app.UseCors();
