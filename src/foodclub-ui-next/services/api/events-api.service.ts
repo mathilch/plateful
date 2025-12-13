@@ -135,6 +135,33 @@ export async function getEventsByUserId(userId: string, accessToken: string) {
   }
 }
 
+export async function createPaymentIntent(accessToken: string, eventId: String, userId: String, amount: number) {
+    try {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+        const res = await fetchWithLoader(
+            `${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/${eventId}/create-payment-intent`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    EventId: eventId,
+                    UserId: userId,
+                    Amount: Math.round(amount * 100),
+                }),
+            });
+
+        const data = await res.json();
+        return data.clientSecret;
+    } catch (err) {
+        console.error("Failed to create a payment intent", err);
+        throw err;
+    }
+}
+
+
 export async function getEventsByUserAsParticipant(
   userId: string,
   accessToken: string
