@@ -1,4 +1,3 @@
-using Events.Application.Contracts.ExternalApis;
 using Events.Application.Contracts.Services;
 using Events.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,6 +15,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<CurrentUser>();
+        services.AddScoped<INotificationsServiceBusClient, NotificationServiceBusClient>();
 
         return services;
     }

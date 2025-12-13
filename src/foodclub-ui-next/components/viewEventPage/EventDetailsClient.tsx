@@ -31,7 +31,7 @@ export default function EventDetailsClient() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("accessToken");
     setToken(storedToken);
   }, []);
 
