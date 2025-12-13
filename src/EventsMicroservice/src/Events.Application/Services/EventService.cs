@@ -199,6 +199,20 @@ public class EventService(
         }
 
         var e = await eventRepository.RemoveEventParticipant(eventId, currentUser.UserId);
+
+        var userIds = new List<Guid>() { e.UserId };
+        var users = await userApiService.GetUsersByIds(userIds);
+        var notificationRequest = new NotificationRequestDto
+        {
+            EmailContent = "A participant has withdrawn from the event",
+            Subject = "Event Particpant Withdrawn",
+            ToAddress = users.FirstOrDefault()?.Email ?? string.Empty
+        };
+        if (!string.IsNullOrWhiteSpace(notificationRequest.ToAddress))
+        {
+            await notificationClient.SendEmailNotification(notificationRequest);
+        }
+
         return e.ToDto();
     }
 
