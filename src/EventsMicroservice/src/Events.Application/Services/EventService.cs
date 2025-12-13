@@ -15,7 +15,8 @@ public class EventService(
     IEventRepository eventRepository,
     CurrentUser currentUser,
     IUserApiService userApiService,
-    IPaymentService paymentService) : IEventService
+    IPaymentService paymentService,
+    INotificationsServiceBusClient notificationClient) : IEventService
 {
     // Helper methods to avoid code duplication
     private async Task EnsureThatUserOwnsTheEvent(Guid eventId)
@@ -171,7 +172,22 @@ public class EventService(
             throw new UserIsNotTheRightAgeException(currentUser.UserId, e.MinAllowedAge, e.MaxAllowedAge);
         }
         */
+        
         await eventRepository.AddEventParticipant(eventId, currentUser.UserId);
+
+        var userIds = new List<Guid>() { e.UserId };
+        var users = await userApiService.GetUsersByIds(userIds);
+        var notificationRequest = new NotificationRequestDto
+        {
+            EmailContent = "New user signed up for an event",
+            Subject = "New Event Participant",
+            ToAddress = users.FirstOrDefault()?.Email ?? string.Empty
+        };
+        if (!string.IsNullOrWhiteSpace(notificationRequest.ToAddress))
+        {
+            await notificationClient.SendEmailNotification(notificationRequest);
+        }
+
         return e.ToDto();
     }
 
