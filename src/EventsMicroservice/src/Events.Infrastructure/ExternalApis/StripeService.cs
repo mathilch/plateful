@@ -1,4 +1,5 @@
 using Events.Application.Contracts.ExternalApis;
+using Microsoft.Extensions.Options;
 using Stripe;
 
 namespace Events.Infrastructure.ExternalApis;
@@ -7,9 +8,9 @@ public class StripeService : IPaymentService
 {
     private readonly StripeSettings _stripeSettings;
 
-    public StripeService(StripeSettings stripeSettings)
+    public StripeService(IOptions<StripeSettings> stripeSettings)
     {
-        _stripeSettings = stripeSettings;
+        _stripeSettings = stripeSettings.Value;
     }
     public async Task<PaymentIntent> CreatePaymentIntent(long amount, Dictionary<string, string> metadata)
     {

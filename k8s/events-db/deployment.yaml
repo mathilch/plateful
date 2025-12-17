@@ -6,20 +6,23 @@ spec:
   # Standard for dbs, its mostly the api that gets scaled
   replicas: 1
   selector:
-    matchLabels: 
-      app: events-db 
+    matchLabels:
+      app: events-db
   # the pod template
   template:
-    metadata: #contains the labels applied to the pod. needs to match the selector 
-      labels: 
-        app: events-db 
+    metadata: #contains the labels applied to the pod. needs to match the selector
+      labels:
+        app: events-db
     spec:
       containers:
-        - name: events-db 
+        - name: events-db
           image: postgres:15
-          ports: 
+          ports:
             - containerPort: 5432
-          env: 
+          args:
+            - "-c"
+            - "max_connections=200"
+          env:
             - name: POSTGRES_USER
               value: "postgres"
             - name: POSTGRES_PASSWORD
@@ -29,10 +32,14 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: events-db-storage
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "2"
+              memory: "4096Mi"
       volumes:
-        - name: events-db-storage 
+        - name: events-db-storage
           persistentVolumeClaim:
             claimName: events-pvc
-
-
-

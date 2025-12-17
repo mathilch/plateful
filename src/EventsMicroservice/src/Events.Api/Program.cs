@@ -76,6 +76,7 @@ public class Program
 
         app.UseExceptionHandler();
         app.UseHttpsRedirection();
+        app.UseCors();
         
         app.MapHealthChecks("/health");
         
@@ -83,7 +84,6 @@ public class Program
         app.UseAuthorization();
         
         app.MapControllers();
-        app.UseCors();
         app.Run();
     }
 }
