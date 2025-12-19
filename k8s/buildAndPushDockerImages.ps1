@@ -53,7 +53,7 @@ $root = Split-Path -Parent $scriptDir
 Set-Location $root
 
 # ---------------------------
-# Frontend: ghcr.io/prvacy/foodclub-ui-next:dev
+# Frontend: ghcr.io/prvacy/foodclub-ui-next:latest
 # ---------------------------
 $frontendLocalTag  = "foodclub-ui-next:latest"
 $frontendRemoteTag = "ghcr.io/prvacy/foodclub-ui-next:latest"
