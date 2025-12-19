@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: users-api  
-          image: mathilch/users-api:latest
+          image: ghcr.io/prvacy/foodclub-users-api:latest
           ports: 
             - containerPort: 8080
           env: 

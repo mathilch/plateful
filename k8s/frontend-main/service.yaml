@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata: 
+  name: foodclub-frontend-main
+spec:
+  type: NodePort # Accessible outside the cluster, unlike ClusterIP
+  selector:   
+    app: foodclub-frontend-main
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30011 # 30000–32767 KUBERNETES DEFAULT

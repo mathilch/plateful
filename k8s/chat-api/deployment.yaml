@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: chat-api
-          image: svhldev/chat-api:latest
+          image: ghcr.io/prvacy/foodclub-chat-api:latest
           ports:
             - containerPort: 8080
           env:
