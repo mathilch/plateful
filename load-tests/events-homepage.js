@@ -7,7 +7,7 @@ export const options = {
 };
 
 export default function() {
-  let res = http.get('http://127.0.0.1:30011/');
+  const res = http.get('http://127.0.0.1:30011/');
   check(res, { "status is 200": (res) => res.status === 200 });
   sleep(1);
 }
