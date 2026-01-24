@@ -11,7 +11,7 @@ namespace Events.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/event")]
-public class EventController(IEventService _eventService, IPaymentService _stripeService) : ControllerBase
+public class EventController(IEventService _eventService, IPaymentService _stripeService, IWebHostEnvironment _environment) : ControllerBase
 {
     [AllowAnonymous]
     [HttpGet("recent")]
@@ -56,6 +56,58 @@ public class EventController(IEventService _eventService, IPaymentService _strip
         return Ok(new { clientSecret = paymentIntent.ClientSecret });
     }
     
+    [HttpPost("upload-image")]
+    public async Task<IActionResult> UploadImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { error = "No file uploaded" });
+        }
+
+        // Validate file type
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+        {
+            return BadRequest(new { error = "Invalid file type. Only image files are allowed." });
+        }
+
+        // Validate file size (max 5MB)
+        if (file.Length > 5 * 1024 * 1024)
+        {
+            return BadRequest(new { error = "File size exceeds 5MB limit" });
+        }
+
+        try
+        {
+            // Generate unique filename
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads");
+            
+            // Ensure directory exists
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
+
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            // Save file to disk
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Return the relative URL
+            var imageUrl = $"/uploads/{fileName}";
+            return Ok(new { imageUrl });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "Failed to upload image", details = ex.Message });
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateEventRequestDto req)
     {
