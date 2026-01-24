@@ -104,7 +104,10 @@ public class EventController(IEventService _eventService, IPaymentService _strip
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { error = "Failed to upload image", details = ex.Message });
+            // Log the full exception for debugging
+            Console.WriteLine($"Image upload failed: {ex.Message}");
+            // Return a generic error message to avoid exposing internal details
+            return StatusCode(500, new { error = "Failed to upload image. Please try again." });
         }
     }
 

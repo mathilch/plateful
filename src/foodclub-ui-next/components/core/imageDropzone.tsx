@@ -24,6 +24,10 @@ export function ImageDropzone({ value, onChange }: ImageDropzoneProps) {
                 formData.append('file', file);
 
                 const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    throw new Error('Authentication required. Please log in.');
+                }
+
                 const response = await fetch(`${process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL}/api/event/upload-image`, {
                     method: 'POST',
                     headers: {
