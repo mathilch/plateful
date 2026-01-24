@@ -413,3 +413,7 @@ next-env.d.ts
 src/npm-packages/events-ts-sdk/src/dist/
 src/npm-packages/events-ts-sdk/src/generated/
 /openapi.json
+
+# Uploaded images (don't commit user-uploaded content)
+src/EventsMicroservice/src/Events.Api/wwwroot/uploads/*
+!src/EventsMicroservice/src/Events.Api/wwwroot/uploads/.gitkeep
