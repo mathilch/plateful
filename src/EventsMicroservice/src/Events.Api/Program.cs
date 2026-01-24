@@ -60,6 +60,10 @@ public class Program
         });
 
         var app = builder.Build();
+        
+        // Enable static file serving
+        app.UseStaticFiles();
+        
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
