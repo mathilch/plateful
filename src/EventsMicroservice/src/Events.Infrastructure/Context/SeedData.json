@@ -1,0 +1,224 @@
+{
+  "users": {
+    "mathiasId": "019b17fc-5147-794b-8a08-bfa49a2aaa90",
+    "testUserId": "019b1802-a063-7095-9e29-8f9f3df736a1"
+  },
+  "events": [
+    {
+      "name": "Cozy Candlelit Dinner",
+      "description": "An intimate evening with homemade Italian cuisine, soft jazz, and warm candlelight ambiance.",
+      "userId": "019b17fc-5147-794b-8a08-bfa49a2aaa90",
+      "maxAllowedParticipants": 6,
+      "pricePerSeat": 45.00,
+      "minAllowedAge": 21,
+      "maxAllowedAge": 50,
+      "startDateOffset": 30,
+      "reservationEndDateOffset": 28,
+      "imageThumbnail": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "Pasta Carbonara & Tiramisu",
+        "ingredients": "Spaghetti, eggs, pancetta, parmesan, black pepper, mascarpone, espresso, ladyfingers",
+        "additionalFoodItems": "Red wine, sparkling water, fresh bread",
+        "dietaryStyles": [],
+        "allergens": ["Gluten", "Dairy", "Eggs"]
+      },
+      "address": {
+        "streetAddress": "Vestergade 12",
+        "postalCode": "8000",
+        "city": "Aarhus",
+        "region": "Region Midtjylland"
+      }
+    },
+    {
+      "name": "Japanese Sushi Masterclass",
+      "description": "Learn to roll sushi from a trained chef while enjoying sake and authentic Japanese appetizers.",
+      "userId": "019b1802-a063-7095-9e29-8f9f3df736a1",
+      "maxAllowedParticipants": 8,
+      "pricePerSeat": 75.00,
+      "minAllowedAge": 18,
+      "maxAllowedAge": 60,
+      "startDateOffset": 14,
+      "reservationEndDateOffset": 12,
+      "imageThumbnail": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "Sushi & Sashimi Platter",
+        "ingredients": "Sushi rice, nori, salmon, tuna, avocado, cucumber, wasabi, pickled ginger, soy sauce",
+        "additionalFoodItems": "Sake, green tea, miso soup, edamame",
+        "dietaryStyles": ["Pescatarian"],
+        "allergens": ["Fish", "Soy", "Gluten"]
+      },
+      "address": {
+        "streetAddress": "Nørrebrogade 45",
+        "postalCode": "2200",
+        "city": "København",
+        "region": "Region Hovedstaden"
+      }
+    },
+    {
+      "name": "Summer Garden BBQ Party",
+      "description": "Outdoor grilling with craft beers, lawn games, and live acoustic music in a beautiful backyard.",
+      "userId": "019b1802-a063-7095-9e29-8f9f3df736a1",
+      "maxAllowedParticipants": 20,
+      "pricePerSeat": 35.00,
+      "minAllowedAge": 18,
+      "maxAllowedAge": 55,
+      "startDateOffset": 45,
+      "reservationEndDateOffset": 40,
+      "imageThumbnail": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "BBQ Grill Selection",
+        "ingredients": "Beef burgers, chicken wings, pork ribs, corn on the cob, coleslaw, potato salad",
+        "additionalFoodItems": "Craft beers, homemade lemonade, watermelon slices",
+        "dietaryStyles": [],
+        "allergens": ["Gluten", "Dairy"]
+      },
+      "address": {
+        "streetAddress": "Skovvej 88",
+        "postalCode": "5000",
+        "city": "Odense",
+        "region": "Region Syddanmark"
+      }
+    },
+    {
+      "name": "Vegan Thai Cooking Night",
+      "description": "Explore plant-based Thai cuisine with fresh herbs, coconut milk curries, and aromatic rice.",
+      "userId": "019b17fc-5147-794b-8a08-bfa49a2aaa90",
+      "maxAllowedParticipants": 10,
+      "pricePerSeat": 40.00,
+      "minAllowedAge": 16,
+      "maxAllowedAge": 65,
+      "startDateOffset": 21,
+      "reservationEndDateOffset": 19,
+      "imageThumbnail": "https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "Thai Green Curry & Pad Thai",
+        "ingredients": "Tofu, coconut milk, Thai basil, lemongrass, galangal, rice noodles, vegetables, peanuts",
+        "additionalFoodItems": "Thai iced tea, mango sticky rice, spring rolls",
+        "dietaryStyles": ["Vegan", "Vegetarian"],
+        "allergens": ["Peanuts", "Soy"]
+      },
+      "address": {
+        "streetAddress": "Algade 22",
+        "postalCode": "9000",
+        "city": "Aalborg",
+        "region": "Region Nordjylland"
+      }
+    },
+    {
+      "name": "French Wine & Cheese Tasting",
+      "description": "Sample artisan cheeses paired with premium French wines in an elegant setting.",
+      "userId": "019b17fc-5147-794b-8a08-bfa49a2aaa90",
+      "maxAllowedParticipants": 12,
+      "pricePerSeat": 65.00,
+      "minAllowedAge": 21,
+      "maxAllowedAge": 70,
+      "startDateOffset": 10,
+      "reservationEndDateOffset": 8,
+      "imageThumbnail": "https://images.unsplash.com/photo-1452195100486-9cc805987862?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "Artisan Cheese Board",
+        "ingredients": "Brie, camembert, roquefort, gruyère, chèvre, fresh grapes, walnuts, honey, baguette",
+        "additionalFoodItems": "Bordeaux red, Burgundy white, Champagne, charcuterie",
+        "dietaryStyles": ["Vegetarian"],
+        "allergens": ["Dairy", "Gluten", "Nuts"]
+      },
+      "address": {
+        "streetAddress": "Hovedgaden 5",
+        "postalCode": "2300",
+        "city": "København S",
+        "region": "Region Hovedstaden"
+      }
+    },
+    {
+      "name": "Mexican Taco Tuesday Fiesta",
+      "description": "Build your own tacos with authentic fillings, fresh salsas, and margaritas!",
+      "userId": "019b1802-a063-7095-9e29-8f9f3df736a1",
+      "maxAllowedParticipants": 15,
+      "pricePerSeat": 30.00,
+      "minAllowedAge": 18,
+      "maxAllowedAge": 45,
+      "startDateOffset": 7,
+      "reservationEndDateOffset": 5,
+      "imageThumbnail": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "Taco Bar Spread",
+        "ingredients": "Corn tortillas, carnitas, grilled chicken, black beans, pico de gallo, guacamole, cheese",
+        "additionalFoodItems": "Margaritas, Mexican beer, churros with chocolate sauce",
+        "dietaryStyles": [],
+        "allergens": ["Dairy", "Gluten"]
+      },
+      "address": {
+        "streetAddress": "Banegårdspladsen 1",
+        "postalCode": "8700",
+        "city": "Horsens",
+        "region": "Region Midtjylland"
+      }
+    },
+    {
+      "name": "Mediterranean Mezze Evening",
+      "description": "A spread of hummus, falafel, grilled halloumi, and fresh pita under the stars.",
+      "userId": "019b17fc-5147-794b-8a08-bfa49a2aaa90",
+      "maxAllowedParticipants": 14,
+      "pricePerSeat": 38.00,
+      "minAllowedAge": 18,
+      "maxAllowedAge": 55,
+      "startDateOffset": 35,
+      "reservationEndDateOffset": 32,
+      "imageThumbnail": "https://images.unsplash.com/photo-1540914124281-342587941389?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "Mezze Platter",
+        "ingredients": "Hummus, baba ganoush, falafel, halloumi, tabbouleh, olives, pickled vegetables, pita bread",
+        "additionalFoodItems": "Ouzo, retsina wine, baklava, Turkish coffee",
+        "dietaryStyles": ["Vegetarian"],
+        "allergens": ["Dairy", "Gluten", "Sesame"]
+      },
+      "address": {
+        "streetAddress": "Havnegade 33",
+        "postalCode": "6700",
+        "city": "Esbjerg",
+        "region": "Region Syddanmark"
+      }
+    },
+    {
+      "name": "Indian Curry Night",
+      "description": "Authentic North Indian curries with naan bread, fragrant rice, and traditional chai.",
+      "userId": "019b1802-a063-7095-9e29-8f9f3df736a1",
+      "maxAllowedParticipants": 12,
+      "pricePerSeat": 42.00,
+      "minAllowedAge": 16,
+      "maxAllowedAge": 60,
+      "startDateOffset": 18,
+      "reservationEndDateOffset": 16,
+      "imageThumbnail": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400",
+      "isActive": true,
+      "isPublic": true,
+      "foodDetails": {
+        "name": "Curry Feast",
+        "ingredients": "Chicken tikka masala, lamb rogan josh, dal makhani, basmati rice, naan, raita, mango chutney",
+        "additionalFoodItems": "Masala chai, lassi, gulab jamun",
+        "dietaryStyles": [],
+        "allergens": ["Dairy", "Gluten", "Nuts"]
+      },
+      "address": {
+        "streetAddress": "Strøget 78",
+        "postalCode": "1000",
+        "city": "København K",
+        "region": "Region Hovedstaden"
+      }
+    }
+  ]
+}

@@ -377,6 +377,7 @@ public class EventService(
             .FilterByName(searchEventsRequestDto.LocationOrEventName)
             .FilterByMinAndMaxAge(searchEventsRequestDto.MinAge, searchEventsRequestDto.MaxAge)
             .FilterByDate(searchEventsRequestDto.FromDate, searchEventsRequestDto.ToDate)
+            .FilterByPrice(searchEventsRequestDto.MaxPrice)
             .Build();
 
         var events = await eventRepository.GetPaginatedAndFilteredEvents(filters, paginationDto);

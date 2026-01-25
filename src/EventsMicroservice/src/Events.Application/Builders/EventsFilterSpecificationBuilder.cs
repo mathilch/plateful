@@ -54,6 +54,16 @@ public class EventsFilterSpecificationBuilder
         return this;
     }
 
+    public EventsFilterSpecificationBuilder FilterByPrice(int? maxPrice)
+    {
+        if (maxPrice is not null)
+        {
+            Filters.Add(x => x.PricePerSeat <= maxPrice);
+        }
+
+        return this;
+    }
+
     public EventsFilterSpecificationBuilder FilterByActive(bool? isActive)
     {
         if (isActive.HasValue)

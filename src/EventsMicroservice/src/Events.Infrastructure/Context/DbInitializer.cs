@@ -1,6 +1,6 @@
 using Events.Domain.Entities;
-using Events.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Events.Infrastructure.Context;
 
@@ -12,142 +12,156 @@ public static class DbInitializer
 
         if (!context.Events.Any())
         {
-            var userId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-            var mathiasId = Guid.Parse("019b17fc-5147-794b-8a08-bfa49a2aaa90");
-            var testUserId = Guid.Parse("019b1802-a063-7095-9e29-8f9f3df736a1");
-
-            var e1Id = Guid.NewGuid();
-
-            var ep1 = new EventParticipant
+            var seedData = LoadSeedData();
+            if (seedData == null)
             {
-                Id = Guid.NewGuid(),
-                EventId = e1Id,
-                UserId = testUserId,
-                CreatedDate = DateTime.UtcNow,
-                ParticipantStatus = ParticipantStatus.Approved,
-                PaymentStatus = PaymentStatus.Paid
-            };
+                Console.WriteLine("Warning: Could not load seed data from SeedData.json");
+                return;
+            }
 
-            var fd1 = new EventFoodDetails
+            var events = new List<Event>();
+            var foodDetailsList = new List<EventFoodDetails>();
+
+            foreach (var eventData in seedData.Events)
             {
-                DietaryStyles = [],
-                Allergens = ["Gluten, Dairy"],
-                Name = "Pizza",
-                Ingredients = "Flour, water, meat, cheese",
-                AdditionalFoodItems = "Monster Energy Nitro"
-            };
-
-            var ea1 = new EventAddress
-            {
-                StreetAddress = "Asmild Ager 2",
-                PostalCode = "8800",
-                City = "Viborg",
-                Region = "Region Midtjylland"
-            };
-
-            var e1 = new Event
-            {
-                EventId = e1Id,
-                UserId = mathiasId,
-                Name = "Cozy Candlelit Dinner",
-                Description = "Freshly made",
-                MaxAllowedParticipants = 5,
-                PricePerSeat = 30,
-                MinAllowedAge = 18,
-                MaxAllowedAge = 25,
-                StartDate = new DateTime(2025, 12, 24, 18, 0, 0, DateTimeKind.Utc),
-                ReservationEndDate = new DateTime(2025, 12, 24, 16, 0, 0, DateTimeKind.Utc),
-                ImageThumbnail =
-                    "https://generalwax.com/cdn/shop/articles/romantic-candlelight-dinner-ideas-1.jpg?v=1719835109",
-                CreatedDate = DateTime.UtcNow,
-                IsActive = true,
-                IsPublic = true,
-                EventFoodDetails = fd1,
-                EventAddress = ea1,
-                EventParticipants = [ep1]
-            };
-
-
-            // Event 2
-            var e2Id = Guid.NewGuid();
-            var fd2 = new EventFoodDetails
-            {
-                DietaryStyles = [],
-                Allergens = [],
-                Name = "Sushi Platter",
-                Ingredients = "Rice, fish, seaweed, wasabi",
-                AdditionalFoodItems = "Green Tea"
-            };
-
-            var e2 = new Event
-            {
-                EventId = e2Id,
-                UserId = testUserId,
-                Name = "Japanese Sushi Night",
-                Description = "Fresh sushi made to order",
-                MaxAllowedParticipants = 10,
-                PricePerSeat = 50,
-                MinAllowedAge = 21,
-                MaxAllowedAge = 35,
-                StartDate = new DateTime(2026, 2, 15, 19, 30, 0, DateTimeKind.Utc),
-                ReservationEndDate = new DateTime(2026, 1, 15, 22, 0, 0, DateTimeKind.Utc),
-                ImageThumbnail =
-                    "https://i2.wp.com/annledo.com/wp-content/uploads/2019/11/Sushi-Party-How-to-Guide-4.jpg?fit=1440%2C1800&ssl=1",
-                CreatedDate = DateTime.UtcNow,
-                IsActive = true,
-                IsPublic = true,
-                EventFoodDetails = fd2,
-                EventAddress = new EventAddress
+                var eventId = Guid.NewGuid();
+                
+                var foodDetails = new EventFoodDetails
                 {
-                    StreetAddress = "Astrids Alle 99",
-                    PostalCode = "3450",
-                    City = "Uberg",
-                    Region = "Region Midtjylland"
-                }
-            };
+                    Id = Guid.NewGuid(),
+                    EventId = eventId,
+                    Name = eventData.FoodDetails.Name,
+                    Ingredients = eventData.FoodDetails.Ingredients,
+                    AdditionalFoodItems = eventData.FoodDetails.AdditionalFoodItems,
+                    DietaryStyles = eventData.FoodDetails.DietaryStyles,
+                    Allergens = eventData.FoodDetails.Allergens
+                };
 
-            // Event 3
-            var e3Id = Guid.NewGuid();
-            var fd3 = new EventFoodDetails
-            {
-                DietaryStyles = [],
-                Allergens = [],
-                Name = "BBQ Feast",
-                Ingredients = "Beef, chicken, sausages, veggies",
-                AdditionalFoodItems = "Lemonade, Beer"
-            };
-
-            var e3 = new Event
-            {
-                EventId = e3Id,
-                UserId = testUserId,
-                Name = "Summer BBQ Bash",
-                Description = "Outdoor grilling and fun",
-                MaxAllowedParticipants = 20,
-                PricePerSeat = 15,
-                MinAllowedAge = 18,
-                MaxAllowedAge = 40,
-                StartDate = new DateTime(2026, 6, 20, 16, 0, 0, DateTimeKind.Utc),
-                ReservationEndDate = new DateTime(2026, 6, 20, 23, 0, 0, DateTimeKind.Utc),
-                ImageThumbnail = "https://www.weliahealth.org/wp-content/uploads/2025/06/blog-bbq-1200x628-1.jpg",
-                CreatedDate = DateTime.UtcNow,
-                IsActive = true,
-                IsPublic = true,
-                EventFoodDetails = fd3,
-                EventAddress =  new EventAddress
+                var eventEntity = new Event
                 {
-                    StreetAddress = "Jagtvej 1, st. tv.",
-                    PostalCode = "2200",
-                    City = "København",
-                    Region = "Region Hovedstaden"
-                }
-            };
+                    EventId = eventId,
+                    UserId = Guid.Parse(eventData.UserId),
+                    Name = eventData.Name,
+                    Description = eventData.Description,
+                    MaxAllowedParticipants = eventData.MaxAllowedParticipants,
+                    PricePerSeat = eventData.PricePerSeat,
+                    MinAllowedAge = eventData.MinAllowedAge,
+                    MaxAllowedAge = eventData.MaxAllowedAge,
+                    StartDate = DateTime.UtcNow.AddDays(eventData.StartDateOffset),
+                    ReservationEndDate = DateTime.UtcNow.AddDays(eventData.ReservationEndDateOffset),
+                    ImageThumbnail = eventData.ImageThumbnail,
+                    CreatedDate = DateTime.UtcNow,
+                    IsActive = eventData.IsActive,
+                    IsPublic = eventData.IsPublic,
+                    EventFoodDetails = foodDetails,
+                    EventAddress = new EventAddress
+                    {
+                        StreetAddress = eventData.Address.StreetAddress,
+                        PostalCode = eventData.Address.PostalCode,
+                        City = eventData.Address.City,
+                        Region = eventData.Address.Region
+                    }
+                };
 
-            // Add events and food details to context
-            context.Events.AddRange(e1, e2, e3);
-            context.EventFoodDetails.AddRange(fd1, fd2, fd3);
-            context.EventParticipants.AddRange(ep1);
+                events.Add(eventEntity);
+                foodDetailsList.Add(foodDetails);
+            }
+
+            context.Events.AddRange(events);
+            context.EventFoodDetails.AddRange(foodDetailsList);
             context.SaveChanges();
+            
+            Console.WriteLine($"Seeded {events.Count} events successfully.");
         }
     }
+
+    private static SeedDataRoot? LoadSeedData()
+    {
+        var assembly = typeof(DbInitializer).Assembly;
+        var resourceName = "Events.Infrastructure.Context.SeedData.json";
+        
+        using var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream == null)
+        {
+            // Fallback: try to load from file path
+            var basePath = AppContext.BaseDirectory;
+            var filePath = Path.Combine(basePath, "SeedData.json");
+            
+            if (!File.Exists(filePath))
+            {
+                // Try relative path from assembly location
+                var assemblyPath = Path.GetDirectoryName(assembly.Location);
+                filePath = Path.Combine(assemblyPath ?? basePath, "SeedData.json");
+            }
+
+            if (File.Exists(filePath))
+            {
+                var json = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<SeedDataRoot>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            
+            return null;
+        }
+
+        using var reader = new StreamReader(stream);
+        var content = reader.ReadToEnd();
+        return JsonSerializer.Deserialize<SeedDataRoot>(content, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+    }
 }
+
+#region Seed Data DTOs
+
+public class SeedDataRoot
+{
+    public SeedUsers Users { get; set; } = new();
+    public List<SeedEvent> Events { get; set; } = [];
+}
+
+public class SeedUsers
+{
+    public string MathiasId { get; set; } = string.Empty;
+    public string TestUserId { get; set; } = string.Empty;
+}
+
+public class SeedEvent
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
+    public int MaxAllowedParticipants { get; set; }
+    public double PricePerSeat { get; set; }
+    public int MinAllowedAge { get; set; }
+    public int MaxAllowedAge { get; set; }
+    public int StartDateOffset { get; set; }
+    public int ReservationEndDateOffset { get; set; }
+    public string ImageThumbnail { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public bool IsPublic { get; set; }
+    public SeedFoodDetails FoodDetails { get; set; } = new();
+    public SeedAddress Address { get; set; } = new();
+}
+
+public class SeedFoodDetails
+{
+    public string Name { get; set; } = string.Empty;
+    public string Ingredients { get; set; } = string.Empty;
+    public string AdditionalFoodItems { get; set; } = string.Empty;
+    public List<string> DietaryStyles { get; set; } = [];
+    public List<string> Allergens { get; set; } = [];
+}
+
+public class SeedAddress
+{
+    public string StreetAddress { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty;
+}
+
+#endregion
