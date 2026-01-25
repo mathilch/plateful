@@ -67,8 +67,16 @@ public class EventService(
 
     public async Task<List<EventOverviewDto>> GetRecentEvents(PaginationDto paginationDto)
     {
+        // Need to know user locale (CET assumed as a default timezone in Denmark)
+        var denmarkTz = TimeZoneInfo.FindSystemTimeZoneById(
+            OperatingSystem.IsWindows() ? "Romance Standard Time" : "Europe/Copenhagen");
+        var dateTimeDk = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, denmarkTz);
+        
         var filterSpecification = new EventsFilterSpecificationBuilder();
-        var filters = filterSpecification.FilterByActive(true).Build();
+        var filters = filterSpecification
+            .FilterByActive(true)
+            .FilterByDate(dateTimeDk)
+            .Build();
 
         var events = await eventRepository.GetPaginatedAndFilteredEvents(filters, paginationDto);
         if (events is not null)
@@ -368,6 +376,7 @@ public class EventService(
             .FilterByPublic(searchEventsRequestDto.IsPublic)
             .FilterByName(searchEventsRequestDto.LocationOrEventName)
             .FilterByMinAndMaxAge(searchEventsRequestDto.MinAge, searchEventsRequestDto.MaxAge)
+            .FilterByDate(searchEventsRequestDto.FromDate, searchEventsRequestDto.ToDate)
             .Build();
 
         var events = await eventRepository.GetPaginatedAndFilteredEvents(filters, paginationDto);

@@ -53,6 +53,9 @@ services:
         condition: service_healthy
       users-api:
         condition: service_started
+    volumes:
+      # Persist uploaded images so they survive container restarts
+      - events_uploads:/app/wwwroot/uploads
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
       interval: 10s
@@ -159,6 +162,7 @@ volumes:
   users_pgdata:
   events_pgdata:
   chat_pgdata:
+  events_uploads:  # Persistent storage for uploaded event images
 
 networks: 
   plateful-frontend:

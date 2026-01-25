@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { parseJwt } from "@/lib/jwt-decoder.helper";
 import { EventOverviewDto } from "@/types/event-details.type";
 import { getEventsByUserId } from "@/services/api/events-api.service";
+import Link from "next/link";
 
 export default function HostedEvents() {
   const [userEvents, setUserEvents] = useState<Array<EventOverviewDto>>([]);
@@ -77,12 +78,14 @@ export default function HostedEvents() {
                 </p>
               </div>
 
-              <Button
-                variant="outline"
-                className="border-emerald-800 text-emerald-800 hover:bg-emerald-50"
-              >
-                View Details
-              </Button>
+              <Link href={`/viewEventPage?id=${event.eventId}`}>
+                <Button
+                  variant="outline"
+                  className="border-emerald-800 text-emerald-800 hover:bg-emerald-50 cursor-pointer"
+                >
+                  View Details
+                </Button>
+              </Link>
               <Button
                 variant="default"
                 className="bg-emerald-800 hover:bg-emerald-700"

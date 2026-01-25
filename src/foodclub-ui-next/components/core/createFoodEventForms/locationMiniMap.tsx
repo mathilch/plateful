@@ -11,10 +11,12 @@ interface LocationMiniMapProps {
 export default function LocationMiniMap({ address, city, postalCode }: LocationMiniMapProps) {
     const [mapUrl, setMapUrl] = useState<string>("");
     
+    const addressWoAptNum = address?.split(',')[0];
+
     // Compute fullAddress as derived state
     const fullAddress = useMemo(
-        () => [address, postalCode, city].filter(Boolean).join(", "),
-        [address, postalCode, city]
+        () => [addressWoAptNum, postalCode, city].filter(Boolean).join("; "),
+        [addressWoAptNum, postalCode, city]
     );
 
     useEffect(() => {

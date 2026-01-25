@@ -9,13 +9,13 @@ public static class DbInitializer
     public static void Seed(EventsDbContext context)
     {
         context.Database.Migrate();
-        
+
         if (!context.Events.Any())
         {
             var userId = Guid.Parse("11111111-1111-1111-1111-111111111111");
             var mathiasId = Guid.Parse("019b17fc-5147-794b-8a08-bfa49a2aaa90");
             var testUserId = Guid.Parse("019b1802-a063-7095-9e29-8f9f3df736a1");
-            
+
             var e1Id = Guid.NewGuid();
 
             var ep1 = new EventParticipant
@@ -27,7 +27,7 @@ public static class DbInitializer
                 ParticipantStatus = ParticipantStatus.Approved,
                 PaymentStatus = PaymentStatus.Paid
             };
-            
+
             var fd1 = new EventFoodDetails
             {
                 DietaryStyles = [],
@@ -44,7 +44,7 @@ public static class DbInitializer
                 City = "Viborg",
                 Region = "Region Midtjylland"
             };
-            
+
             var e1 = new Event
             {
                 EventId = e1Id,
@@ -57,15 +57,16 @@ public static class DbInitializer
                 MaxAllowedAge = 25,
                 StartDate = new DateTime(2025, 12, 24, 18, 0, 0, DateTimeKind.Utc),
                 ReservationEndDate = new DateTime(2025, 12, 24, 16, 0, 0, DateTimeKind.Utc),
-                ImageThumbnail = "",
+                ImageThumbnail =
+                    "https://generalwax.com/cdn/shop/articles/romantic-candlelight-dinner-ideas-1.jpg?v=1719835109",
                 CreatedDate = DateTime.UtcNow,
                 IsActive = true,
                 IsPublic = true,
                 EventFoodDetails = fd1,
                 EventAddress = ea1,
                 EventParticipants = [ep1]
-            };   
-            
+            };
+
 
             // Event 2
             var e2Id = Guid.NewGuid();
@@ -88,13 +89,21 @@ public static class DbInitializer
                 PricePerSeat = 50,
                 MinAllowedAge = 21,
                 MaxAllowedAge = 35,
-                StartDate = new DateTime(2026, 1, 15, 19, 30, 0, DateTimeKind.Utc),
+                StartDate = new DateTime(2026, 2, 15, 19, 30, 0, DateTimeKind.Utc),
                 ReservationEndDate = new DateTime(2026, 1, 15, 22, 0, 0, DateTimeKind.Utc),
-                ImageThumbnail = "",
+                ImageThumbnail =
+                    "https://i2.wp.com/annledo.com/wp-content/uploads/2019/11/Sushi-Party-How-to-Guide-4.jpg?fit=1440%2C1800&ssl=1",
                 CreatedDate = DateTime.UtcNow,
                 IsActive = true,
                 IsPublic = true,
-                EventFoodDetails = fd2
+                EventFoodDetails = fd2,
+                EventAddress = new EventAddress
+                {
+                    StreetAddress = "Astrids Alle 99",
+                    PostalCode = "3450",
+                    City = "Uberg",
+                    Region = "Region Midtjylland"
+                }
             };
 
             // Event 3
@@ -120,11 +129,18 @@ public static class DbInitializer
                 MaxAllowedAge = 40,
                 StartDate = new DateTime(2026, 6, 20, 16, 0, 0, DateTimeKind.Utc),
                 ReservationEndDate = new DateTime(2026, 6, 20, 23, 0, 0, DateTimeKind.Utc),
-                ImageThumbnail = "",
+                ImageThumbnail = "https://www.weliahealth.org/wp-content/uploads/2025/06/blog-bbq-1200x628-1.jpg",
                 CreatedDate = DateTime.UtcNow,
                 IsActive = true,
                 IsPublic = true,
-                EventFoodDetails = fd3
+                EventFoodDetails = fd3,
+                EventAddress =  new EventAddress
+                {
+                    StreetAddress = "Jagtvej 1, st. tv.",
+                    PostalCode = "2200",
+                    City = "København",
+                    Region = "Region Hovedstaden"
+                }
             };
 
             // Add events and food details to context

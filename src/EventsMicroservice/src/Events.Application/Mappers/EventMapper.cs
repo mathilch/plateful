@@ -33,13 +33,6 @@ public static class EventMapper
 
     public static EventOverviewDto ToEventOverviewDto(this Event e, IEnumerable<UserDto> users)
     {
-        string[] mockImageThumbnails =
-        [
-            "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
-            "https://img.freepik.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19744.jpg?semt=ais_hybrid&w=740&q=80",
-            "https://cdn.foodfaithfitness.com/uploads/2025/02/a-crunchy_roll_sushi-feature-2.jpeg"
-        ];
-
         return new EventOverviewDto(
             e.EventId,
             e.UserId,
@@ -56,7 +49,7 @@ public static class EventMapper
             e.ReservationEndDate,
             e.EventFoodDetails?.Ingredients?.Split(',') ?? Array.Empty<String>(),
             e.EventParticipants.Count,
-            mockImageThumbnails[new Random().Next(0, 2)],
+            e.ImageThumbnail,
             e.CreatedDate,
             e.PricePerSeat,
             e.IsActive,
@@ -70,13 +63,6 @@ public static class EventMapper
 
     public static EventOverviewDto ToEventOverviewDto(this Event e, string userName)
     {
-        string[] mockImageThumbnails =
-        [
-            "https://i0.wp.com/blog.themalamarket.com/wp-content/uploads/2024/06/Vegetarian-pulled-noodles-lead-more-sat.jpg?resize=1200%2C900&ssl=1",
-            "https://img.freepik.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19744.jpg?semt=ais_hybrid&w=740&q=80",
-            "https://cdn.foodfaithfitness.com/uploads/2025/02/a-crunchy_roll_sushi-feature-2.jpeg"
-        ];
-
         return new EventOverviewDto(
             e.EventId,
             e.UserId,
@@ -93,7 +79,7 @@ public static class EventMapper
             e.ReservationEndDate,
             e.EventFoodDetails?.Ingredients?.Split(',') ?? Array.Empty<String>(),
             e.EventParticipants.Count,
-            mockImageThumbnails[new Random().Next(0, 2)],
+            e.ImageThumbnail,
             e.CreatedDate,
             e.PricePerSeat,
             e.IsActive,

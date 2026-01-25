@@ -73,7 +73,7 @@ export function ImageDropzone({ value, onChange }: ImageDropzoneProps) {
                 ) : value ? (
                     <img src={value} alt="Preview" className="h-full w-full object-cover rounded-xl" />
                 ) : (
-                    isDragActive ? "Drop the image here..." : "Drop image"
+                    <span>{isDragActive ? "Drop the image here..." : "Drop image"}</span>
                 )}
             </div>
             {error && (
