@@ -2,7 +2,32 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ImageDropzone } from '@/components/core/imageDropzone';
 
+// Mock fetch globally
+global.fetch = jest.fn();
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
+
 describe('ImageDropzone Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Set up default mocks
+    localStorageMock.getItem.mockReturnValue('fake-token');
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({ imageUrl: '/uploads/test-image.jpg' }),
+    });
+  });
+
   it('should render dropzone placeholder text', () => {
     render(<ImageDropzone />);
     
@@ -31,17 +56,18 @@ describe('ImageDropzone Component', () => {
     if (input) {
       await user.upload(input, file);
       
-      // Wait for FileReader to complete
+      // Wait for upload to complete
       await new Promise(resolve => setTimeout(resolve, 100));
       
       expect(handleChange).toHaveBeenCalled();
+      expect(handleChange).toHaveBeenCalledWith(expect.stringContaining('/uploads/test-image.jpg'));
     }
   });
 
   it('should have proper styling classes', () => {
     const { container } = render(<ImageDropzone />);
     
-    const dropzone = container.firstChild;
+    const dropzone = container.querySelector('[class*="border-dashed"]');
     expect(dropzone).toHaveClass('border-dashed');
     expect(dropzone).toHaveClass('rounded-xl');
   });

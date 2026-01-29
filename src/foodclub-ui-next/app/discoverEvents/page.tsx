@@ -10,7 +10,7 @@ import type { SearchEventsRequestDto } from "@/types/search-events.type";
 export default function DiscoverEvents() {
   const [searchTerm, setSearchTerm] = useState("");
   const [price, setPrice] = useState<number>(500);
-  const [fromDate, setFromDate] = useState<string>("");
+  const [fromDate, setFromDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [toDate, setToDate] = useState<string>("");
   const [minAge, setMinAge] = useState<number | null>(null);
   const [maxAge, setMaxAge] = useState<number | null>(null);
@@ -183,6 +183,7 @@ export default function DiscoverEvents() {
             </div>
           </div>
         </aside>
+
         <section className="lg:col-span-9">
           <div className="flex items-center justify-between mb-6">
             <div className="text-sm text-gray-600">

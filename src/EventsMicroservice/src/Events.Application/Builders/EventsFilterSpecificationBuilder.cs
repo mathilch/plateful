@@ -39,6 +39,31 @@ public class EventsFilterSpecificationBuilder
         return this;
     }
 
+    public EventsFilterSpecificationBuilder FilterByDate(DateTimeOffset? fromDate, DateTimeOffset? toDate = null)
+    {
+        if (fromDate is not null)
+        {
+            Filters.Add(x => x.StartDate >= fromDate.Value.UtcDateTime);
+        }
+
+        if (toDate is not null)
+        {
+            Filters.Add(x => x.StartDate <= toDate.Value.UtcDateTime);
+        }
+            
+        return this;
+    }
+
+    public EventsFilterSpecificationBuilder FilterByPrice(int? maxPrice)
+    {
+        if (maxPrice is not null)
+        {
+            Filters.Add(x => x.PricePerSeat <= maxPrice);
+        }
+
+        return this;
+    }
+
     public EventsFilterSpecificationBuilder FilterByActive(bool? isActive)
     {
         if (isActive.HasValue)
