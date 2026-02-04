@@ -5,7 +5,7 @@
 <h1 align="center">Plateful</h1>
 
 <p align="center">
-  <strong>A dotnet fullstack application using clean architecture and microservices</strong>
+  <strong>A dotnet fullstack application using clean architecture and microservices. Written by me and my studygroup as a semesterproject for our degree in software engineering.</strong>
 </p>
 
 ---
