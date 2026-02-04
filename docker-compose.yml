@@ -87,41 +87,6 @@ services:
       retries: 5
       start_period: 5s
 
-  # ====== Chat ======= #
-  chat-api:
-    build:
-      context: ./src/ChatMicroservice
-      dockerfile: Dockerfile 
-    container_name: chat-api
-    ports:
-      - "5003:8080"
-    depends_on:
-      chat-db:
-        condition: service_healthy
-    networks:
-      - plateful-backend
-
-  chat-db:
-    image: postgres:18
-    container_name: chatmicroservice-db
-    environment:
-      POSTGRES_USER: postgres 
-      POSTGRES_PASSWORD: postgres 
-      POSTGRES_DB: chatdb
-    volumes:
-      - chat_pgdata:/var/lib/postgresql 
-    ports:
-      - "5435:5432"
-    networks: 
-      - plateful-backend
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-
-
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
